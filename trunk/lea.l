@@ -69,6 +69,7 @@ alg						{ return ALG;		}
 func					{ return FUNC;		}
 entrada[ \t]+de[ \t]+	{ return IN_STREAM;	}
 salida[ \t]+de[ \t]+	{ return OUT_STREAM; }
+entrada[ \t]+y[ \t]+salida[ \t]+de[ \t]+	{ return INOUT_STREAM; }
 dev						{ return DEV;		}
 
 proc					{
@@ -80,9 +81,9 @@ proc					{
 							BEGIN(INITIAL);
 							return END;
 						}
-ent[ \t]+				{ return ENT;		}
-sal[ \t]+				{ return SAL;		}
-entsal[ \t]+			{ return ENTSAL;	}
+ent[ \t]+				{ return IN;		}
+sal[ \t]+				{ return OUT;		}
+entsal[ \t]+			{ return INOUT;		}
 
 cons					{ return CONS;		}
 tipos					{ return TYPES;		}
