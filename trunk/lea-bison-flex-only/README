@@ -32,10 +32,10 @@ system. In order to compile LEA, execute the following command:
 
 cd LEA-CVS-Snapshot/ && make
 
-If the process finish sucessfully, a "lea" binary will be created in thw working directory. You can already test
+If the process finish sucessfully, a "lea" binary will be created in the working directory. You can already test
 the parser executing:
 
-$ ./lea script
+$ ./lea sample-script
 
 ("script" is a test script written in *syntaxically* valid LEA code)
 
@@ -63,6 +63,11 @@ After that, to execute/parse your script, simply execute the following command:
 
 $ ./<name-of-my-script-file>
 
+For example:
+$ chmod +x sample-script
+and once sucessfully installed the parser:
+$ ./sample-script
+
 4.2 Interactive intrepeter/parser
 ---------------------------------
 
@@ -74,6 +79,11 @@ Execute "./lea" or "/bin/lea"
 $  /bin/lea
 <write your code here>
 
+For example:
+$ lea
+or (in sources directory):
+$ ./lea
+
 Note that the parser will not end if you enter syntaxically valid code, so you can terminate the execution of the
 parser hitting the <Ctrl>-<C> keys combination.
 
@@ -82,7 +92,10 @@ parser hitting the <Ctrl>-<C> keys combination.
 
 You can also pass to the LEA parser the path to the script you want to parse:
 
-/bin/lea </path/to/my/script-file>
+$ /bin/lea </path/to/my/script-file>
+
+For example:
+$ lea sample-script
 
 5. Notes
 --------
