@@ -54,9 +54,9 @@
 %type <no>			declarations_block consts_block const_dcl_list types_block vars_block 
 %type <no>			sentence_list_block sentence if_statement output_statement input_statement
 %type <no>			while_loop fromto_assign_statement fromto_loop function_call procedure_call expr expr_bool
-%type <nl>			library proc_arg_list in_arg_list out_arg_list inout_arg_list id_list array_dimensions 
-%type <nl>			int_val_list types_dcl str_list vars_dcl sentence_list elif_statement elif_statement_list 
-%type <nl>			assign_statement mult_assign_statement expr_list
+%type <nl>			library proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list id_list
+%type <nl>			array_dimensions int_val_list types_dcl str_list vars_dcl sentence_list elif_statement
+%type <nl>			elif_statement_list assign_statement mult_assign_statement expr_list
 */
 %start program
 
@@ -139,15 +139,19 @@ interface_block: /* empty */
 		{  }
 ;
 
+proc_arg: /* empty */
+	| IN in_arg_list 
+		{  }
+	| OUT out_arg_list
+		{  }
+	| INOUT inout_arg_list
+		{  }
+;
+
 proc_arg_list: /* empty */
-	| proc_arg_list
-	IN in_arg_list ';'  
+	proc_arg_list ';' proc_arg
 		{  }
-	|proc_arg_list
-	OUT out_arg_list ';' 
-		{  }
-	| proc_arg_list
-	INOUT inout_arg_list ';' 
+	| proc_arg
 		{  }
 ;
 
@@ -175,7 +179,7 @@ inout_arg_list : /* empty */
 in_var_dcl:
 	id_list   ':' ID
 		{  }
-	| id_list ':' ID IN_STREAM ID
+	| id_list ':' ID OF IN_STREAM ID
 		{  }
 	| id_list  ':' ARRAY array_dimensions OF ID
 		{  }
@@ -184,7 +188,7 @@ in_var_dcl:
 out_var_dcl:
 	id_list   ':' ID
 		{  }
-	| id_list ':' ID OUT_STREAM ID
+	| id_list ':' ID OF OUT_STREAM ID
 		{  }
 	| id_list ':' ARRAY array_dimensions OF ID
 		{  }
@@ -193,7 +197,7 @@ out_var_dcl:
 inout_var_dcl:
 	id_list   ':' ID
 		{  }
-	| id_list ':' ID INOUT_STREAM ID
+	| id_list ':' ID OF INOUT_STREAM ID
 		{  }
 	| id_list ':' ARRAY array_dimensions OF ID
 		{  }
@@ -251,21 +255,21 @@ const_dcl_list: /* empty */
 
 types_block: /* empty */
 	| TYPES '\n'
-		types_dcl
+		types_dcl_list
 		{  }
 ;
-types_dcl: /* empty */
-	| types_dcl
+types_dcl_list: /* empty */
+	| types_dcl_list
 	id_list ':' '(' str_list ')' '\n'
 		{  }
-	| types_dcl
-	id_list ':' ID
+	| types_dcl_list
+	id_list ':' ID '\n'
 		{  }
-	| types_dcl
-	id_list ':' ID IN_STREAM ID
+	| types_dcl_list
+	id_list ':' ID OF ID '\n'
 		{  }
-	| types_dcl
-	id_list ':' ARRAY array_dimensions OF ID
+	| types_dcl_list
+	id_list ':' ARRAY array_dimensions OF ID '\n'
 		{  }
 ;
 
