@@ -259,7 +259,7 @@ vars_dcl: /* empty */
 		{ $$ = dcl_var_pair($1, $3); }
 ;
 
-sentence_list_block: /* empty */
+sentence_list_block:
 	START '\n'
 		sentence_list
 	END '\n'
