@@ -95,11 +95,11 @@ library:
 	EPSILON
 		{ $$ = NULL; }
 	| library algorithm
-		{ $$ = TRlibrary_alg($1, $2); }
+		{ $$ = TRlibrary($1, $2); }
 	| library function
-		{ $$ = TRlibrary_func($1, $2); }
+		{ $$ = TRlibrary($1, $2); }
 	| library procedure
-		{ $$ = TRlibrary_proc($1, $2); }
+		{ $$ = TRlibrary($1, $2); }
 ;
 
 algorithm:
@@ -203,7 +203,7 @@ in_var_dcl:
 	| id_list ':' ID OF IN_STREAM ID
 		{ $$ = TRin_var_dcl($1, $3, $6, $5); }
 	| id_list  ':' ARRAY array_dimensions OF ID
-		{ $$ = TRin_var_dcl_array($1, $3, $4, $6); }
+		{ $$ = TRin_var_dcl_array($1, $4, $6); }
 ;
 
 out_var_dcl:
@@ -214,7 +214,7 @@ out_var_dcl:
 	| id_list ':' ID OF OUT_STREAM ID
 		{ $$ = TRout_var_dcl($1, $3, $6, $5); }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRout_varl_dcl_array($1, $3, $4, $6); }
+		{ $$ = TRout_varl_dcl_array($1, $4, $6); }
 ;
 
 inout_var_dcl:
@@ -225,7 +225,7 @@ inout_var_dcl:
 	| id_list ':' ID OF INOUT_STREAM ID
 		{ $$ = TRinout_var_dcl($1, $3, $6, $5); }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRinout_var_dcl_array($1, $3, $4, $6) }
+		{ $$ = TRinout_var_dcl_array($1, $4, $6) }
 ;
 
 id_list:
@@ -249,9 +249,9 @@ int_val_list:
 
 int_id_val:
 	INT_VAL
-		{ $$ = $1; }
+		{ $$ = TRint_id_val_int($1); }
 	| ID
-		{ $$ = TRint_id_val($1); }
+		{ $$ = TRint_id_val_id($1); }
 ;
 
 declarations_block:
@@ -392,7 +392,7 @@ sentence_list:
 	| sentence_list sentence
 		{ $$ = TRsentence_list($1); }
 	| IS_NULL '\n'
-		{ $$ = TRsentence_list(NULL); }
+		{ $$ = NULL; }
 ;
 
 sentence:
@@ -453,10 +453,10 @@ assign_statement:
 		{ $$ = TRassign_statement_assign($1, $3); }
 	| struct_call ASSIGN expr
 		{ $$ = TRassign_statement_expr($1, $3); }
-	| struct_call ASSIGN mult_assign
-		{ $$ = TRassign_statement_mult($1, $3); }
+	/* TODO: | struct_call ASSIGN mult_assign
+		{ $$ = TRassign_statement_mult($1, $3); }*/
 ;
-
+/* TODO:
 mult_assign:
 	'{' mult_assign_list '}'
 		{ $$ = $2; }
@@ -470,7 +470,7 @@ mult_assign_list:
 	| expr
 		{ $$ = TRmult_assign_list_expr($1, NULL); }
 	| mult_assign
-		{ $$ = TRmult_assign_list($1, NULL); }
+		{ $$ = TRmult_assign_list($1, NULL); }*/
 ;
 
 mult_assign_statement:
@@ -492,8 +492,8 @@ while_loop:
 ;
 
 fromto_assign_statement:
-	assign_statement
-		{ $$ = $1; }
+	struct_call ASSIGN expr
+		{ $$ = TRfromto_assign_statement($1, $3); }
 	| '(' fromto_assign_statement ')'
 		{ $$ = $2; }
 ;
@@ -511,7 +511,7 @@ function_call:
 ;
 
 variable_call:
-	ID array_dimensions
+	ID '[' expr_list ']'
 		{ $$ = TRvariable_call($1, $2); }
 	| ID
 		{  $$ = TRvariable_call($1, NULL); }
