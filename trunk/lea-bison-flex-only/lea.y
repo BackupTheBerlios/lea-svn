@@ -318,6 +318,7 @@ register:
 	vars_dcl
 	ENDREG '\n'
 		{  }
+;
 
 sentence_list_block:
 	START '\n'
@@ -358,6 +359,12 @@ if_statement:
 	IF expr_bool ':' '\n'
 		sentence_list
 	elif_statement_list
+	'|' ELSE ':' '\n' 
+		sentence_list
+	ENDIF '\n'
+		{  }
+	IF expr_bool ':' '\n'
+		sentence_list
 	'|' ELSE ':' '\n' 
 		sentence_list
 	ENDIF '\n'
