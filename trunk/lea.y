@@ -279,7 +279,7 @@ sentence_list: /* empty */
 ;
 
 sentence:
-	conditional_statement
+	if_statement
 	| assign_statement
 	| mult_assign
 	| input_statement
