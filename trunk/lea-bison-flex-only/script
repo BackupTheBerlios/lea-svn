@@ -41,6 +41,7 @@ func my_function() dev (a:entero)
 proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo de salida de caracter; entsal f:flujo de entrada y salida de real, g:tabla[5] de logico)
 	tipos
 		a: tabla[5,4] de entero
+		a: (V,H)
 		df: reg
 			v: entero
 		freg

@@ -279,8 +279,10 @@ types_dcl_list: /* empty */
 		{  }
 ;
 
-str_list: /* empty */
-	| str_list ',' ID
+str_list:
+	str_list ',' ID
+		{  }
+	| ID
 		{  }
 ;
 
