@@ -76,7 +76,7 @@ proc					{
 							BEGIN(proc);
 							return PROC;
 						}
-<proc>;					{ return yytext[0];	}
+<proc>;					{ return ';';		}
 <proc>fin				{
 							BEGIN(INITIAL);
 							return END;
@@ -91,14 +91,7 @@ var						{ return VAR;		}
 prin					{ return START;		}
 fin						{ return END;		}
 
-entero					{ return INT;		}
-logico					{ return BOOL;		}
-caracter				{ return CHAR;		}
-cadena					{ return STRING;	}
-real					{ return FLOAT;		}
-flujo[ \t]+de[ \t]+		{ return STREAM;	}
-tabla					{ return ARRAY;		}
-[ \t]+de[ \t]+			{ return ARRAY_OF;	}
+[ \t]+de[ \t]+			{ return OF;		}
 
 escribir				{ return PRINT;		}
 leer					{ return READ;		}

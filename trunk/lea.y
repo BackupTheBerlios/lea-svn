@@ -69,7 +69,7 @@
 
 %%
 
-program: /* empty */
+program:
 	prog_header
 	declarations_block
 	sentences_block
@@ -86,7 +86,7 @@ library: /* empty */
 		{ $$ == add_proc($2); }
 ;
 
-algorithm: /* empty */
+algorithm:
 	alg_header
 	interface_block
 	declarations_block
@@ -94,49 +94,101 @@ algorithm: /* empty */
 		{ $$ = declare_alg($1, $2, $3, $4); }
 ;
 
-function: /* empty */
+function:
 	func_header
 	declarations_block
 	sentences_block
 		{ $$ = declare_func($1, $2, $3, $4); }
 ;
 
-procedure: /* empty */
+procedure:
 	proc_header
 	declarations_block
 	sentences_block
 		{ $$ = declare_proc($1, $2, $3, $4); }
 ;
 
-alg_header: ALG ID '\n'
+alg_header:
+	ALG ID '\n'
 		{ $$ = ID; }
 ;
 
-func_header: FUNC ID func_in_arg_list DEV func_out_arg_list '\n'
-		{ $$ = declare_func_header($2, $3, $5); }
+func_header:
+	FUNC ID '(' linked_in_args ')'  DEV '(' linked_out_args ')' '\n'
+		{ $$ = declare_func_header($2, $4, $8); }
 ;
 
-proc_header: PROC ID proc_arg_list '\n'
-		{ $$ = declare_proc_header($2, $3); }
+proc_header:
+	PROC ID '(' proc_arg_list ')' '\n'
+		{ $$ = declare_proc_header($2, $4); }
 ;
 
-func_in_arg_list: '(' func_linked_in_args ')'
-		{ $$ = $2; }
+interface_block: /* empty */
+	| IN linked_in_args '\n' interface_block
+		{ $$ = add_interface_linked_arg_node($2, $3); }
+	| OUT linked_out_args '\n' interface_block
+		{ $$ = add_interface_linked_arg_node($2, $3); }
 ;
 
-func_linked_in_args: /* empty */
-	func_in_var_dcl func_linked_in_args
-		{ $$ = add_func_linked_in_arg_node($1, $2) }
+proc_arg_list: /* empty */
+	| IN linked_in_args ';' proc_arg_list 
+		{ $$ = add_proc_linked_arg_node($2, $3); }
+	| OUT linked_out_args ';' proc_arg_list
+		{ $$ = add_proc_linked_arg_node($2, $3); }
+	| INOUT linked_inout_args ';' proc_arg_list
+		{ $$ = add_proc_linked_arg_node($2, $3); }
 ;
 
-func_out_arg_list: '(' func_linked_out_args ')'
-		{ $$ = $2; }
+linked_in_args : NULL
+	| in_var_dcl ',' linked_in_args
+		{ $$ = add_func_linked_in_arg_node($1, $2); }
+	| in_var_dcl
+		{ $$ = add_func_linked_in_arg_node($1); }
 ;
 
-func_linked_out_args : /* empty */
-	func_out_var_dcl func_linked_out_args
-		{ $$ = add_func_linked_out_arg_node($1, $2) }
+linked_out_args : NULL
+	| out_var_dcl ',' linked_out_args
+		{ $$ = add_func_linked_out_arg_node($1, $2); }
+	| out_var_dcl ','
+		{ $$ = add_func_linked_out_arg_node($1); }
 ;
+
+linked_inout_args : /* empty */
+	| inout_var_dcl ',' linked_inout_args
+		{ $$ = add_linked_inout_arg_node($1, $2); }
+	| inout_var_dcl
+		{ $$ = add_linked_inout_arg_node($1); }
+;
+
+in_var_dcl:
+	ID   ':' ID
+		{ $$ = declare_var($1, $3); }
+	| ID ':' ID IN_STREAM ID
+		{ $$ = declare_var($1, $3, $5); }
+	| ID ':' ARRAY array_dimensions OF ID
+		{ $$ = declare_var($1, $3, $4, $6); }
+;
+
+out_var_dcl:
+	ID   ':' ID
+		{ $$ = declare_var($1, $3); }
+	| ID ':' ID OUT_STREAM ID
+		{ $$ = declare_var($1, $3, $5); }
+	| ID ':' ARRAY array_dimensions OF ID
+		{ $$ = declare_var($1, $3, $4, $6); }
+;
+
+inout_var_dcl:
+	ID   ':' ID
+		{ $$ = declare_var($1, $3); }
+	| ID ':' ID INOUT_STREAM ID
+		{ $$ = declare_var($1, $3, $5); }
+	| ID ':' ARRAY array_dimensions OF ID
+		{ $$ = declare_var($1, $3, $4, $6); }
+;
+
+
+
 
 
 
