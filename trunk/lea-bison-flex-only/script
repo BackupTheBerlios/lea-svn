@@ -38,7 +38,7 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 	tipos
 		a: tabla[5,4] de entero
 	prin
-		a, b := 3.5, 5
+		a := {1, 2, 3}
 		llamada_a_un_func_o_proc(45, 4., a)
 		escribir pi
 		

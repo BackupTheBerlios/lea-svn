@@ -359,8 +359,9 @@ assign_statement:
 		{  }
 	| ID ASSIGN expr
 		{  }
+	| ID ASSIGN '{' expr_list '}'
+		{  }
 ;
-
 
 mult_assign_statement:
 	id_list ASSIGN expr_list '\n'
