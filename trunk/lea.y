@@ -207,21 +207,26 @@ declarations_block:
 
 consts_block: /* empty */
 	| CONSTS '\n'
-		const_dcl
+		const_dcl_list
 		{ $$ = consts_block_node($3); }
 ;
 
-const_dcl:
-	id_list   ':' BOOL_VAL '\n'
-		{ $$ = dcl_bool_const($1, $3); }
+const_dcl_list: /* empty */
+	| id_list ':' BOOL_VAL '\n'
+	const_dcl_list
+		{ $$ = dcl_bool_const($1, $3, $5); }
 	| id_list ':' INT_VAL '\n'
-		{ $$ = dcl_int_const($1, $3); }
+	const_dcl_list
+		{ $$ = dcl_int_const($1, $3, $5); }
 	| id_list ':' FLOAT_VAL '\n'
-		{ $$ = dcl_float_const($1, $3); }
+	const_dcl_list
+		{ $$ = dcl_float_const($1, $3, $5); }
 	| id_list ':' CHAR_VAL '\n'
-		{ $$ = dcl_char_const($1, $3); }
+	const_dcl_list
+		{ $$ = dcl_char_const($1, $3, $5); }
 	| id_list ':' STR_VAL '\n'
-		{ $$ = dcl_str_const($1, $3); }
+	const_dcl_list
+		{ $$ = dcl_str_const($1, $3, $5); }
 ;
 
 types_block: /* empty */
