@@ -76,13 +76,13 @@ proc					{
 							return PROC;
 						}
 <proc>;					{ return yytext[0];	}
-<proc>ent[ \t]+			{ return ENT;		}
-<proc>sal[ \t]+			{ return SAL;		}
-<proc>entsal[ \t]+		{ return ENTSAL;	}
 <proc>fin				{
 							BEGIN(INITIAL);
 							return END;
 						}
+ent[ \t]+				{ return ENT;		}
+sal[ \t]+				{ return SAL;		}
+entsal[ \t]+			{ return ENTSAL;	}
 
 cons					{ return CONS;		}
 tipos					{ return TYPES;		}
@@ -142,6 +142,47 @@ falso					{
 							return FLOAT_VAL;
 }
 
+\'[^\']\'				{
+							yylval.char_val = strdup(yytext[1]);
+							return CHAR_VAL;
+}
+\'\\[0-7]{1,3}\'		{
+							int result;
+							
+							sscanf(yytext + 1, "%o", &result);
+							
+							if (result > 0xff)
+								lexical_error("constant out of range");
+							
+							yylval.char_val = result;
+							return CHAR_VAL;
+}
+
+\'\\[0-9]+\'			{
+							lexical_error("erroneous escape sequence");
+}
+
+\'\\n\'					{
+							yylval.char_val = '\n';
+							return CHAR_VAL;
+}
+<str>\\t				{
+							yylval.char_val = '\t';
+							return CHAR_VAL;
+}
+<str>\\r				{
+							yylval.char_val = '\r';
+							return CHAR_VAL;
+}
+<str>\\b				{
+							yylval.char_val = '\b';
+							return CHAR_VAL;
+}
+<str>\\f				{
+							yylval.char_val = '\f';
+							return CHAR_VAL;
+}
+
 {ID}					{
 							yylval.str_val = strdup(yytext);
 							return ID;
@@ -171,7 +212,7 @@ falso					{
 							if (result > 0xff)
 								lexical_error("constant out of range");
 							
-							*string_buf_ptr++ = resultado;
+							*string_buf_ptr++ = resultad;
 }
 
 <str>\\[0-9]+			{

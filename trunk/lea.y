@@ -35,18 +35,23 @@
 	float float_val;
 	char char_val;
 	char *string_val;
-	node *node_ptr;
+    node *no;
+    node_block *nb;
+    node_list *nl;
 	
 }
 
-%token <int_val>		INT_VAL
-%token <bool_var>		BOOL_VAL
-%token <float_val>		FLOAT_VAL
-%token <char_val>		CHAR_VAL
-%token <str_val>		STR_VAL
-%token <node_ptr>		var_node
+%token <int_val>	INT_VAL
+%token <bool_var>	BOOL_VAL
+%token <float_val>	FLOAT_VAL
+%token <char_val>	CHAR_VAL
+%token <str_val>	STR_VAL
 
-%start input
+%type <no>			algorithm
+%type <nb>			
+%type <nl>			
+
+%start program
 
 /*
 
@@ -64,8 +69,86 @@
 
 %%
 
-input: /* empty */
-	| input line;
+program: /* empty */
+	prog_header
+	declarations_block
+	sentences_block
+	library
+		{ $$ = declare_prog($1, $2, $3, $4); }
+;
+
+library: /* empty */
+	| library algorithm
+		{ $$ == add_alg($2);}
+	| library function
+		{ $$ == add_func($2); }
+	| library procedure
+		{ $$ == add_proc($2); }
+;
+
+algorithm: /* empty */
+	alg_header
+	interface_block
+	declarations_block
+	sentences_block
+		{ $$ = declare_alg($1, $2, $3, $4); }
+;
+
+function: /* empty */
+	func_header
+	declarations_block
+	sentences_block
+		{ $$ = declare_func($1, $2, $3, $4); }
+;
+
+procedure: /* empty */
+	proc_header
+	declarations_block
+	sentences_block
+		{ $$ = declare_proc($1, $2, $3, $4); }
+;
+
+alg_header: ALG ID '\n'
+		{ $$ = ID; }
+;
+
+func_header: FUNC ID func_in_arg_list DEV func_out_arg_list '\n'
+		{ $$ = declare_func_header($2, $3, $5); }
+;
+
+proc_header: PROC ID proc_arg_list '\n'
+		{ $$ = declare_proc_header($2, $3); }
+;
+
+func_in_arg_list: '(' func_linked_in_args ')'
+		{ $$ = $2; }
+;
+
+func_linked_in_args: /* empty */
+	func_in_var_dcl func_linked_in_args
+		{ $$ = add_func_linked_in_arg_node($1, $2) }
+;
+
+func_out_arg_list: '(' func_linked_out_args ')'
+		{ $$ = $2; }
+;
+
+func_linked_out_args : /* empty */
+	func_out_var_dcl func_linked_out_args
+		{ $$ = add_func_linked_out_arg_node($1, $2) }
+;
+
+
+
+
+
+
+
+
+
+
+
+
 
 line: '\n'					{ prompt();			}
 	| int_exp '\n'			{
