@@ -36,6 +36,7 @@ prog prueba
 		a, b, i  := 3, 5, 0
 		continue := verdadero
 		intialise_two_files(c, d)
+		a[5].b := "hola"
 		
 		mientras continue y i < MAX
 			i:=i+1

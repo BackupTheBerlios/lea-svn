@@ -112,7 +112,7 @@ desde					{ printf("FROM\n"); return FROM;		}
 hasta					{ printf("TO\n"); return TO;		}
 fd						{ printf("ENDFROMTO\n"); return ENDFROMTO;	}
 
-[+\-*/%^()<>:\[\]|=,\n{}]	{ printf("%d\n", yytext[0]); return yytext[0];	}
+[+\-*/%^()<>:\[\]\.|=,\n{}]	{ printf("%d\n", yytext[0]); return yytext[0];	}
 ;						{ printf("\n\n"); return '\n';		}
 "y"						{ printf("AND_OP\n"); return AND_OP;	}
 "o"						{ printf("OR_OP\n"); return OR_OP;		}

@@ -388,11 +388,11 @@ elif_statement_list:
 ;
 
 assign_statement:
-	variable_call ASSIGN assign_statement
+	struct_call ASSIGN assign_statement
 		{  }
-	| variable_call ASSIGN expr
+	| struct_call ASSIGN expr
 		{  }
-	| variable_call ASSIGN mult_assign
+	| struct_call ASSIGN mult_assign
 		{  }
 ;
 
@@ -456,6 +456,13 @@ variable_call:
 		{  }
 ;
 
+struct_call:
+	struct_call '.' variable_call
+		{  }
+	| variable_call
+		{  }
+;
+
 variable_list:
 	variable_list ',' variable_call
 		{  }
@@ -477,7 +484,7 @@ expr:
 		{  }
 	| STR_VAL
 		{  }
-	| variable_call
+	| struct_call
 		{  }
 	| expr '+' expr
 		{  }
@@ -509,7 +516,7 @@ expr_list: /* empty */
 expr_bool:
 	BOOL_VAL
 		{  }
-	| variable_call
+	| struct_call
 		{  }
 	| NOT_OP expr_bool
 		{  }
