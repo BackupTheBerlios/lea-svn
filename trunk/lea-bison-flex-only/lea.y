@@ -363,7 +363,7 @@ if_statement:
 		sentence_list
 	ENDIF '\n'
 		{  }
-	IF expr_bool ':' '\n'
+	| IF expr_bool ':' '\n'
 		sentence_list
 	'|' ELSE ':' '\n' 
 		sentence_list
