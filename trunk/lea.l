@@ -26,7 +26,6 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "y.tab.h"
-	//#include "lea.lex.h"
 	#define MAX_STR_CONST 1024
 	#define lexical_error(a) printf("%s\n", a)
 %}
@@ -43,7 +42,7 @@ ID			{L}+{H}*
 
 %%
 %{
-	char string_buf[MAX_STR_CONST];
+	char *string_buf;
 	char *string_buf_ptr;
 %}
 
@@ -127,37 +126,42 @@ fd						{ printf("ENDFROMTO "); return ENDFROMTO;	}
 "<>"					{ printf("NOT_EQ "); return NOT_EQ;	}
 
 verdadero				{
-							//yylval.bool_val = true;
+							yylval.bool_val = malloc(sizeof(bool));
+							*(yylval.bool_val) = true;
 							printf("BOOL_VAL "); return BOOL_VAL;
 						}
 falso					{
-							//yylval.bool_val = false;
+							yylval.bool_val = malloc(sizeof(bool));
+							*(yylval.bool_val) = true;
 							printf("BOOL_VAL "); return BOOL_VAL;
 						}
 
 {D}+					{
-							//yylval.int_val = atoi(yytext);
+							yylval.int_val = malloc(sizeof(int));
+							*(yylval.int_val) = atoi(yytext);
 							printf("INT_VAL "); return INT_VAL;
 }
 
 {D}+\.{D}*				{
-							//yylval.float_val = atof(yytext);
+							yylval.float_val = malloc(sizeof(float));
+							*(yylval.float_val) = atof(yytext);
 							printf("FLOAT_VAL "); return FLOAT_VAL;
 }
 
 \'[^\']\'				{
-							//yylval.char_val = strdup(yytext[1]);
+							yylval.char_val = malloc(sizeof(char));
+							*(yylval.char_val) = strdup(yytext[1]);
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \'\\[0-7]{1,3}\'		{
-							int result;
+							int *result = malloc(sizeof(int));
 							
-							sscanf(yytext + 1, "%o", &result);
+							sscanf(yytext + 1, "%o", result);
 							
-							if (result > 0xff)
+							if (*result > 0xff)
 								lexical_error("constant out of range");
 							
-							//yylval.char_val = result;
+							*(yylval.char_val) = result;
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 
@@ -166,33 +170,39 @@ falso					{
 }
 
 \'\\n\'					{
-							//yylval.char_val = '\n';
+							yylval.char_val = malloc(sizeof(char));
+							*(yylval.char_val) = '\n';
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 
 \\t						{
-							//yylval.char_val = '\t';
+							yylval.char_val = malloc(sizeof(char));
+							*(yylval.char_val) = '\t';
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \\r						{
-							//yylval.char_val = '\r';
+							yylval.char_val = malloc(sizeof(char));
+							*(yylval.char_val) = '\r';
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \\b						{
-							//yylval.char_val = '\b';
+							yylval.char_val = malloc(sizeof(char));
+							*(yylval.char_val) = '\b';
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \\f						{
-							//yylval.char_val = '\f';
+							yylval.char_val = malloc(sizeof(char));
+							*(yylval.char_val) = '\f';
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 
 {ID}					{
-							//yylval.str_val = strdup(yytext);
+							yylval.str_val = strdup(yytext);
 							printf("ID "); return ID;
 }
 
 \"						{
+							string_buf = malloc(sizeof(char) * MAX_STR_CONST);
 							string_buf_ptr = string_buf;
 							BEGIN(str);
 }
@@ -200,7 +210,7 @@ falso					{
 <str>\"					{
 							BEGIN(INITIAL);
 							*string_buf_ptr = '\0';
-							//yylval.str_val = string_buf_ptr;
+							yylval.str_val = string_buf_ptr;
 							printf("STR_VAL "); return STR_VAL;
 }
 

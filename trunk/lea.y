@@ -25,54 +25,88 @@
  */
 	#include <stdio.h>
 	#include <stdlib.h>
-	//#include "lea.h"
 	
 	#define yyerror(s) printf("%s\n", s)
 %}
 
-/*%union {
-	int int_val;
-	bool bool_var;
-	float float_val;
-	char char_val;
-	char *str_val;
-	node *no;
-	node_list *nl;
-}*/
+%union {
+	int						*int_val;
+	bool					*bool_val;
+	float					*float_val;
+	char					*char_val;
+	char					*str_val;
+/*
+ * The list above has been automagically genereted executing:
+ * $ ACTION=print_rule_types ./handy.awk lea.y
+ * NOTE: tabulation added manually
+ */
+	Tprogram				*Tprogram;
+	Tmethod_sym				*Tmethod_sym;
+	Tinterface_sym			*Tinterface_sym;
+	Tother_sym_list			*Tother_sym_list;
+	Tid_list				*Tid_list;
+	Tint_id_val_list		*Tint_id_val_list;
+	Tdeclarations_sym		*Tdeclarations_sym;
+	Tother_sym_list			*Tother_sym_list;
+	Tother_type_list		*Tother_type_list;
+	Tstr_list				*Tstr_list;
+	Tother_sym_list 		*Tother_sym_list;
+	Tother_type				*Tother_type;
+	Tsentence_list			*Tsentence_list;
+	Telif_statement			*Telif_statement;
+	Telif_statement_list	*Telif_statement_list;
+	Tsentence 				*Tsentence;
+	Tassign_statement		*Tassign_statement;
+	Tsentence				*Tsentence;
+	Tvar_call_list			*Tvar_call_list;
+	Tsentence				*Tsentence;
+	Texpr_list				*Texpr_list;
+	Texpr_bool				*Texpr_bool;
+// \endlist
+}
 
 %token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START OF
-%token IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID IS_NULL ARRAY REG ENDREG
+%token IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO IS_NULL ARRAY REG ENDREG
 
-%token INT_VAL
-%token BOOL_VAL
-%token FLOAT_VAL
-%token CHAR_VAL
-%token STR_VAL
+%token <int_val> INT_VAL
+%token <bool_val> BOOL_VAL
+%token <float_val> FLOAT_VAL
+%token <char_val> CHAR_VAL
+%token <str_val> STR_VAL ID
 
-/*%type <no>			program prog_header algorithm function procedure alg_header func_header 
-%type <no>			proc_header interface_block in_var_dcl out_var_dcl inout_var_dcl 
-%type <no>			declarations_block consts_block const_dcl_list types_block vars_block 
-%type <no>			sentence_list_block sentence if_statement output_input_statement register
-%type <no>			while_loop fromto_assign_statement fromto_loop function_call procedure_call expr expr_bool
-%type <nl>			library proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list id_list
-%type <nl>			array_dimensions int_val_list types_dcl str_list vars_dcl sentence_list elif_statement
-%type <nl>			elif_statement_list assign_statement mult_assign_statement expr_list mult_assign mult_assign_list
-*/
-
-/**
- * Note: to generate a list of rules as the following one, just execute $ ACTION=print_rules ./handy.awk lea.y
- 
-program prog_header library algorithm function procedure alg_header func_header proc_header interface_block proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list in_var_dcl out_var_dcl inout_var_dcl id_list array_dimensions int_val_list int_id_val declarations_block consts_block const_dcl_list types_block types_dcl_list str_list vars_block vars_dcl register sentence_list_block sentence_list sentence if_statement cond_start elif_statement elif_statement_list assign_statement mult_assign mult_assign_list mult_assign_statement output_input_statement while_loop fromto_assign_statement fromto_loop function_call variable_call struct_call variable_list procedure_call expr_list expr_bool expr EPSILON
+/*
+ * The list above has been automagically genereted executing:
+ * $ ACTION=print_rule_types ./handy.awk lea.y
+ * NOTE: tabulation added manually
  */
+%type <Tstr_list>				str_list
+%type <Tvar_call_list>			variable_list
+%type <Tother_type_list>		types_dcl_list
+%type <Tid_list>				id_list
+%type <Tprogram>				program
+%type <Tsentence>				assign_statement fromto_loop procedure_call
+%type <Telif_statement>			elif_statement
+%type <Tint_id_val_list>		int_val_list
+%type <Texpr_list>				expr_list
+%type <Tdeclarations_sym>		declarations_block
+%type <Tassign_statement>		fromto_assign_statement
+%type <Texpr_bool>				expr_bool
+%type <Tinterface_sym>			interface_block
+%type <Tother_sym_list>			in_arg_list const_dcl_list vars_reg_dcl
+%type <Tmethod_sym>				library
+%type <Telif_statement_list>	elif_statement_list
+%type <Tsentence_list>			sentence_list
+%type <Tother_type>				register
+// \endlist
 
-%start program
+%start	program
 
-%left '-' '+'
-%left '*'  '/' '%'
-%right '^'
-%right ASSIGN
-%right '=' GE_OP LE_OP '<' '>' NOT_EQ
-%left AND_OP OR_OP NOT_OP
+%left	'-' '+'
+%left	'*'  '/' '%'
+%right	'^'
+%right	ASSIGN
+%right	'=' GE_OP LE_OP '<' '>' NOT_EQ
+%left	AND_OP OR_OP NOT_OP
 
 %nonassoc NEG
 
@@ -225,7 +259,7 @@ inout_var_dcl:
 	| id_list ':' ID OF INOUT_STREAM ID
 		{ $$ = TRinout_var_dcl($1, $3, $6, $5); }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRinout_var_dcl_array($1, $4, $6) }
+		{ $$ = TRinout_var_dcl_array($1, $4, $6); }
 ;
 
 id_list:
