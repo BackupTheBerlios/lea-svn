@@ -77,50 +77,57 @@
 	#define Vintern_var_type		37
 	#define Vintern_reg_type		38
 	
-	#define OPnot					40
-	#define OPand					41
-	#define OPor					42
-	#define OPeq					43
-	#define OPless					44
-	#define OPgreater				45
-	#define OPle					46
-	#define OPge					47
+	#define OPnot					39
+	#define OPand					40
+	#define OPor					41
+	#define OPeq					42
+	#define OPless					43
+	#define OPgreater				44
+	#define OPle					45
+	#define OPge					46
 	
-	#define OPsum					48
-	#define OPsub					49
-	#define OPmult					50
-	#define OPdiv					51
-	#define OPmod					52
-	#define OPexp					53
+	#define OPsum					47
+	#define OPsub					48
+	#define OPmult					49
+	#define OPdiv					50
+	#define OPmod					51
+	#define OPexp					52
 	
-	#define Valg					54
-	#define Vfunc					55
-	#define Vproc					56
+	#define Valg					53
+	#define Vfunc					54
+	#define Vproc					55
 	
-	#define Vif_statement			57
-	#define Vassign_statement		58
-	#define Vmult_assign_statement	59
-	#define Vwhile_loop				60
-	#define Vfromto_loop			61
-	#define Vmethod_call			62
-	#define Vreserved_call			63
+	#define Vif_statement			56
+	#define Vassign_statement		57
+	#define Vmult_assign_statement	58
+	#define Vwhile_loop				59
+	#define Vfromto_loop			60
+	#define Vmethod_call			61
+	#define Vreserved_call			62
 	
-	#define Valgorithm				64
-	#define Vfunction				65
-	#define Vprocedure				66
+	#define Valgorithm				63
+	#define Vfunction				64
+	#define Vprocedure				65
 	
-	#define OPexpr					67
-	#define OPexpr_bool				68
-	#define OPop					69
-	#define OPvar_call				70
-	#define OParray_call			71
-	#define OPmethod_call			72
-	#define OPreserved_call			73
+	#define OPexpr					66
+	#define OPexpr_bool				67
+	#define OPop					68
+	#define OPvar_call				69
+	#define OParray_call			70
+	#define OPmethod_call			71
+	#define OPreserved_call			72
 	
 	/****************************
 	*     Types definitions     *
 	****************************/
 	
+	/* HACK:
+	 * These structures types are used the ones in the others
+	 * and the compiler doesn't handle very well dependencies
+	 * among them when structure types are declared directly,
+	 * so to circumvent the problem we separate the type definitions
+	 * and the structure definitions.
+	 */
 	typedef struct Tother_type Tother_type;
 	typedef struct Tother_sym Tother_sym;
 	typedef struct Treg_type Treg_type;
