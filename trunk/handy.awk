@@ -31,7 +31,8 @@ BEGIN {
 	if (ENVIRON["ACTION"] ~ /^print_action_rules$/) { print_action_rules() } else 
 	if (ENVIRON["ACTION"] ~ /^print_skeleton_functions$/) { print_skeleton_functions() } else 
 	if (ENVIRON["ACTION"] ~ /^print_grammar_no_actions$/) { print_grammar_no_actions() } else 
-	if (ENVIRON["ACTION"] ~ /^print_rule_types$/) { print_rule_types() }
+	if (ENVIRON["ACTION"] ~ /^print_rule_types$/) { print_rule_types() } else 
+	if (ENVIRON["ACTION"] ~ /^print_union_types$/) { print_union_types() }
 }
 
 # /**
@@ -133,25 +134,16 @@ function print_rule_types()
 {
 	# First get all the Translation functions and its types from lea-translator.h
 	
-	print "//Insert the next code into %union { <here> }\n"
-	
 	while(getline line < "lea-translator.h")
 	{
 		if (line ~ /^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]+\*TR[a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/)
 		{
 			new_name = gensub(/^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]+\*(TR[a-zA-Z0-9_]*)\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line)
 			type = gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]+\*TR[a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line)
-			# Check if this type is already in the array
-			if (TYPES_ARRAY[last_name] !~ type)
-			{
 				TYPES_ARRAY[new_name] = type
-				print type " *" type ";"
 				last_name = new_name
-			}
 		}
 	}
-	
-	print "// End %union code"
 	
 	close("lea-translator.h")
 	
@@ -186,6 +178,33 @@ function print_rule_types()
 	# Finally, print the required list of types & rules
 	for(actual in TYPE_RULES_LIST)
 	{
-		print "type <" actual ">" TYPE_RULES_LIST[actual]
+		print "%type <" actual ">" TYPE_RULES_LIST[actual]
 	}
+}
+
+# /**
+#  * \brief Print the var delarations that should be included in %union
+#  */
+function print_union_types()
+{
+	# First get all the Translation functions and its types
+	
+	print "//Insert the next code into %union { <here> }\n"
+	
+	while(getline line)
+	{
+		if (line ~ /^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]+\*TR[a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/)
+		{
+			name = gensub(/^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]+\*(TR[a-zA-Z0-9_]*)\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line)
+			type = gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]+\*TR[a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line)
+			if (!(type in CHECK_TYPE_ARRAY))
+			{
+				print type " *" type ";"
+				TYPES_ARRAY[name] = type
+				CHECK_TYPE_ARRAY[type] = "1"
+			}
+		}
+	}
+	
+	print "// End %union code"
 }
