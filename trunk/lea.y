@@ -161,68 +161,228 @@ linked_inout_args : /* empty */
 ;
 
 in_var_dcl:
-	ID   ':' ID
+	ids   ':' ID
 		{ $$ = declare_var($1, $3); }
-	| ID ':' ID IN_STREAM ID
+	| ids ':' ID IN_STREAM ID
 		{ $$ = declare_var($1, $3, $5); }
-	| ID ':' ARRAY array_dimensions OF ID
+	| ids  ':' ARRAY array_dimensions OF ID
 		{ $$ = declare_var($1, $3, $4, $6); }
 ;
 
 out_var_dcl:
-	ID   ':' ID
+	ids   ':' ID
 		{ $$ = declare_var($1, $3); }
-	| ID ':' ID OUT_STREAM ID
+	| ids ':' ID OUT_STREAM ID
 		{ $$ = declare_var($1, $3, $5); }
-	| ID ':' ARRAY array_dimensions OF ID
+	| ids ':' ARRAY array_dimensions OF ID
 		{ $$ = declare_var($1, $3, $4, $6); }
 ;
 
 inout_var_dcl:
-	ID   ':' ID
+	ids   ':' ID
 		{ $$ = declare_var($1, $3); }
-	| ID ':' ID INOUT_STREAM ID
+	| ids ':' ID INOUT_STREAM ID
 		{ $$ = declare_var($1, $3, $5); }
-	| ID ':' ARRAY array_dimensions OF ID
+	| ids ':' ARRAY array_dimensions OF ID
 		{ $$ = declare_var($1, $3, $4, $6); }
 ;
 
+ids:
+	ID ',' ids
+		{ $$ = add_linked_id_node($1, $3); }
+	ID
+		{ $$ = add_linked_id_node($1); }
+;
+
+declarations_block:
+	consts_block
+	types_block
+	vars_block
+		{ $$ = add_declarations_block($1, $2, $3); }
+;
+
+consts_block: /* empty */
+	| CONSTS '\n'
+		const_dcl
+		{ $$ = add_consts_block($3); }
+;
+
+const_dcl:
+	ids   ':' BOOL_VAL '\n'
+		{ $$ = declare_const($1, $3); }
+	| ids ':' FLOAT_VAL '\n'
+		{ $$ = declare_const($1, $3); }
+	| ids ':' CHAR_VAL '\n'
+		{ $$ = declare_const($1, $3); }
+	| ids ':' STR_VAL '\n'
+		{ $$ = declare_const($1, $3); }
+;
+
+types_block: /* empty */
+	| TYPES '\n'
+		type_dcl
+		{ $$ = add_types_block($3); }
+;
+types_dcl: /* empty */
+	| ids ':' '(' strs ')' '\n'
+	types_dcl
+		{ $$ = add_linked_type_node($1, $4); }
+;
+
+strs:
+	ID ',' strs
+		{ $$ = add_linked_str_node($1, $3); }
+;
+
+vars_block: /* empty */
+	| VARS '\n'
+		vars_dcl
+		{ $$ = add_vars_block($1, $3); }
+;
+
+vars_dcl: /* empty */
+	| ids ':' ID '\n'
+	var_dcl
+		{ $$ = declare_var($1, $3); }
+;
+
+sentences_block: /* empty */
+	START '\n'
+		sentences
+	END '\n'
+;
+
+sentences: /* empty */
+	| sentence sentences
+;
+
+sentence:
+	| conditional_statement
+	| assign_statement
+	| input_statement
+	| output_statement
+	| while_loop
+	| fromto_loop
+	| function_call
+	| procedure_call
+;
+
+if_statement:
+	IF expr_bool
+		sentences
+	elif_statements
+	ELSE
+		expr
+	ENDIF
+		{ $$ = if_node($2, $3, $4, $6); }
+;
+
+elif_statements:
+	'|' expr_bool
+		sentences
+		{ $$ = elif_node($2, $3); }
+	'|' expr_bool
+		sentences
+	elif_statements
+		{ $$ = elif_node($2, $3, $4); }
+;
+
+assign_statement:
+	| ID ASSIGN expr
+		{ $$ = assign_node($1, $3); }
+;
+
+output_statement:
+	PRINT expr
+		{ $$ = print($2); }
+;
+
+input_statement:
+	READ expr
+		{ $$ = read($2); }
+;
+
+while_loop:
+	WHILE expr_bool
+		sentences
+	ENDWHILE
+		{ $$ = while_node($2, $3); }
+;
+
+fromto_loop:
+	FROM expr TO expr_bool
+		sentences
+	ENDFROMTO
+		{ $$ = fromto_node($2, $4, $5); }
+;
+
+function_call:
+	ID '(' arg_list ')' '\n'
+		{ $$ = func_call($1, $3); }
+;
 
 
+procedure_call:
+	ID '(' arg_list ')' '\n'
+		{ $$ = proc_call($1, $3); }
+;
 
+expr:
+	INT_VAL
+		{ $$ = integer_val($1); }
+	| BOOL_VAL
+		{ $$ = boolean_val($1); }
+	| FLOAT_VAL
+		{ $$ = float_val($1); }
+	| CHAR_VAL
+		{ $$ = char_val($1); }
+	| STR_VAL
+		{ $$ = string_val($1); }
+	| ID
+		{ $$ = get_identifier($1); }
+	| expr '+' expr
+		{ $$ = binary_node('+',$1, $3); }
+	| expr '-' expr
+		{ $$ = binary_node('-', $1, $3); }
+	| expr '*' expr
+		{ $$ = binary_node('*', $1, $3); }
+	| expr '/' expr
+		{ $$ = binary_node('/', $1, $3); }
+	| expr '%' expr
+		{ $$ = binary_node('%', $1, $3); }
+	| expr '^' expr
+		{ $$ = binary_node('^', $1, $3); }
+	| '-' expr %prec NEG
+		{ $$ = binary_node('-', $1); }
+	| '(' expr ')'
+		{ $$ = $1; }
+;
 
-
-
-
-
-
-
-
-
-
-
-
-line: '\n'					{ prompt();			}
-	| int_exp '\n'			{
-		printf("\t%d\n", $1);
-		prompt();
-	}
-	| error '\n'			{ yyerrok;	 		}
-
-int_exp: INT				{ $$ = $1;			}
-	| INT_VAR				{ $$ = get_sym($1);	}
-	| INT_VAR EQ int_exp	{ 
-		$$ = $3;
-		set_sym($1, $3);
-	}
-	| int_exp '+' int_exp	{
-		$$ = $1 + $3;
-	}
-	| int_exp '-' int_exp	{ $$ = $1 - $3;		}
-	| int_exp '*' int_exp	{ $$ = $1 * $3;		}
-	| int_exp '/' int_exp	{ $$ = $1 / $3;		}
-	| '(' int_exp ')'		{ $$ = $2;			}
-	| '-' int_exp %prec NEG {$$ = -$2;			}
+expr_bool:
+	BOOL_VAL
+		{ $$ = boolean_val($1); }
+	| ID
+		{ $$ = get_identifier($1); }
+	| NOT_OP expr_bool
+		{ $$ = bool_node('!', $1); }
+	| expr_bool AND_OP expr_bool
+		{ $$ = bool_node('^', $1, $3); }
+	| expr_bool OR_OP expr_bool
+		{ $$ = bool_node('´', $1, $3); }
+	| expr_bool '=' expr_bool
+		{ $$ = bool_node('=', $1, $3); }
+	| expr_bool '<' expr_bool
+		{ $$ = bool_node('<', $1, $3); }
+	| expr_bool '>' expr_bool
+		{ $$ = bool_node('>', $1, $3); }
+	| expr_bool LE_OP expr_bool
+		{ $$ = bool_node('{', $1, $3); }
+	| expr_bool GE_OP expr_bool
+		{ $$ = bool_node('}', $1, $3); }
+	| expr_bool NOT_EQ expr_bool
+		{ $$ = bool_node('¨', $1, $3); }
+	'(' expr_bool ')'
+;
 
 %%
 

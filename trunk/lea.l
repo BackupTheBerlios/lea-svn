@@ -25,7 +25,7 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "y.tab.h"
-	//#include "lea.lex.h"
+	#include "lea.lex.h"
 	#define MAX_STR_CONST 1024
 %}
 
@@ -85,9 +85,9 @@ ent[ \t]+				{ return IN;		}
 sal[ \t]+				{ return OUT;		}
 entsal[ \t]+			{ return INOUT;		}
 
-cons					{ return CONS;		}
+cons					{ return CONSTS;	}
 tipos					{ return TYPES;		}
-var						{ return VAR;		}
+var						{ return VARS;		}
 prin					{ return START;		}
 fin						{ return END;		}
 
@@ -114,8 +114,9 @@ fd						{ return ENDFROMTO;	}
 "o"						{ return OR_OP;		}
 "no"					{ return NOT_OP;	}
 ":=" 					{ return ASSIGN;	}
-"<="					{ return LE_OP		}
-">="					{ return GE_OP		}
+"<="					{ return LE_OP;		}
+">="					{ return GE_OP;		}
+"<>"					{ return NOT_EQ;	}
 
 verdadero				{
 							yylval.bool_val = true;
@@ -160,19 +161,20 @@ falso					{
 							yylval.char_val = '\n';
 							return CHAR_VAL;
 }
-<str>\\t				{
+
+\\t						{
 							yylval.char_val = '\t';
 							return CHAR_VAL;
 }
-<str>\\r				{
+\\r						{
 							yylval.char_val = '\r';
 							return CHAR_VAL;
 }
-<str>\\b				{
+\\b						{
 							yylval.char_val = '\b';
 							return CHAR_VAL;
 }
-<str>\\f				{
+\\f						{
 							yylval.char_val = '\f';
 							return CHAR_VAL;
 }
