@@ -27,12 +27,11 @@
 #  * \brief User can select which action to execute setting the $ACTION var
 #  */
 BEGIN {
-	"echo $ACTION" | getline action
-	
-	if (action ~ /^print_rules$/) { print_rules() } else 
-	if (action ~ /^print_action_rules$/) { print_action_rules() } else 
-	if (action ~ /^print_skeleton_functions$/) { print_skeleton_functions() } else 
-	if (action ~ /^print_grammar_no_actions$/) { print_grammar_no_actions() }
+	if (ENVIRON["ACTION"] ~ /^print_rules$/) { print_rules() } else 
+	if (ENVIRON["ACTION"] ~ /^print_action_rules$/) { print_action_rules() } else 
+	if (ENVIRON["ACTION"] ~ /^print_skeleton_functions$/) { print_skeleton_functions() } else 
+	if (ENVIRON["ACTION"] ~ /^print_grammar_no_actions$/) { print_grammar_no_actions() } else 
+	if (ENVIRON["ACTION"] ~ /^print_rule_types$/) { print_rule_types() }
 }
 
 # /**
@@ -60,7 +59,7 @@ function print_action_rules()
 	{
 		if (line ~ /[a-zA-Z_][a-zA-Z0-9_]*:$/)
 		{
-			new_rule="true"
+			new_rule=1
 			rule=line
 		} 
 		else if (line ~ /\{[ \t]*\$\$[ \t]*=[ \t]*[^}]+\}$/)
@@ -68,19 +67,19 @@ function print_action_rules()
 			line = gensub(/\{[ \t]*\$\$[ \t]*=[ \t]*([^}]*)[ \t]*\}$/, "\\1", "g", line)
 			if (line ~ /[ \t]*NULL;/)
 			{
-				if (new_rule ~ "true")
+				if (new_rule ~ 1)
 				{
 					printf("// %s \n", rule)
-					new_rule="false"
+					new_rule=0
 				}
 				
 				printf("// %s \n", line)
 			} else if (line !~ /[ \t]*(\$[0-9]);/)
 			{
-				if (new_rule ~ "true")
+				if (new_rule ~ 1)
 				{
 					printf("// %s \n", rule)
-					new_rule="false"
+					new_rule=0
 				}
 				
 				print line
@@ -113,7 +112,7 @@ function print_skeleton_functions()
 
 function print_grammar_no_actions()
 {
-	print "%{\n/*This file was generated executing the following command in parent directory:\n
+	print "%{\n/*This file was generated executing the following command in parent directory:\n \
 	 $ ACTION=print_grammar_no_actions ./handy.awk ../../trunk/lea.y > lea.y */\n%}\n"
 	while(getline line)
 	{
@@ -124,5 +123,69 @@ function print_grammar_no_actions()
 		{
 			print line;
 		}
+	}
+}
+
+# /**
+#  * \brief Print the type specifications for a bison-like script
+#  */
+function print_rule_types()
+{
+	# First get all the Translation functions and its types from lea-translator.h
+	
+	print "//Insert the next code into %union { <here> }\n"
+	
+	while(getline line < "lea-translator.h")
+	{
+		if (line ~ /^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]+\*TR[a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/)
+		{
+			new_name = gensub(/^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]+\*(TR[a-zA-Z0-9_]*)\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line)
+			type = gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]+\*TR[a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line)
+			# Check if this type is already in the array
+			if (TYPES_ARRAY[last_name] !~ type)
+			{
+				TYPES_ARRAY[new_name] = type
+				print type " *" type ";"
+				last_name = new_name
+			}
+		}
+	}
+	
+	print "// End %union code"
+	
+	close("lea-translator.h")
+	
+	# Now for each rule in the bison-like script, locate the first funcion call,
+	# and asthe remaining function calls will return the same type that's all we
+	# need to know of the rule.
+	# Then add actual rule to 
+	
+	while (getline line)
+	{
+		if (line ~ /[a-zA-Z_][a-zA-Z0-9_]*:$/)
+		{
+			new_rule = "1"
+			rule=gensub(/([a-zA-Z_][a-zA-Z0-9_]*):$/, "\\1", "g", line)
+		}
+		else if (line ~ /\{[ \t]*\$\$[ \t]*=[ \t]+TR[a-zA-Z0-9_]+\([a-zA-Z0-9_ ,*\t\$]+\);[ \t]*\}$/ && new_rule ~ "1")
+		{
+			name = gensub(/\{[ \t]*\$\$[ \t]*=[ \t]+([a-zA-Z0-9_]*)\([a-zA-Z0-9_ ,*\t\$]+\);[ \t]*\}$/, "\\1","g", line)
+			name = gensub(/[ \t]*([^ \t]+)/, "\\1", "g", name);
+			type = TYPES_ARRAY[name]
+			
+			# Need to check if that type exists (it's not "") because the rule could be comented
+			# in the code and thus the function called might not be prototyped in "lea-translator.h"
+			if (type)
+			{
+				TYPE_RULES_LIST[type] = TYPE_RULES_LIST[type] " " rule
+				new_rule="0"
+			}
+		}
+	}
+	
+	# Finally, print the required list of types & rules
+	for(actual in TYPE_RULES_LIST)
+	{
+		print "type <" actual ">" TYPE_RULES_LIST[actual]
 	}
 }
