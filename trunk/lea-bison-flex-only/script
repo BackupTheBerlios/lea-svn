@@ -83,6 +83,7 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 		freg
 	prin
 		a := {1, 2, 3}
+		a[3] := 2
 		llamada_a_un_func_o_proc(45, 4., a)
 		escribir pi
 		

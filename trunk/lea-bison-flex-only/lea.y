@@ -466,6 +466,8 @@ expr:
 		{  }
 	| ID
 		{  }
+	| ID '[' array_dimensions ']'
+		{  }
 	| expr '+' expr
 		{  }
 	| expr '-' expr
@@ -497,6 +499,8 @@ expr_bool:
 	BOOL_VAL
 		{  }
 	| ID
+		{  }
+	| ID '[' array_dimensions ']'
 		{  }
 	| NOT_OP expr_bool
 		{  }
