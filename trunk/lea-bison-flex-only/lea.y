@@ -1,4 +1,9 @@
 %{
+/*This file was generated executing the following command in parent directory:
+ ACTION=print_grammar_no_actions lea.y > lea-bison-flex-only/lea.y*/
+%}
+
+%{
 /**
  * \file lea.y
  * \brief Lea gramatical parser
@@ -83,23 +88,23 @@ program:
 	declarations_block
 	sentence_list_block
 	library
-		{ $$ = TRprogram($1, $2, $3, $4); }
+		{  }
 ;
 
 prog_header:
 	PROG ID '\n'
-		{ $$ = $2; }
+		{  }
 ;
 
 library:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| library algorithm
-		{ $$ = TRlibrary($1, $2); }
+		{  }
 	| library function
-		{ $$ = TRlibrary($1, $2); }
+		{  }
 	| library procedure
-		{ $$ = TRlibrary($1, $2); }
+		{  }
 ;
 
 algorithm:
@@ -107,311 +112,311 @@ algorithm:
 	interface_block
 	declarations_block
 	sentence_list_block
-		{ $$ = TRalgorithm($1, $2, $3, $4); }
+		{  }
 ;
 
 function:
 	func_header
 	declarations_block
 	sentence_list_block
-		{ $$ = TRfunction($1, $2, $3); }
+		{  }
 ;
 
 procedure:
 	proc_header
 	declarations_block
 	sentence_list_block
-		{ $$ = TRprocedure($1, $2, $3); }
+		{  }
 ;
 
 alg_header:
 	ALG ID '\n'
-		{ $$ = $2; }
+		{  }
 ;
 
 func_header:
 	FUNC ID '(' in_arg_list ')'  DEV '(' out_var_dcl ')' '\n'
-		{ $$ = TRfunc_header($2, $4, $8); }
+		{  }
 ;
 
 proc_header:
 	PROC ID '(' proc_arg_list ')' '\n'
-		{ $$ = TRproc_header($2, $4); }
+		{  }
 ;
 
 interface_block:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| IN in_arg_list '\n'
 	interface_block
-		{ $$ = TRinterface_block_in($2, $4); }
+		{  }
 	| OUT out_arg_list '\n'
 	interface_block
-		{ $$ = TRinterface_block_out($2, $4); }
+		{  }
 ;
 
 proc_arg:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| IN in_arg_list 
-		{ $$ = TRproc_arg_in($2); }
+		{  }
 	| OUT out_arg_list
-		{ $$ = TRproc_arg_out($2); }
+		{  }
 	| INOUT inout_arg_list
-		{ $$ = TRproc_arg_inout($2); }
+		{  }
 ;
 
 proc_arg_list:
 	proc_arg_list ';' proc_arg
-		{ $$ = TRproc_arg_list($1, $3);  }
+		{  }
 	| proc_arg
-		{ $$ = TRproc_arg_list(NULL, $1); }
+		{  }
 ;
 
 in_arg_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| in_arg_list ',' in_var_dcl
-		{ $$ = TRin_arg_list($1, $3); }
+		{  }
 	| in_var_dcl
-		{ $$ = TRin_arg_list(NULL, $1); }
+		{  }
 ;
 
 out_arg_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| out_arg_list ',' out_var_dcl
-		{ $$ = TRout_arg_list($1, $3); }
+		{  }
 	| out_var_dcl
-		{ $$ = TRout_arg_list(NULL, $1); }
+		{  }
 ;
 
 inout_arg_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| inout_arg_list ',' inout_var_dcl
-		{ $$ = TRinout_arg_list($1, $3); }
+		{  }
 	| inout_var_dcl
-		{ $$ = TRinout_arg_list(NULL, $1); }
+		{  }
 ;
 
 in_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRin_var_dcl($1, $3, NULL, NULL); }
+		{  }
 	| id_list ':' ID OF ID
-		{ $$ = TRin_var_dcl($1, $3, $5, NULL); }
+		{  }
 	| id_list ':' ID OF IN_STREAM ID
-		{ $$ = TRin_var_dcl($1, $3, $6, $5); }
+		{  }
 	| id_list  ':' ARRAY array_dimensions OF ID
-		{ $$ = TRin_var_dcl_array($1, $4, $6); }
+		{  }
 ;
 
 out_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRout_var_dcl($1, $3, NULL, NULL); }
+		{  }
 	| id_list ':' ID OF ID
-		{ $$ = TRout_var_dcl($1, $3, $5, NULL); }
+		{  }
 	| id_list ':' ID OF OUT_STREAM ID
-		{ $$ = TRout_var_dcl($1, $3, $6, $5); }
+		{  }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRout_varl_dcl_array($1, $4, $6); }
+		{  }
 ;
 
 inout_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRinout_var_dcl($1, $3, NULL, NULL); }
+		{  }
 	| id_list ':' ID OF ID
-		{ $$ = TRinout_var_dcl($1, $3, $5, NULL); }
+		{  }
 	| id_list ':' ID OF INOUT_STREAM ID
-		{ $$ = TRinout_var_dcl($1, $3, $6, $5); }
+		{  }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRinout_var_dcl_array($1, $4, $6) }
+		{  }
 ;
 
 id_list:
 	id_list ',' ID
-		{ $$ = TRid_list($1, $3); }
+		{  }
 	| ID
-		{ $$ = TRid_list(NULL, $1); }
+		{  }
 ;
 
 array_dimensions:
 	'[' int_id_val_list ']'
-		{ $$ = $2; }
+		{  }
 ;
 
 int_val_list:
 	int_id_val_list ',' int_id_val
-		{ $$ = TRint_val_list($1, $3); }
+		{  }
 	| int_id_val
-		{ $$ = TRint_val_list(NULL, $1); }
+		{  }
 ;
 
 int_id_val:
 	INT_VAL
-		{ $$ = TRint_id_val_int($1); }
+		{  }
 	| ID
-		{ $$ = TRint_id_val_id($1); }
+		{  }
 ;
 
 declarations_block:
 	consts_block
 	types_block
 	vars_block
-		{ $$ = TRdeclarations_block($1, $2, $3); }
+		{  }
 ;
 
 consts_block:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| CONSTS '\n'
 		const_dcl_list
-		{ $$ = $3; }
+		{  }
 ;
 
 const_dcl_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| const_dcl_list
 	id_list ':' BOOL_VAL '\n'
-		{ $$ = TRconst_dcl_list_bool($1, $2, $4); }
+		{  }
 	| const_dcl_list
 	id_list ':' INT_VAL '\n'
-		{ $$ = TRconst_dcl_list_int($1, $2, $4); }
+		{  }
 	| const_dcl_list
 	id_list ':' FLOAT_VAL '\n'
-		{ $$ = TRconst_dcl_list_float($1, $2, $4); }
+		{  }
 	| const_dcl_list
 	id_list ':' CHAR_VAL '\n'
-		{ $$ = TRconst_dcl_list_char($1, $2, $4); }
+		{  }
 	| const_dcl_list
 	id_list ':' STR_VAL '\n'
-		{ $$ = TRconst_dcl_list_str($1, $2, $4); }
+		{  }
 	| const_dcl_list
 	id_list ':' register
-		{ $$ = TRconst_dcl_list_reg($1, $2, $4); }
+		{  }
 ;
 
 types_block:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| TYPES '\n'
 		types_dcl_list
-		{ $$ = $3; }
+		{  }
 ;
 types_dcl_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| types_dcl_list
 	id_list ':' '(' str_list ')' '\n'
-		{ $$ = TRtypes_dcl_list_enum($1, $2, $5); }
+		{  }
 	| types_dcl_list
 	id_list ':' ID '\n'
-		{ $$ = TRtypes_dcl_list_var($1, $2, $4, NULL); }
+		{  }
 	| types_dcl_list
 	id_list ':' ID OF ID '\n'
-		{ $$ = TRtypes_dcl_list_var($1, $2, $4, $6); }
+		{  }
 	| types_dcl_list
 	id_list ':' ARRAY array_dimensions OF ID '\n'
-		{ $$ = TRtypes_dcl_list_array($1, $2, $5, $7); }
+		{  }
 	| types_dcl_list
 	id_list ':' register
-		{ $$ = TRtypes_dcl_list_reg($1, $2, $4); }
+		{  }
 ;
 
 str_list:
 	str_list ',' ID
-		{ $$ = TRstr_list($1, $3); }
+		{  }
 	| ID
-		{ $$ = TRstr_list(NULL, $1); }
+		{  }
 ;
 
 vars_block:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| VARS '\n'
 		vars_dcl
-		{ $$ = $3; }
+		{  }
 ;
 
 vars_dcl:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| vars_dcl
 	id_list ':' ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, NULL); }
+		{  }
 	| vars_dcl
 	id_list ':' ID OF ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, $6); }
+		{  }
 	| vars_dcl
 	id_list ':' ARRAY array_dimensions OF ID '\n'
-		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
+		{  }
 	| vars_dcl
 	id_list ':' register  //TODO: !!!!!
-		{ $$ = TRvars_dcl_reg($1, $2, $4); }
+		{  }
 ;
 vars_reg_dcl:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| vars_reg_dcl
 	id_list ':' ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, NULL); }
+		{  }
 	| vars_reg_dcl
 	id_list ':' ID OF ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, $6); }
+		{  }
 	| vars_reg_dcl
 	id_list ':' ARRAY array_dimensions OF ID '\n'
-		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
+		{  }
 ;
 
 register:
 	REG '\n'
 		vars_reg_dcl
 	ENDREG '\n'
-		{ $$ = TRregister($3); }
+		{  }
 	| '\n' REG '\n'
 		vars_reg_dcl
 	ENDREG '\n'
-		{ $$ = TRregister($4); }
+		{  }
 ;
 
 sentence_list_block:
 	START '\n'
 		sentence_list
 	END '\n'
-		{ $$ = $3; }
+		{  }
 	| START '\n'
 		sentence_list
 	END
-		  { $$ = $3; }
+		{  }
 ;
 
 sentence_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| sentence_list sentence
-		{ $$ = TRsentence_list($1, $2); }
+		{  }
 	| IS_NULL '\n'
-		{ $$ = NULL; }
+		{  }
 ;
 
 sentence:
 	if_statement
-		{ $$ = $1; }
+		{  }
 	| assign_statement '\n'
-		{ $$ = $1; }
+		{  }
 	| mult_assign_statement
-		{ $$ = $1; }
+		{  }
 	| output_input_statement
-		{ $$ = $1; }
+		{  }
 	| while_loop
-		{ $$ = $1; }
+		{  }
 	| fromto_loop
-		{ $$ = $1; }
+		{  }
 	| function_call '\n'
-		{ $$ = $1; }
+		{  }
 	| procedure_call
-		{ $$ = $1; }
+		{  }
 ;
 
 if_statement:
@@ -421,13 +426,13 @@ if_statement:
 	'|' ELSE cond_start
 		sentence_list
 	ENDIF '\n'
-		{ $$ = TRif_statement($2, $4, $5, $9); }
+		{  }
 	| IF expr_bool cond_start
 		sentence_list
 	'|' ELSE cond_start
 		sentence_list
 	ENDIF '\n'
-		{ $$ = TRif_statement($2, $4, NULL, $8); }
+		{  }
 ;
 
 cond_start:
@@ -438,171 +443,171 @@ cond_start:
 elif_statement:
 	'|' expr_bool cond_start
 		sentence_list
-		{ $$ = TRelif_statement($2, $4); }
+		{  }
 ;
 
 elif_statement_list:
 	elif_statement_list elif_statement
-		{ $$ = TRelif_statement_list($1, $2); }
+		{  }
 	| elif_statement
-		{ $$ = TRelif_statement_list(NULL, $1); }
+		{  }
 ;
 
 assign_statement:
 	struct_call ASSIGN assign_statement
-		{ $$ = TRassign_statement_assign($1, $3); }
+		{  }
 	| struct_call ASSIGN expr
-		{ $$ = TRassign_statement_expr($1, $3); }
+		{  }
 	/* TODO: | struct_call ASSIGN mult_assign
 		{ $$ = TRassign_statement_mult($1, $3); }*/
 ;
 /* TODO:
 mult_assign:
 	'{' mult_assign_list '}'
-		{ $$ = $2; }
+		{  }
 ;
 
 mult_assign_list:
 	mult_assign ',' mult_assign_list
-		{ $$ = TRmult_assign_list($1, $3); }
+		{  }
 	| expr ',' mult_assign_list
-		{ $$ = TRmult_assign_list_expr($1, $3); }
+		{  }
 	| expr
-		{ $$ = TRmult_assign_list_expr($1, NULL); }
+		{  }
 	| mult_assign
 		{ $$ = TRmult_assign_list($1, NULL); }*/
 ;
 
 mult_assign_statement:
 	variable_list ASSIGN expr_list '\n'
-		{ $$ = TRmult_assign_statement($1, $3); }
+		{  }
 ;
 
 // We'll need course need to check that id = (PRINT|READ)
 output_input_statement:
 	ID expr_list '\n'
-		{ $$ = TRoutput_input_statement($1, $2); }
+		{  }
 ;
 
 while_loop:
 	WHILE expr_bool '\n'
 		sentence_list
 	ENDWHILE '\n'
-		{ $$ = TRwhile_loop($2, $4); }
+		{  }
 ;
 
 fromto_assign_statement:
 	struct_call ASSIGN expr
-		{ $$ = TRfromto_assign_statement($1, $3); }
+		{  }
 	| '(' fromto_assign_statement ')'
-		{ $$ = $2; }
+		{  }
 ;
 
 fromto_loop:
 	FROM fromto_assign_statement TO expr '\n'
 		sentence_list
 	ENDFROMTO '\n'
-		{ $$ = TRfromto_loop($2, $4, $6); }
+		{  }
 ;
 
 function_call:
 	ID '(' expr_list ')'
-		{ $$ = TRfunction_call($1, $3); }
+		{  }
 ;
 
 variable_call:
 	ID '[' expr_list ']'
-		{ $$ = TRvariable_call($1, $2); }
+		{  }
 	| ID
-		{  $$ = TRvariable_call($1, NULL); }
+		{  }
 ;
 
 struct_call:
 	struct_call '.' variable_call
-		{ $$ = TRstruct_call($1, $3); }
+		{  }
 	| variable_call
-		{ $$ = TRstruct_call(NULL, $1); }
+		{  }
 ;
 
 variable_list:
 	variable_list ',' variable_call
-		{ $$ = TRvariable_list($1, $3); }
+		{  }
 	| variable_call
-		{ $$ = TRvariable_list(NULL, $1); }
+		{  }
 ;
 
 procedure_call:
 	ID '(' expr_list ')' '\n'
-		{ $$ = TRprocedure_call($1, $3); }
+		{  }
 ;
 
 expr_list:
 	EPSILON
-		{ $$ = NULL; }
+		{  }
 	| expr_list ',' expr
-		{ $$ = TRexpr_list($1, $3); }
+		{  }
 	| expr
-		{ $$ = TRexpr_list(NULL, $1); }
+		{  }
 ;
 
 expr_bool:
 	BOOL_VAL
-		{ $$ = TRexpr_bool_val($1); }
+		{  }
 	| '(' expr_bool ')'
-		{ $$ = $2; }
+		{  }
 	| struct_call
-		{ $$ = TRexpr_bool_struct($1); }
+		{  }
 	| NOT_OP expr_bool %prec NEG
-		{ $$ = TRexpr_bool('!', $2, NULL); }
+		{  }
 	| expr_bool AND_OP expr_bool
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{  }
 	| expr_bool OR_OP expr_bool
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{  }
 	| expr '=' expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{  }
 	| expr '<' expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{  }
 	| expr '>' expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{  }
 	| expr LE_OP expr
-		{ $$ = TRexpr_bool('l', $1, $3); }
+		{  }
 	| expr GE_OP expr
-		{ $$ = TRexpr_bool('g', $1, $3); }
+		{  }
 	| expr NOT_EQ expr
-		{ $$ = TRexpr_bool('n', $1, $3); }
+		{  }
 	| function_call
-		{ $$ = TRexpr_bool_fcall($1); }
+		{  }
 ;
 
 expr:
 	INT_VAL
-		{ $$ = TRexpr_int($1); }
+		{  }
 	| expr_bool
-		{ $$ = TRexpr_expr_bool($1); }
+		{  }
 	| FLOAT_VAL
-		{ $$ = TRexpr_float($1); }
+		{  }
 	| STR_VAL
-		{ $$ = TRexpr_str($1); }
+		{  }
 	| struct_call
-		{ $$ = TRexpr_struct($1); }
+		{  }
 	| expr '+' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{  }
 	| expr '-' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{  }
 	| expr '*' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{  }
 	| expr '/' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{  }
 	| expr '%' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{  }
 	| expr '^' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{  }
 	| '-' expr %prec NEG
-		{ $$ = TRexpr('n', $2, NULL); }
+		{  }
 	| '(' expr ')'
-		{ $$ = $2; }
+		{  }
 	| function_call
-		{ $$ = TRexpr_fcall($1); }
+		{  }
 ;
 
 EPSILON:
