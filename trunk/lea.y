@@ -243,7 +243,7 @@ types_dcl: /* empty */
 ;
 
 str_list: /* empty */
-	ID ',' str_list
+	| ID ',' str_list
 		{ $$ = str_list_pair($1, $3); }
 ;
 
