@@ -302,8 +302,8 @@ elif_statement_list: /* empty */
 ;
 
 assign_statement:
-	ID ASSIGN expr assign_statement
-		{ $$ = assign_statement_pair($1, $3, $4); }
+	ID ASSIGN assign_statement
+		{ $$ = assign_statement_pair($1, $3); }
 	| ID ASSIGN expr '\n'
 		{ $$ = assign_statement_node($1, $3); }
 ;
