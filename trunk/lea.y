@@ -137,30 +137,33 @@ interface_block: /* empty */
 ;
 
 proc_arg_list: /* empty */
+	proc_arg_list
 	| IN in_arg_list ';' proc_arg_list 
 		{ $$ = proc_arg_list_in_pair($2, $4); }
+	proc_arg_list
 	| OUT out_arg_list ';' proc_arg_list
 		{ $$ = proc_arg_list_out_pair($2, $4); }
+	proc_arg_list
 	| INOUT inout_arg_list ';' proc_arg_list
 		{ $$ = proc_arg_list_inout_pair($2, $4); }
 ;
 
 in_arg_list : /* empty */
-	| in_var_dcl ',' in_arg_list
+	| in_arg_list ',' in_var_dcl
 		{ $$ = in_arg_list_pair($1, $3); }
 	| in_var_dcl
 		{ $$ = in_arg_list_node($1); }
 ;
 
 out_arg_list : /* empty */
-	| out_var_dcl ',' out_arg_list
+	| out_arg_list ',' out_var_dcl
 		{ $$ = out_arg_list_pair($1, $3); }
-	| out_var_dcl ','
+	| out_var_dcl
 		{ $$ = out_arg_list_node($1); }
 ;
 
 inout_arg_list : /* empty */
-	| inout_var_dcl ',' inout_arg_list
+	| inout_arg_list ',' inout_var_dcl
 		{ $$ = inout_arg_list_pair($1, $3); }
 	| inout_var_dcl
 		{ $$ = inout_arg_list_node($1); }
@@ -194,7 +197,7 @@ inout_var_dcl:
 ;
 
 id_list:
-	ID ',' id_list
+	id_list ',' ID
 		{ $$ = id_list_pair($1, $3); }
 	| ID
 		{ $$ = id_list_node($1); }
@@ -214,20 +217,20 @@ consts_block: /* empty */
 ;
 
 const_dcl_list: /* empty */
+	const_dcl_list
 	| id_list ':' BOOL_VAL '\n'
-	const_dcl_list
 		{ $$ = dcl_bool_const($1, $3, $5); }
+	const_dcl_list
 	| id_list ':' INT_VAL '\n'
-	const_dcl_list
 		{ $$ = dcl_int_const($1, $3, $5); }
+	const_dcl_list
 	| id_list ':' FLOAT_VAL '\n'
-	const_dcl_list
 		{ $$ = dcl_float_const($1, $3, $5); }
+	const_dcl_list
 	| id_list ':' CHAR_VAL '\n'
-	const_dcl_list
 		{ $$ = dcl_char_const($1, $3, $5); }
-	| id_list ':' STR_VAL '\n'
 	const_dcl_list
+	| id_list ':' STR_VAL '\n'
 		{ $$ = dcl_str_const($1, $3, $5); }
 ;
 
@@ -237,22 +240,22 @@ types_block: /* empty */
 		{ $$ = types_block_node($3); }
 ;
 types_dcl: /* empty */
+	types_dcl
 	| id_list ':' '(' str_list ')' '\n'
-	types_dcl
 		{ $$ = types_dcl_pair($1, $4); }
+	types_dcl
 	| id_list ':' ID
-	types_dcl
 		{ $$ = types_dcl_node($1, $3); }
+	types_dcl
 	| id_list ':' ID IN_STREAM ID
-	types_dcl
 		{ $$ = types_dcl_node($1, $3, $5); }
-	| id_list ':' ARRAY array_dimensions OF ID
 	types_dcl
+	| id_list ':' ARRAY array_dimensions OF ID
 		{ $$ = types_dcl_node($1, $3, $4, $6); }
 ;
 
 str_list: /* empty */
-	| ID ',' str_list
+	| str_list ',' ID
 		{ $$ = str_list_pair($1, $3); }
 ;
 
@@ -275,7 +278,7 @@ sentence_list_block:
 ;
 
 sentence_list: /* empty */
-	| sentence sentence_list
+	| sentence_list sentence
 ;
 
 sentence:
@@ -386,7 +389,7 @@ expr:
 ;
 
 expr_list:
-	| expr expr_list
+	| expr_list expr
 		{ $$ = expr_list_pair($1, $2); }
 ;
 
