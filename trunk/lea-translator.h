@@ -28,17 +28,17 @@
 	
 	#include <stdlib.h>
 	#include <string.h>
+	#include <stdio.h>
 	
 	/**
 	 * \brief defines of (V)value type and their assigned values
 	 * These are the possible values used in the variables "char *type;"
 	 * used across the structures defined bellow
 	 */
-	#define Vint_val				0
-	#define Vbool_val				1
-	#define Vfloat_val				2
-	#define Vchar_val				3
-	#define Vstr_val				4
+	#define Vint_val				1
+	#define Vbool_val				2
+	#define Vfloat_val				3
+	#define Vchar_val				4
 	#define Vstr_val				5
 	#define Vfile_val				6
 	#define Vconst_int_val			7
@@ -76,7 +76,6 @@
 	#define Vintern_array_type		36
 	#define Vintern_var_type		37
 	#define Vintern_reg_type		38
-	#define Vintern_other_type		39
 	
 	#define OPnot					40
 	#define OPand					41
@@ -156,7 +155,7 @@
 	 *  -  V(|const_|intern_)str_val (for storage.str_val)
 	 *  -  V(|const_|intern_)file_val (for storage.file)
 	 */
-	typedef struct
+	typedef struct {
 		union {
 			int *int_val;
 			bool *bool_val;
@@ -181,10 +180,32 @@
 	/**
 	 * \brief Tid_list type definition
 	 */
-	typedef struct {
+	typedef struct Tid_list Tid_list;
+	
+	struct Tid_list {
 		char *actual;
 		Tid_list *next;
-	} Tid_list;
+	};
+	
+	/**
+	 * \brief Tvar_sym type definition
+	 * Symbols are meant to be part of the symbol table
+	 */
+	typedef struct {
+		char *name;
+		Ttype *storage;
+	} Tvar_sym;
+	
+	/**
+	 * \brief Tvar_sym_list type definition
+	 * Note that constants and vars are both called via this type list
+	 */
+	typedef struct Tvar_sym_list Tvar_sym_list;
+	 
+	struct Tvar_sym_list {
+		Tvar_sym *actual;
+		Tvar_sym_list *next;
+	};
 	
 	/**
 	 * \brief Tint_id_val type definition
@@ -199,20 +220,22 @@
 	 *  -  Vint_val (for val.int_val)
 	 */
 	typedef struct {
+		char *type;
 		union {
-			Tvar_call *var_call;
+			Tvar_sym *var_call;
 			int *int_val;
 		} val;
-		char *type;
 	} Tint_id_val;
 	
 	/**
 	 * \brief Tstr_list type definition
 	 */
-	typedef struct {
+	typedef struct Tstr_list Tstr_list;
+	
+	struct Tstr_list {
 		Tstr_val *actual;
 		Tstr_list *next;
-	} Tstr_list;
+	};
 	
 	/**
 	 * \brief Tint_id_val_list type definition
@@ -220,39 +243,12 @@
 	 * that can be obtained either by an existing integer variable/constant
 	 * or entered directly.
 	 */
-	typedef struct {
+	typedef struct Tint_id_val_list Tint_id_val_list;
+	
+	struct Tint_id_val_list {
 		Tint_id_val *value;
 		Tint_id_val_list *next;
-	} Tint_id_val_list;
-	
-	/**
-	 * \brief Tvar_call type definition
-	 * Note that constants and vars are both called via this type
-	 */
-	typedef Tvar_sym Tvar_call;
-	
-	/**
-	 * \brief Tvar_call_list type definition
-	 * Note that constants and vars are both called via this type list
-	 */
-	typedef struct {
-		Tvar_call *actual;
-		Tvar_call_list *next;
-	} Tvar_call_list;
-	
-	/**
-	 * \brief Tarray_call type definition
-	 */
-	typedef Tarray_sym Tarray_call;
-	
-	/**
-	 * \brief Tvar_sym type definition
-	 * Symbols are meant to be part of the symbol table
-	 */
-	typedef struct {
-		char *name;
-		Ttype *storage;
-	} Tvar_sym;
+	};
 	
 	/**
 	 * \brief Tenum_element type definition
@@ -382,18 +378,22 @@
 	/**
 	 * \brief Tother_type_list type definition
 	 */
-	typedef struct {
+	typedef struct Tother_type_list Tother_type_list;
+	
+	struct Tother_type_list {
 		Tother_type *actual;
 		Tother_type_list *next;
-	} Tother_type_list;
+	};
 	
 	/**
 	 * \brief Tother_sym_list type definition
 	 */
-	typedef struct {
+	typedef struct Tother_sym_list Tother_sym_list;
+	
+	struct Tother_sym_list {
 		Tother_sym *actual;
 		Tother_sym_list *next;
-	} Tother_sym_list;
+	};
 	
 	/**
 	 * \brief Treg_type_sym type definition
@@ -416,7 +416,7 @@
 	 * \brief Treg_call type definition
 	 * Note that this will store only a ultimate call to
 	 * a register; myRegister.intArrayNM[x, y] should be
-	 * stored as a Tvar_call (to an integer var) and not 
+	 * stored as a Tvar_sym (to an integer var) and not 
 	 * as a Treg_call!
 	 */
 	typedef union {
@@ -425,7 +425,7 @@
 	} Treg_call;
 	
 	/**
-	 * \brief expr_bool type definition
+	 * \brief expr_bsool type definition
 	 * In this structure char *type can be:
 	 *  -  OPexpr_bool (for expr_bool.expr_bool)
 	 *  -  OPvar_call (for expr_bool.var_call)
@@ -435,8 +435,8 @@
 	typedef struct {
 		union {
 			Texpr_bool_op *expr_bool;
-			Tvar_call *var_call;
-			Tarray_call *array_call;
+			Tvar_sym *var_call;
+			Tarray_sym *array_call;
 			Tmethod_call *method_call;
 		} expr_bool;
 		char *type;
@@ -487,8 +487,8 @@
 		union {
 			Texpr_bool_op *expr_bool;
 			Texpr_op *expr;
-			Tvar_call *var_call;
-			Tarray_call *array_call;
+			Tvar_sym *var_call;
+			Tarray_sym *array_call;
 			Tmethod_call *method_call;
 		} expr;
 	} Texpr;
@@ -506,10 +506,12 @@
 	/**
 	 * \brief Tlibrary type definition
 	 */
-	typedef struct {
+	typedef struct Tlibrary Tlibrary;
+	
+	struct Tlibrary {
+		Tlibrary *next;
 		Tmethod_sym *actual;
-		Tmethod_sym *next;
-	} Tlibrary;
+	};
 	
 	/**
 	 * \brief Tmethod_sym type definition
@@ -544,10 +546,12 @@
 	/**
 	 * \brief Tsentence_list type definition
 	 */
-	typedef struct {
+	typedef struct Tsentence_list Tsentence_list;
+	
+	struct Tsentence_list {
 		Tsentence *actual;
 		Tsentence_list *next;
-	} Tsentence_list;
+	};
 	 
 	/**
 	 * \brief Tsentence type definition
@@ -562,6 +566,7 @@
 	 */
 	typedef struct {
 		char *type;
+		char *TMP;
 		union {
 			Tif_statement *if_statement;
 			Tassign_statement *assign_statement;
@@ -571,7 +576,7 @@
 			Tmethod_call *method_call;
 			Treserved_call *Treserved_call;
 		} sentence;
-	} Tsentence_list;
+	} Tsentence;
 	 
 	/**
 	 * \brief Tif_statement type definition
@@ -585,10 +590,12 @@
 	/**
 	 * \brief Telif_statement_list type definition
 	 */
-	typedef struct {
+	typedef struct Telif_statement_list Telif_statement_list;
+	
+	struct Telif_statement_list {
 		Telif_statement *actual;
 		Telif_statement_list *next;
-	} Telif_statement_list;
+	};
 	 
 	/**
 	 * \brief Telif_statement type definition
@@ -609,10 +616,12 @@
 	/**
 	 * \brief Texpr_list type definition
 	 */
-	typedef struct {
+	typedef struct Texpr_list Texpr_list;
+	
+	struct Texpr_list {
 		Texpr *actual;
 		Texpr_list *next;
-	} Texpr_list;
+	};
 	 
 	/**
 	 * \brief Tmult_assign_statement type definition
@@ -811,7 +820,7 @@
 			TRmult_assign_list_expr($1, NULL); 
 			TRmult_assign_list($1, NULL);  */
 	// mult_assign_statement: 
-	Tsentence *TRmult_assign_statement(Tvar_call_list *, Texpr_list *);
+	Tsentence *TRmult_assign_statement(Tvar_sym_list *, Texpr_list *);
 	// output_input_statement: 
 	Tsentence *TRoutput_input_statement(char *, Texpr_list *); 
 	// while_loop: 
@@ -829,8 +838,8 @@
 	Tsentence *TRstruct_call(Tsentence *, Tsentence *); 
 // 	Tsentence *TRstruct_call(NULL, Tsentence *); 
 	// variable_list: 
-	Tvar_call_list *TRvariable_list(Tvar_call_list *, Tvar_call *); 
-// 	Tvar_call_list *TRvariable_list(NULL, Tvar_call *); 
+	Tvar_sym_list *TRvariable_list(Tvar_sym_list *, Tvar_sym *); 
+// 	Tvar_sym_list *TRvariable_list(NULL, Tvar_sym *); 
 	// procedure_call: 
 	Tsentence *TRprocedure_call(char *, Texpr_list *); 
 	// expr_list: 

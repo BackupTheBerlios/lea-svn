@@ -21,6 +21,8 @@
  * 
  * See COPYING for details.
  */
+ 
+ #include "lea-translator.h"
 
 /**
  * \brief Automagical skeleton function creation from header's func. prototypes
@@ -661,7 +663,7 @@ Tsentence *TRassign_statement_expr(Tsentence *var_list, Texpr *expr)
  * \param		
  * \return	 
  */
-Tsentence *TRmult_assign_statement(Tvar_call_list *var_list, Texpr_list *expr_list)
+Tsentence *TRmult_assign_statement(Tvar_sym_list *var_list, Texpr_list *expr_list)
 {
 	Tsentence *ret;
 
@@ -765,9 +767,9 @@ Tsentence *TRstruct_call(Tsentence *previous_list, Tsentence *next_list)
  * \param		
  * \return	 
  */
-Tvar_call_list *TRvariable_list(Tvar_call_list *previous_list, Tvar_call *next_list)
+Tvar_sym_list *TRvariable_list(Tvar_sym_list *previous_list, Tvar_sym *next_list)
 {
-	Tvar_call_list *ret;
+	Tvar_sym_list *ret;
 
 	return ret;
 }
