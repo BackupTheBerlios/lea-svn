@@ -113,7 +113,8 @@ function print_skeleton_functions()
 
 function print_grammar_no_actions()
 {
-	print "%{\n/*This file was generated executing the following command in parent directory:\n ACTION=print_grammar_no_actions lea.y > lea-bison-flex-only/lea.y*/\n%}\n"
+	print "%{\n/*This file was generated executing the following command in parent directory:\n
+	 $ ACTION=print_grammar_no_actions ./handy.awk ../../trunk/lea.y > lea.y */\n%}\n"
 	while(getline line)
 	{
 		if (line ~ /\{[ \t]*\$\$[ \t]*=[ \t]*[^}]+\}$/)
