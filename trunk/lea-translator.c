@@ -78,7 +78,7 @@ Tmethod_sym *TRalgorithm(char *name, Tinterface_sym *interface, Tdeclarations_sy
  * \param		
  * \return	 
  */
-Tmethod_sym *TRfunction(Tinterface_sym *interface, Tdeclarations_sym *declarations, Tsentence_list *sentences)
+Tmethod_sym *TRfunction(Tmethod_sym *interface, Tdeclarations_sym *declarations, Tsentence_list *sentences)
 {
 	Tmethod_sym *ret;
 
@@ -91,7 +91,7 @@ Tmethod_sym *TRfunction(Tinterface_sym *interface, Tdeclarations_sym *declaratio
  * \param		
  * \return	 
  */
-Tmethod_sym *TRprocedure(Tinterface_sym *interface, Tdeclarations_sym *declarations, Tsentence_list *sentences)
+Tmethod_sym *TRprocedure(Tmethod_sym *interface, Tdeclarations_sym *declarations, Tsentence_list *sentences)
 {
 	Tmethod_sym *ret;
 
@@ -117,7 +117,7 @@ Tmethod_sym *TRfunc_header(char *name, Tother_sym_list *args_in, Tother_sym *arg
  * \param		
  * \return	 
  */
-Tmethod_sym *TRproc_header(char *name, Tother_sym_list *args)
+Tmethod_sym *TRproc_header(char *name, Tinterface_sym *args)
 {
 	Tmethod_sym *ret;
 
@@ -247,7 +247,7 @@ Tother_sym_list *TRinout_arg_list(Tother_sym_list *previous_list, Tother_sym *ac
  * \param		
  * \return	 
  */
-Tother_sym *TRin_var_dcl(Tid_list *id_list, char *type1, char *type2, char *type3)
+Tother_sym *TRin_var_dcl(Tid_list *id_list, char *type1, char *type2, char type3)
 {
 	Tother_sym *ret;
 
@@ -273,7 +273,7 @@ Tother_sym *TRin_var_dcl_array(Tid_list *id_list, Tint_id_val_list *dimensions, 
  * \param		
  * \return	 
  */
-Tother_sym *TRout_var_dcl(Tid_list *id_list, char *type1, char *type2, char *type3)
+Tother_sym *TRout_var_dcl(Tid_list *id_list, char *type1, char *type2, char type3)
 {
 	Tother_sym *ret;
 
@@ -299,7 +299,7 @@ Tother_sym *TRout_var_dcl_array(Tid_list *id_list, Tint_id_val_list *dimensions,
  * \param		
  * \return	 
  */
-Tother_sym *TRinout_var_dcl(Tid_list *id_list, char *type1, char *type2, char *type3)
+Tother_sym *TRinout_var_dcl(Tid_list *id_list, char *type1, char *type2, char type3)
 {
 	Tother_sym *ret;
 
@@ -754,6 +754,19 @@ Tsentence *TRvariable_call(char *name, Texpr_list *expr_list)
  * \param		
  * \return	 
  */
+Tsentence *TRvariable_call_node(char *name)
+{
+	Tsentence *ret;
+
+	return ret;
+}
+
+/**
+ * \brief 
+ * 
+ * \param		
+ * \return	 
+ */
 Tsentence *TRstruct_call(Tsentence *previous_list, Tsentence *next_list)
 {
 	Tsentence *ret;
@@ -767,7 +780,33 @@ Tsentence *TRstruct_call(Tsentence *previous_list, Tsentence *next_list)
  * \param		
  * \return	 
  */
-Tvar_sym_list *TRvariable_list(Tvar_sym_list *previous_list, Tvar_sym *next_list)
+Tsentence *TRstruct_call_node(Tsentence *next_list)
+{
+	Tsentence *ret;
+
+	return ret;
+}
+
+/**
+ * \brief 
+ * 
+ * \param		
+ * \return	 
+ */
+Tvar_sym_list *TRvariable_list(Tvar_sym_list *previous_list, Tsentence *next_list)
+{
+	Tvar_sym_list *ret;
+
+	return ret;
+}
+
+/**
+ * \brief 
+ * 
+ * \param		
+ * \return	 
+ */
+Tvar_sym_list *TRvariable_list_node(Tsentence *next_list)
 {
 	Tvar_sym_list *ret;
 
@@ -832,7 +871,33 @@ Texpr_bool *TRexpr_bool_struct(Tsentence *struct_call)
  * \param		
  * \return	 
  */
-Texpr_bool *TRexpr_bool(char type, Texpr_bool *left_expr, Texpr_bool *right_expr)
+Texpr_bool *TRexpr_bool_not(Texpr_bool *expr_bool)
+{
+	Texpr_bool *ret;
+
+	return ret;
+}
+
+/**
+ * \brief 
+ * 
+ * \param		
+ * \return	 
+ */
+Texpr_bool *TRexpr_bool_log(char type, Texpr_bool *left_expr, Texpr_bool *right_expr)
+{
+	Texpr_bool *ret;
+
+	return ret;
+}
+
+/**
+ * \brief 
+ * 
+ * \param		
+ * \return	 
+ */
+Texpr_bool *TRexpr_bool(char type, Texpr *left_expr, Texpr *right_expr)
 {
 	Texpr_bool *ret;
 

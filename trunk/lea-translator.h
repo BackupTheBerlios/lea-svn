@@ -120,6 +120,27 @@
 	/****************************
 	*     Types definitions     *
 	****************************/
+	
+	typedef struct Tother_type Tother_type;
+	typedef struct Tother_sym Tother_sym;
+	typedef struct Treg_type Treg_type;
+	typedef struct Treg_sym Treg_sym;
+	typedef struct Texpr Texpr;
+	typedef struct Texpr_bool_op Texpr_bool_op;
+	typedef struct Tmethod_call Tmethod_call;
+	typedef struct Tmethod_sym Tmethod_sym;
+	typedef struct Tdeclarations_sym Tdeclarations_sym;
+	typedef struct Tsentence_list Tsentence_list;
+	typedef struct Tlibrary Tlibrary;
+	typedef struct Tinterface_sym Tinterface_sym;
+	typedef struct Tsentence Tsentence;
+	typedef struct Tif_statement Tif_statement;
+	typedef struct Tassign_statement Tassign_statement;
+	typedef struct Tmult_assign_statement Tmult_assign_statement;
+	typedef struct Twhile_loop Twhile_loop;
+	typedef struct Tfromto_loop Tfromto_loop;
+	typedef struct Treserved_call Treserved_call;
+	
 	/**
 	 * \brief Definition of all the (T)types used in the translator
 	 *
@@ -336,7 +357,7 @@
 	 *  -  V(|intern_)file_type (for kind.file)
 	 *  -  V(|intern_)reg_type (for kind.reg)
 	 */
-	typedef struct {
+	struct Tother_type {
 		char *name;
 		union {
 			Ttype *other;
@@ -346,7 +367,7 @@
 			Treg_type *reg;
 		} kind;
 		char *type;
-	} Tother_type;
+	};
 	
 	/**
 	 * \brief Tother_sym type definition
@@ -362,7 +383,7 @@
 	 * (but only partially) redundant. But some redundancy
 	 * some times make things less insane!
 	 */
-	typedef struct{
+	struct Tother_sym {
 		char *name;
 		union {
 			Tvar_sym *other;
@@ -372,8 +393,8 @@
 			Treg_sym *reg;
 		} symbol;
 		char *type;
-		Tother_type *type;
-	}  Tother_sym; 
+		Tother_type *type_type;
+	}; 
 	
 	/**
 	 * \brief Tother_type_list type definition
@@ -400,17 +421,17 @@
 	 */
 	typedef struct {
 		char *name;
-		Tother_type_list *list;
+		Treg_type *list;
 	} Treg_type_sym;
 	
 	/**
 	 * \brief Treg_sym type definition
 	 */
-	typedef struct {
+	struct Treg_sym {
 		char *name;
 		Treg_type_sym *type;
 		Tother_sym_list *store;
-	} Treg_sym;
+	};
 	
 	/**
 	 * \brief Treg_call type definition
@@ -425,7 +446,7 @@
 	} Treg_call;
 	
 	/**
-	 * \brief expr_bsool type definition
+	 * \brief expr_bool type definition
 	 * In this structure char *type can be:
 	 *  -  OPexpr_bool (for expr_bool.expr_bool)
 	 *  -  OPvar_call (for expr_bool.var_call)
@@ -450,7 +471,7 @@
 	 *  - OPeq/OPless/OPgreater/OPle/OPge (for right.expr, left.expr)
 	 *  - OPand/OPor (for right.expr_bool, left.expr_bool)
 	 */
-	typedef struct {
+	struct Texpr_bool_op {
 		char *op;
 		union{
 			Texpr_bool *expr_bool;
@@ -460,7 +481,7 @@
 			Texpr_bool *expr_bool;
 			Texpr *expr;
 		} right;
-	} Texpr_bool_op;
+	};
 	
 	/**
 	 * \brief expr_op type definitionition
@@ -482,7 +503,7 @@
 	 *  -  OParray_call (for expr.array_call)
 	 *  -  OPmethod_call (for expr.method_call)
 	 */
-	typedef struct {
+	struct Texpr {
 		char *type;
 		union {
 			Texpr_bool_op *expr_bool;
@@ -491,7 +512,7 @@
 			Tarray_sym *array_call;
 			Tmethod_call *method_call;
 		} expr;
-	} Texpr;
+	};
 	
 	/**
 	 * \brief Tprogram type definition
@@ -506,8 +527,6 @@
 	/**
 	 * \brief Tlibrary type definition
 	 */
-	typedef struct Tlibrary Tlibrary;
-	
 	struct Tlibrary {
 		Tlibrary *next;
 		Tmethod_sym *actual;
@@ -518,36 +537,34 @@
 	 * In this structure char *type can be:
 	 *  - OPalg/OPfunc/OPproc
 	 */
-	typedef struct {
+	struct Tmethod_sym {
 		char *name;
 		Tinterface_sym *interface;
 		Tdeclarations_sym *declarations;
 		Tsentence_list *sentences;
 		char *type;
-	} Tmethod_sym;
+	};
 	
 	/**
 	 * \brief Tinterface_sym type definition
 	 * If this is an interface for a function then args_io
 	 * would be NULL and args_out would be a sole arg, etc..
 	 */
-	typedef struct {
+	struct Tinterface_sym {
 		Tother_sym_list *args_in, *args_out, *args_io;
-	} Tinterface_sym;
+	};
 	 
 	/**
 	 * \brief Tdeclarations_sym type definition
 	 */
-	typedef struct {
+	struct Tdeclarations_sym {
 		Tother_sym_list *consts, *vars;
 		Tother_type_list *types;
-	} Tdeclarations_sym;
+	};
 	 
 	/**
 	 * \brief Tsentence_list type definition
 	 */
-	typedef struct Tsentence_list Tsentence_list;
-	
 	struct Tsentence_list {
 		Tsentence *actual;
 		Tsentence_list *next;
@@ -564,9 +581,8 @@
 	 *  -  Vmethod_call (for sentence.method_call)
 	 *  -  Vreserved_call (for sentence.Treserved_call)
 	 */
-	typedef struct {
+	struct Tsentence {
 		char *type;
-		char *TMP;
 		union {
 			Tif_statement *if_statement;
 			Tassign_statement *assign_statement;
@@ -576,16 +592,15 @@
 			Tmethod_call *method_call;
 			Treserved_call *Treserved_call;
 		} sentence;
-	} Tsentence;
-	 
+	};
+	
 	/**
-	 * \brief Tif_statement type definition
+	 * \brief Telif_statement type definition
 	 */
 	typedef struct {
 		Texpr_bool *cond;
-		Telif_statement_list *elif_statement_list;
-		Tsentence_list *sentence_list, *else_sentence_list;
-	} Tif_statement;
+		Tsentence_list *sentence_list;
+	} Telif_statement;
 	 
 	/**
 	 * \brief Telif_statement_list type definition
@@ -596,22 +611,23 @@
 		Telif_statement *actual;
 		Telif_statement_list *next;
 	};
-	 
+	
 	/**
-	 * \brief Telif_statement type definition
+	 * \brief Tif_statement type definition
 	 */
-	typedef struct {
+	struct Tif_statement {
 		Texpr_bool *cond;
-		Tsentence_list *sentence_list;
-	} Telif_statement;
+		Telif_statement_list *elif_statement_list;
+		Tsentence_list *sentence_list, *else_sentence_list;
+	};
 	 
 	/**
 	 * \brief Tassign_statement type definition
 	 */
-	typedef struct {
+	struct Tassign_statement {
 		Tother_sym_list *sym_list;
 		Texpr *expr;
-	} Tassign_statement;
+	};
 	 
 	/**
 	 * \brief Texpr_list type definition
@@ -626,49 +642,49 @@
 	/**
 	 * \brief Tmult_assign_statement type definition
 	 */
-	typedef struct {
+	struct Tmult_assign_statement {
 		Tother_sym_list *sym_list;
 		Texpr_list *expr_list;
-	} Tmult_assign_statement;
+	};
 	
 	/**
 	 * \brief Twhile_loop type definition
 	 */
-	typedef struct {
+	struct Twhile_loop {
 		Texpr_bool *cond;
 		Tsentence_list *sentence_list;
-	} Twhile_loop;
+	};
 	 
 	/**
 	 * \brief Tfromto_loop type definition
 	 */
-	typedef struct {
+	struct Tfromto_loop {
 		Tassign_statement *assign_statement;
 		int *int_val;
 		Tsentence_list *sentence_list;
-	} Tfromto_loop;
+	};
 	 
 	/**
 	 * \brief Tmethod_call type definition
 	 */
-	typedef struct {
+	struct Tmethod_call {
 		Texpr_list *arg_list;
 		union {
 			char *name;
 			Tmethod_sym *symbol;
 		} function;
-	} Tmethod_call;
+	};
 	 
 	/**
 	 * \brief Treserved_call type definition
 	 */
-	typedef struct {
+	struct Treserved_call {
 		Texpr_list *arg_list;
 		union {
 			char *name;
 			void *(*function_ptr)();
 		} function;
-	} Treserved_call;
+	};
 	
 	/*
 	 * List types to keep an eye in for sorting the list of its elements
@@ -679,7 +695,6 @@
 	 *  - Tlibrary
 	 * And also the structures that directly use them:
 	 *  - Treg_type_sym
-	 *  - Treg_sym
 	 *  - Tprogram
 	 *  - Tinterface_sym
 	 *  - Tdeclarations_sym
@@ -708,13 +723,13 @@
 	// algorithm: 
 	Tmethod_sym *TRalgorithm(char *, Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// function: 
-	Tmethod_sym *TRfunction(Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
+	Tmethod_sym *TRfunction(Tmethod_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// procedure: 
-	Tmethod_sym *TRprocedure(Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
+	Tmethod_sym *TRprocedure(Tmethod_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// func_header: 
 	Tmethod_sym *TRfunc_header(char *, Tother_sym_list *, Tother_sym *); 
 	// proc_header: 
-	Tmethod_sym *TRproc_header(char *, Tother_sym_list *); 
+	Tmethod_sym *TRproc_header(char *, Tinterface_sym *); 
 	// interface_block: 
 	// 		NULL;  
 	Tinterface_sym *TRinterface_block_in(Tother_sym_list *, Tinterface_sym *); 
@@ -742,17 +757,17 @@
 	// in_var_dcl: 
 // 	Tother_sym *TRin_var_dcl(Tid_list *, char *, NULL, NULL); 
 // 	Tother_sym *TRin_var_dcl(Tid_list *, char *, char *, NULL); 
-	Tother_sym *TRin_var_dcl(Tid_list *, char *, char *, char *); 
+	Tother_sym *TRin_var_dcl(Tid_list *, char *, char *, char); 
 	Tother_sym *TRin_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// out_var_dcl: 
 // 	Tother_sym *TRout_var_dcl(Tid_list *, char *, NULL, NULL); 
 // 	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, NULL); 
-	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, char *); 
+	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, char); 
 	Tother_sym *TRout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// inout_var_dcl: 
 // 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, NULL, NULL); 
 // 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, NULL); 
-	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, char *); 
+	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, char); 
 	Tother_sym *TRinout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// id_list: 
 	Tid_list *TRid_list(Tid_list *, char *); 
@@ -833,13 +848,13 @@
 	Tsentence *TRfunction_call(char *, Texpr_list *); 
 	// TODO: is it correct to set this as  Tsentence *? variable_call: 
 	Tsentence *TRvariable_call(char *, Texpr_list *); 
-// 	Tsentence *TRvariable_call($1, Texpr_list *); 
+	Tsentence *TRvariable_call_node(char *); 
 	// TODO: is it correct to set this as  Tsentence *? struct_call: 
-	Tsentence *TRstruct_call(Tsentence *, Tsentence *); 
-// 	Tsentence *TRstruct_call(NULL, Tsentence *); 
+	Tsentence *TRstruct_call(Tsentence *, Tsentence *);
+	Tsentence *TRstruct_call_node(Tsentence *);
 	// variable_list: 
-	Tvar_sym_list *TRvariable_list(Tvar_sym_list *, Tvar_sym *); 
-// 	Tvar_sym_list *TRvariable_list(NULL, Tvar_sym *); 
+	Tvar_sym_list *TRvariable_list(Tvar_sym_list *, Tsentence *); 
+	Tvar_sym_list *TRvariable_list_node(Tsentence *); 
 	// procedure_call: 
 	Tsentence *TRprocedure_call(char *, Texpr_list *); 
 	// expr_list: 
@@ -849,15 +864,17 @@
 	// expr_bool: 
 	Texpr_bool *TRexpr_bool_val(bool *); 
 	Texpr_bool *TRexpr_bool_struct(Tsentence *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, NULL); 
-	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, NULL);; 
+	Texpr_bool *TRexpr_bool_not(Texpr_bool *);  
+	Texpr_bool *TRexpr_bool_log(char, Texpr_bool *, Texpr_bool *); 
+	Texpr_bool *TRexpr_bool(char, Texpr *, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
 	Texpr_bool *TRexpr_bool_fcall(Tsentence *); 
 	// expr: 
 	Texpr *TRexpr_int(int *); 

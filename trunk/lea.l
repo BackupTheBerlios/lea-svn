@@ -26,7 +26,7 @@
 	#include <stdlib.h>
 	#include <string.h>
  	#include "lea-translator.h"
-	#include "y.tab.h"
+	#include "lea.tab.h"
 	
 	#define MAX_STR_CONST 1024
 	#define lexical_error(a) printf("%s\n", a)
@@ -163,7 +163,7 @@ falso					{
 							if (*result > 0xff)
 								lexical_error("constant out of range");
 							
-							*(yylval.char_val) = result;
+							yylval.char_val = (char *)result;
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 

@@ -44,25 +44,24 @@
 	Tprogram				*Tprogram;
 	Tmethod_sym				*Tmethod_sym;
 	Tinterface_sym			*Tinterface_sym;
+	Tother_sym				*Tother_sym;
+	Tvar_sym_list			*Tvar_sym_list;
 	Tother_sym_list			*Tother_sym_list;
 	Tid_list				*Tid_list;
+	Tint_id_val				*Tint_id_val;
 	Tint_id_val_list		*Tint_id_val_list;
 	Tdeclarations_sym		*Tdeclarations_sym;
-	Tother_sym_list			*Tother_sym_list;
 	Tother_type_list		*Tother_type_list;
 	Tstr_list				*Tstr_list;
-	Tother_sym_list 		*Tother_sym_list;
 	Tother_type				*Tother_type;
 	Tsentence_list			*Tsentence_list;
 	Telif_statement			*Telif_statement;
 	Telif_statement_list	*Telif_statement_list;
 	Tsentence 				*Tsentence;
 	Tassign_statement		*Tassign_statement;
-	Tsentence				*Tsentence;
-	Tvar_call_list			*Tvar_call_list;
-	Tsentence				*Tsentence;
 	Texpr_list				*Texpr_list;
 	Texpr_bool				*Texpr_bool;
+	Texpr					*Texpr;
 // \endlist
 }
 
@@ -82,12 +81,12 @@
  */
 %type <Tstr_list>				str_list
 %type <Texpr>					expr
-%type <Tother_type_list>		types_dcl_list
+%type <Tother_type_list>		types_dcl_list types_block
 %type <Tid_list>				id_list
 %type <Tprogram>				program
 %type <Telif_statement>			elif_statement
-%type <Tsentence>				if_statement assign_statement mult_assign_statement output_input_statement while_loop fromto_loop function_call variable_call struct_call procedure_call
-%type <Tint_id_val_list>		int_val_list
+%type <Tsentence>				if_statement assign_statement mult_assign_statement output_input_statement while_loop fromto_loop function_call variable_call struct_call procedure_call sentence
+%type <Tint_id_val_list>		int_val_list array_dimensions
 %type <Texpr_list>				expr_list
 %type <Tdeclarations_sym>		declarations_block
 %type <Tint_id_val>				int_id_val
@@ -95,12 +94,13 @@
 %type <Texpr_bool>				expr_bool
 %type <Tinterface_sym>			interface_block proc_arg proc_arg_list
 %type <Tvar_sym_list>			variable_list
-%type <Tother_sym_list>			in_arg_list out_arg_list inout_arg_list const_dcl_list vars_dcl vars_reg_dcl
+%type <Tother_sym_list>			in_arg_list out_arg_list inout_arg_list const_dcl_list vars_dcl vars_reg_dcl consts_block vars_block
 %type <Tmethod_sym>				library algorithm function procedure func_header proc_header
 %type <Tother_sym>				in_var_dcl out_var_dcl inout_var_dcl
 %type <Telif_statement_list>	elif_statement_list
-%type <Tsentence_list>			sentence_list
+%type <Tsentence_list>			sentence_list sentence_list_block
 %type <Tother_type>				register
+%type <str_val>					prog_header alg_header
 // \endlist
 
 %start	program
@@ -235,33 +235,33 @@ inout_arg_list:
 
 in_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRin_var_dcl($1, $3, NULL, NULL); }
+		{ $$ = TRin_var_dcl($1, $3, (char *)NULL, (char)NULL); }
 	| id_list ':' ID OF ID
-		{ $$ = TRin_var_dcl($1, $3, $5, NULL); }
+		{ $$ = TRin_var_dcl($1, $3, $5, (char)NULL); }
 	| id_list ':' ID OF IN_STREAM ID
-		{ $$ = TRin_var_dcl($1, $3, $6, $5); }
+		{ $$ = TRin_var_dcl($1, $3, $6, 's'); }
 	| id_list  ':' ARRAY array_dimensions OF ID
 		{ $$ = TRin_var_dcl_array($1, $4, $6); }
 ;
 
 out_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRout_var_dcl($1, $3, NULL, NULL); }
+		{ $$ = TRout_var_dcl($1, $3, (char *)NULL, (char)NULL); }
 	| id_list ':' ID OF ID
-		{ $$ = TRout_var_dcl($1, $3, $5, NULL); }
+		{ $$ = TRout_var_dcl($1, $3, $5, (char)NULL); }
 	| id_list ':' ID OF OUT_STREAM ID
-		{ $$ = TRout_var_dcl($1, $3, $6, $5); }
+		{ $$ = TRout_var_dcl($1, $3, $6, 's'); }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRout_varl_dcl_array($1, $4, $6); }
+		{ $$ = TRout_var_dcl_array($1, $4, $6); }
 ;
 
 inout_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRinout_var_dcl($1, $3, NULL, NULL); }
+		{ $$ = TRinout_var_dcl($1, $3, (char *)NULL, (char)NULL); }
 	| id_list ':' ID OF ID
-		{ $$ = TRinout_var_dcl($1, $3, $5, NULL); }
+		{ $$ = TRinout_var_dcl($1, $3, $5, (char)NULL); }
 	| id_list ':' ID OF INOUT_STREAM ID
-		{ $$ = TRinout_var_dcl($1, $3, $6, $5); }
+		{ $$ = TRinout_var_dcl($1, $3, $6, 's'); }
 	| id_list ':' ARRAY array_dimensions OF ID
 		{ $$ = TRinout_var_dcl_array($1, $4, $6); }
 ;
@@ -541,23 +541,23 @@ function_call:
 
 variable_call:
 	ID '[' expr_list ']'
-		{ $$ = TRvariable_call($1, $2); }
+		{ $$ = TRvariable_call($1, $3); }
 	| ID
-		{  $$ = TRvariable_call($1, NULL); }
+		{  $$ = TRvariable_call_node($1); }
 ;
 
 struct_call:
 	struct_call '.' variable_call
 		{ $$ = TRstruct_call($1, $3); }
 	| variable_call
-		{ $$ = TRstruct_call(NULL, $1); }
+		{ $$ = TRstruct_call_node($1); }
 ;
 
 variable_list:
 	variable_list ',' variable_call
 		{ $$ = TRvariable_list($1, $3); }
 	| variable_call
-		{ $$ = TRvariable_list(NULL, $1); }
+		{ $$ = TRvariable_list_node($1); }
 ;
 
 procedure_call:
@@ -582,17 +582,17 @@ expr_bool:
 	| struct_call
 		{ $$ = TRexpr_bool_struct($1); }
 	| NOT_OP expr_bool %prec NEG
-		{ $$ = TRexpr_bool('!', $2, NULL); }
+		{ $$ = TRexpr_bool_not($2); }
 	| expr_bool AND_OP expr_bool
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool_log('&', $1, $3); }
 	| expr_bool OR_OP expr_bool
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool_log('|', $1, $3); }
 	| expr '=' expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool('=', $1, $3); }
 	| expr '<' expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool('<', $1, $3); }
 	| expr '>' expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool('>', $1, $3); }
 	| expr LE_OP expr
 		{ $$ = TRexpr_bool('l', $1, $3); }
 	| expr GE_OP expr
@@ -618,17 +618,17 @@ expr:
 	| struct_call
 		{ $$ = TRexpr_struct($1); }
 	| expr '+' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{ $$ = TRexpr('+', $1, $3); }
 	| expr '-' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{ $$ = TRexpr('-', $1, $3); }
 	| expr '*' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{ $$ = TRexpr('*', $1, $3); }
 	| expr '/' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{ $$ = TRexpr('/', $1, $3); }
 	| expr '%' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{ $$ = TRexpr('%', $1, $3); }
 	| expr '^' expr
-		{ $$ = TRexpr($2, $1, $3); }
+		{ $$ = TRexpr('^', $1, $3); }
 	| '-' expr %prec NEG
 		{ $$ = TRexpr('n', $2, NULL); }
 	| '(' expr ')'
