@@ -12,7 +12,7 @@ CFLAGS+=-lm
 
 lea: $(LEX_SRC) $(YACC_SRC)
 	 $(LEX) $(LEX_SRC)
-	 $(YACC) -d $(YACC_SRC)
+	 $(YACC) --verbose -d $(YACC_SRC)
 	 $(CC) $(CFLAGS) -o $(OUT) lex.yy.c y.tab.c -ly -lfl $(CFLAGS)
 	 
 clean:
