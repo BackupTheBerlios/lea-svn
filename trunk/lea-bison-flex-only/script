@@ -1,0 +1,33 @@
+#!/bin/lea
+
+prog prueba
+	cons
+		pi:3.1416
+	
+		
+
+	var
+		a, b: entero
+		d: tabla[4,5] de caracter
+		c, d : flujo de real
+	prin
+		a, b := 3.5, 5
+		llamada_a_un_func_o_proc(45, 4., a)
+		escribir pi
+		
+		si a = b:
+			leer a
+		| ( a <= llamada_a_un_func_o_proc(45, 4., a) ):
+			mientras llamada_a_un_func_o_proc(45, 4., a)
+				a, b := b+1, a-1
+			fm
+		| a > b - 1 :
+			escribir a, b-1
+		| otras:
+			nula
+		fsi
+		
+		desde (a:=1) hasta 5
+			leer pi
+		fd
+	fin
