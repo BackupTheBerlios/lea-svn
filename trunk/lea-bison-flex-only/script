@@ -33,7 +33,7 @@ prog prueba
 		fd
 	fin
 
-func my_function(b: flujo de entrada de entero) dev (a:entero)
+func my_function() dev (a:entero)
 	prin
 		escribir pi
 	fin

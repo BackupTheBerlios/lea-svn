@@ -49,7 +49,7 @@
 %token CHAR_VAL
 %token STR_VAL
 
-/*%type <no>			program prog_header algorithm function procedure alg_header func_header
+/*%type <no>			program prog_header algorithm function procedure alg_header func_header 
 %type <no>			proc_header interface_block in_var_dcl out_var_dcl inout_var_dcl 
 %type <no>			declarations_block consts_block const_dcl_list types_block vars_block 
 %type <no>			sentence_list_block sentence if_statement output_statement input_statement register
@@ -121,7 +121,7 @@ alg_header:
 ;
 
 func_header:
-	FUNC ID '(' in_arg_list ')'  DEV '(' out_arg_list ')' '\n'
+	FUNC ID '(' in_arg_list ')'  DEV '(' out_var_dcl ')' '\n'
 		{  }
 ;
 
