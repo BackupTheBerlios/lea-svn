@@ -5,10 +5,14 @@ TODO List
 The structure of our language processor, our interpreter, is the following:
 
 User-input/code ---strings----> 
-	Lexical analyzer ----tokens--->
+
+	lexical analyzer ----tokens--->
+		
 		grammatical parser ----structures---->
-			tree-generator ----parse-tree/symbol-table---->
-				execution-unit.
+			
+			tree generator ----parse-tree/symbol-table---->
+				
+				execution unit.
 
 
 1. Lexical analyzer
