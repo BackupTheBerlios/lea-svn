@@ -8,9 +8,9 @@ User-input/code ---strings---->
 
 	lexical analyzer ----tokens--->
 		
-		grammatical parser ----structures---->
+		grammatical parser ----parse-tree---->
 			
-			tree generator ----parse-tree/symbol-table---->
+			tree generator ----symbol-table---->
 				
 				execution unit.
 
