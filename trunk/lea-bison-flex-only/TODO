@@ -35,7 +35,10 @@ The structure of our language processor, our interpreter, is the following:
 2. Grammatical parser
 #####################
  ----> Mostly done
- 
+
+ @  Reserved words are not being managed
+	We haven't implemented this yet
+
  @ No error recovery yet
 	Pretty similar problem as in the Lexical parser, applied to grammatics.
 	

@@ -60,7 +60,7 @@
 */
 
 /**
- * Note: to generate a list of rules as the following one, just execute $ awk -f awk lea.y
+ * Note: to generate a list of rules as the following one, just execute $ ACTION=print_rules ./handy.awk lea.y
  
 program prog_header library algorithm function procedure alg_header func_header proc_header interface_block proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list in_var_dcl out_var_dcl inout_var_dcl id_list array_dimensions int_val_list int_id_val declarations_block consts_block const_dcl_list types_block types_dcl_list str_list vars_block vars_dcl register sentence_list_block sentence_list sentence if_statement cond_start elif_statement elif_statement_list assign_statement mult_assign mult_assign_list mult_assign_statement output_input_statement while_loop fromto_assign_statement fromto_loop function_call variable_call struct_call variable_list procedure_call expr_list expr_bool expr EPSILON
  */
@@ -83,7 +83,7 @@ program:
 	declarations_block
 	sentence_list_block
 	library
-		{ $$ = TRprogram($1, $2, $3); }
+		{ $$ = TRprogram($1, $2, $3, $4); }
 ;
 
 prog_header:
@@ -107,7 +107,7 @@ algorithm:
 	interface_block
 	declarations_block
 	sentence_list_block
-		{ $$ = TRalgorithm($1,$2, $3, $4); }
+		{ $$ = TRalgorithm($1, $2, $3, $4); }
 ;
 
 function:
@@ -154,18 +154,18 @@ proc_arg:
 	EPSILON
 		{ $$ = NULL; }
 	| IN in_arg_list 
-		{ $$ = $2; }
+		{ $$ = TRproc_arg_in($2); }
 	| OUT out_arg_list
-		{ $$ = $2; }
+		{ $$ = TRproc_arg_out($2); }
 	| INOUT inout_arg_list
-		{ $$ = $2; }
+		{ $$ = TRproc_arg_inout($2); }
 ;
 
 proc_arg_list:
 	proc_arg_list ';' proc_arg
 		{ $$ = TRproc_arg_list($1, $3);  }
 	| proc_arg
-		{ $$ = TRproc_arg_list(NULL, $3); }
+		{ $$ = TRproc_arg_list(NULL, $1); }
 ;
 
 in_arg_list:
@@ -174,7 +174,7 @@ in_arg_list:
 	| in_arg_list ',' in_var_dcl
 		{ $$ = TRin_arg_list($1, $3); }
 	| in_var_dcl
-		{ $$ = TRin_arg_list(NULL, $3); }
+		{ $$ = TRin_arg_list(NULL, $1); }
 ;
 
 out_arg_list:
@@ -183,7 +183,7 @@ out_arg_list:
 	| out_arg_list ',' out_var_dcl
 		{ $$ = TRout_arg_list($1, $3); }
 	| out_var_dcl
-		{ $$ = TRout_arg_list(NULL, $3); }
+		{ $$ = TRout_arg_list(NULL, $1); }
 ;
 
 inout_arg_list:
@@ -192,7 +192,7 @@ inout_arg_list:
 	| inout_arg_list ',' inout_var_dcl
 		{ $$ = TRinout_arg_list($1, $3); }
 	| inout_var_dcl
-		{ $$ = TRinout_arg_list(NULL, $3); }
+		{ $$ = TRinout_arg_list(NULL, $1); }
 ;
 
 in_var_dcl:
@@ -316,7 +316,7 @@ types_dcl_list:
 		{ $$ = TRtypes_dcl_list_array($1, $2, $5, $7); }
 	| types_dcl_list
 	id_list ':' register
-		{ $$ = TRtypes_dcl_list($1, $2, $4); }
+		{ $$ = TRtypes_dcl_list_reg($1, $2, $4); }
 ;
 
 str_list:
@@ -342,7 +342,7 @@ vars_dcl:
 		{ $$ = TRvars_dcl_var($1, $2, $4, NULL); }
 	| vars_dcl
 	id_list ':' ID OF ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, $5); }
+		{ $$ = TRvars_dcl_var($1, $2, $4, $6); }
 	| vars_dcl
 	id_list ':' ARRAY array_dimensions OF ID '\n'
 		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
@@ -388,7 +388,7 @@ sentence:
 	| assign_statement '\n'
 		{ $$ = TRsentence_assign($1); }
 	| mult_assign_statement
-		{ $$ = TRsentence_mult_assign($1); }
+		{ $$ = TRsentence_mult($1); }
 	| output_input_statement
 		{ $$ = TRsentence_io($1); }
 	| while_loop
@@ -425,14 +425,14 @@ cond_start:
 elif_statement:
 	'|' expr_bool cond_start
 		sentence_list
-		{ $$ = TRelif_statement($1, $3); }
+		{ $$ = TRelif_statement($2, $4); }
 ;
 
 elif_statement_list:
-	elif_statement
-		{ $$ = TRelif_statement_list(NULL, $1); }
-	| elif_statement_list elif_statement
+	elif_statement_list elif_statement
 		{ $$ = TRelif_statement_list($1, $2); }
+	| elif_statement
+		{ $$ = TRelif_statement_list(NULL, $1); }
 ;
 
 assign_statement:
