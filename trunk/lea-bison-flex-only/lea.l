@@ -100,9 +100,6 @@ fin						{ printf("END\n"); return END;		}
 
 [ \t]+de[ \t]+			{ printf("OF\n"); return OF;		}
 
-escribir				{ printf("PRINT\n"); return PRINT;		}
-leer					{ printf("READ\n"); return READ;		}
-
 si						{ printf("IF\n"); return IF;		}
 otras					{ printf("ELSE\n"); return ELSE;		}
 nula					{ printf("IS_NULL\n"); return IS_NULL;	}

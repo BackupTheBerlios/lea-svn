@@ -41,7 +41,7 @@
 }*/
 
 %token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START OF
-%token PRINT READ IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID IS_NULL ARRAY REG ENDREG
+%token IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID IS_NULL ARRAY REG ENDREG
 
 %token INT_VAL
 %token BOOL_VAL
@@ -52,7 +52,7 @@
 /*%type <no>			program prog_header algorithm function procedure alg_header func_header 
 %type <no>			proc_header interface_block in_var_dcl out_var_dcl inout_var_dcl 
 %type <no>			declarations_block consts_block const_dcl_list types_block vars_block 
-%type <no>			sentence_list_block sentence if_statement output_statement input_statement register
+%type <no>			sentence_list_block sentence if_statement output_input_statement register
 %type <no>			while_loop fromto_assign_statement fromto_loop function_call procedure_call expr expr_bool
 %type <nl>			library proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list id_list
 %type <nl>			array_dimensions int_val_list types_dcl str_list vars_dcl sentence_list elif_statement
@@ -179,6 +179,8 @@ inout_arg_list : /* empty */
 in_var_dcl:
 	id_list   ':' ID
 		{  }
+	| id_list ':' ID OF ID
+		{  }
 	| id_list ':' ID OF IN_STREAM ID
 		{  }
 	| id_list  ':' ARRAY array_dimensions OF ID
@@ -188,6 +190,8 @@ in_var_dcl:
 out_var_dcl:
 	id_list   ':' ID
 		{  }
+	| id_list ':' ID OF ID
+		{  }
 	| id_list ':' ID OF OUT_STREAM ID
 		{  }
 	| id_list ':' ARRAY array_dimensions OF ID
@@ -196,6 +200,8 @@ out_var_dcl:
 
 inout_var_dcl:
 	id_list   ':' ID
+		{  }
+	| id_list ':' ID OF ID
 		{  }
 	| id_list ':' ID OF INOUT_STREAM ID
 		{  }
@@ -336,9 +342,7 @@ sentence:
 		{  }
 	| mult_assign_statement
 		{  }
-	| input_statement
-		{  }
-	| output_statement
+	| output_input_statement
 		{  }
 	| while_loop
 		{  }
@@ -401,14 +405,10 @@ mult_assign_statement:
 		{  }
 ;
 
-output_statement:
-	PRINT expr_list '\n'
-		{  }
-;
-
-input_statement:
-	READ expr '\n'
-		{  }
+// We'll need course need to check that id = (PRINT|READ)
+output_input_statement:
+	ID expr_list '\n'
+		{ }
 ;
 
 while_loop:
@@ -449,6 +449,8 @@ expr:
 	| BOOL_VAL
 		{  }
 	| FLOAT_VAL
+		{  }
+	| STR_VAL
 		{  }
 	| ID
 		{  }
