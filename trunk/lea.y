@@ -59,16 +59,11 @@
 
 %start program
 
-/*
-
-(((-5) + 6) - (56^(5*8)))
-*/
-
 %left '-' '+'
 %left '*'  '/' '%'
 %right '^'
 %right ASSIGN
-%right '=' GE_OP LE_OP
+%right '=' GE_OP LE_OP '<' '>'
 %left AND_OP OR_OP NOT_OP
 
 %nonassoc NEG
@@ -401,22 +396,23 @@ expr_bool:
 		{ $$ = expr_bool_and_op_node($1, $3); }
 	| expr_bool OR_OP expr_bool
 		{ $$ = expr_bool_or_op_node($1, $3); }
-	| expr_bool '=' expr_bool
+	| expr '=' expr
 		{ $$ = expr_bool_eq_op_node($1, $3); }
-	| expr_bool '<' expr_bool
+	| expr '<' expr
 		{ $$ = expr_bool_l_op_node($1, $3); }
-	| expr_bool '>' expr_bool
+	| expr '>' expr
 		{ $$ = expr_bool_g_op_node($1, $3); }
-	| expr_bool LE_OP expr_bool
+	| expr LE_OP expr
 		{ $$ = expr_bool_le_op_node($1, $3); }
-	| expr_bool GE_OP expr_bool
+	| expr GE_OP expr
 		{ $$ = expr_bool_ge_op_node($1, $3); }
-	| expr_bool NOT_EQ expr_bool
+	| expr NOT_EQ expr
 		{ $$ = expr_bool_not_eq_node($1, $3); }
 	'(' expr_bool ')'
 		{ $$ = $2; }
 	| function_call
-		{ $$ = expor_bool_check_node($1); }
+		{ $$ = expr_bool_check_node($1); }
+	
 ;
 
 %%
