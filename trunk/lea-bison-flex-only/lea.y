@@ -388,11 +388,11 @@ elif_statement_list:
 ;
 
 assign_statement:
-	ID ASSIGN assign_statement
+	variable_call ASSIGN assign_statement
 		{  }
-	| ID ASSIGN expr
+	| variable_call ASSIGN expr
 		{  }
-	| ID ASSIGN mult_assign
+	| variable_call ASSIGN mult_assign
 		{  }
 ;
 
@@ -413,7 +413,7 @@ mult_assign_list:
 ;
 
 mult_assign_statement:
-	id_list ASSIGN expr_list '\n'
+	variable_list ASSIGN expr_list '\n'
 		{  }
 ;
 
@@ -449,6 +449,19 @@ function_call:
 		{  }
 ;
 
+variable_call:
+	ID array_dimensions
+		{  }
+	| ID
+		{  }
+;
+
+variable_list:
+	variable_list ',' variable_call
+		{  }
+	| variable_call
+		{  }
+;
 
 procedure_call:
 	ID '(' expr_list ')' '\n'
@@ -464,9 +477,7 @@ expr:
 		{  }
 	| STR_VAL
 		{  }
-	| ID
-		{  }
-	| ID '[' array_dimensions ']'
+	| variable_call
 		{  }
 	| expr '+' expr
 		{  }
@@ -498,9 +509,7 @@ expr_list: /* empty */
 expr_bool:
 	BOOL_VAL
 		{  }
-	| ID
-		{  }
-	| ID '[' array_dimensions ']'
+	| variable_call
 		{  }
 	| NOT_OP expr_bool
 		{  }
