@@ -187,7 +187,7 @@ fd						{ return ENDFROMTO;	}
 }
 
 %{/*
-   * Throw everything else to the parser
+   * Everything else is erroneous
    */
 %}
 .						{ lexical_error("unknown error");	}
