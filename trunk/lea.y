@@ -30,11 +30,11 @@
 %}
 
 %union {
-	int integer_val;
-	bool boolean_var;
+	int int_val;
+	bool bool_var;
 	float float_val;
 	char char_val;
-	char *string_val;
+	char *str_val;
 	node *no;
 	node_list *nl;
 }
