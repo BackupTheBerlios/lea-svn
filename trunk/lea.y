@@ -363,26 +363,22 @@ expr:
 		{ $$ = expr_bool_node($1); }
 	| FLOAT_VAL
 		{ $$ = expr_float_node($1); }
-	| CHAR_VAL
-		{ $$ = expr_char_node($1); }
-	| STR_VAL
-		{ $$ = expr_str_node($1); }
 	| ID
 		{ $$ = expr_get_id_node($1); }
 	| expr '+' expr
-		{ $$ = expr_plus_op_node($1, $3); }
+		{ $$ = expr_op_node('+', $1, $3); }
 	| expr '-' expr
-		{ $$ = expr_min_op_node($1, $3); }
+		{ $$ = expr_op_node('-', $1, $3); }
 	| expr '*' expr
-		{ $$ = expr_times_op_node($1, $3); }
+		{ $$ = expr_op_node('*', $1, $3); }
 	| expr '/' expr
-		{ $$ = expr_div_op_node($1, $3); }
+		{ $$ = expr_op_node('/', $1, $3); }
 	| expr '%' expr
-		{ $$ = expr_rest_op_node($1, $3); }
+		{ $$ = expr_op_node('%', $1, $3); }
 	| expr '^' expr
-		{ $$ = expr_pow_op_node($1, $3); }
+		{ $$ = expr_op_node('^', $1, $3); }
 	| '-' expr %prec NEG
-		{ $$ = expr_rest_op_node($1); }
+		{ $$ = expr_op_node('-', $1); }
 	| '(' expr ')'
 		{ $$ = $2; }
 	| function_call
@@ -400,28 +396,27 @@ expr_bool:
 	| ID
 		{ $$ = expr_bool_get_id_node($1); }
 	| NOT_OP expr_bool
-		{ $$ = expr_bool_not_op_node($1); }
+		{ $$ = expr_bool_op_node("NOT", $1); }
 	| expr_bool AND_OP expr_bool
-		{ $$ = expr_bool_and_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("AND", $1, $3); }
 	| expr_bool OR_OP expr_bool
-		{ $$ = expr_bool_or_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("OR", $1, $3); }
 	| expr '=' expr
-		{ $$ = expr_bool_eq_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("EQ", $1, $3); }
 	| expr '<' expr
-		{ $$ = expr_bool_l_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("L", $1, $3); }
 	| expr '>' expr
-		{ $$ = expr_bool_g_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("G", $1, $3); }
 	| expr LE_OP expr
-		{ $$ = expr_bool_le_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("LE", $1, $3); }
 	| expr GE_OP expr
-		{ $$ = expr_bool_ge_op_node($1, $3); }
+		{ $$ = expr_bool_op_node("GE", $1, $3); }
 	| expr NOT_EQ expr
-		{ $$ = expr_bool_not_eq_node($1, $3); }
+		{ $$ = expr_bool_op_node("NOT_EQ", $1, $3); }
 	'(' expr_bool ')'
 		{ $$ = $2; }
 	| function_call
 		{ $$ = expr_bool_check_node($1); }
-	
 ;
 
 %%
@@ -432,7 +427,7 @@ int main(int argc, char *argv[])
 	
 	init_table();
 	
-	if (argc>1) {
+	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "\nUnable to open source file: %s\n", argv[1]);
 			exit(1);
