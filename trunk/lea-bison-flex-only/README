@@ -35,9 +35,9 @@ cd LEA-CVS-Snapshot/ && make
 If the process finish sucessfully, a "lea" binary will be created in the working directory. You can already test
 the parser executing:
 
-$ ./lea sample-script
+$ ./lea simple-script
 
-("script" is a test script written in *syntaxically* valid LEA code)
+(I prefer sampling the simple-script, because the other one that is included, "script", is a test script written in *syntaxically* valid LEA code, mostly gramatically valid code, and usually semantically invalid code)
 
 Finally, you'll need superuser permissions to do a system-wide install of the parser. Executing the following
 command, and typing the needed password when/if asked for it,  will do it:
@@ -95,7 +95,7 @@ You can also pass to the LEA parser the path to the script you want to parse:
 $ /bin/lea </path/to/my/script-file>
 
 For example:
-$ lea sample-script
+$ lea simple-script
 
 5. Notes
 --------
