@@ -605,188 +605,189 @@
 	 * \Brief Prototypes of the (TR)translator functions
 	 */
 	// program: 
-			TRprogram($1, $2, $3, $4); 
+	Tprogram *TRprogram(Tid *, Tdeclarations_sym *, Tsentence_list *, Tmethod_sym *); 
 	// prog_header: 
-			TRprog_header($2); 
+	Tid *TRprog_header(char *);
 	// library: 
 	// 		NULL;  
-			TRlibrary_alg($1, $2); 
-			TRlibrary_func($1, $2); 
-			TRlibrary_proc($1, $2); 
+	Tmethod_sym *TRlibrary(Tmethod_sym *, Tmethod_sym *); 
 	// algorithm: 
-			TRalgorithm($1, $2, $3, $4); 
+	Tmethod_sym *TRalgorithm(Tid *, Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// function: 
-			TRfunction($1, $2, $3); 
+	Tmethod_sym *TRfunction(Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// procedure: 
-			TRprocedure($1, $2, $3); 
+	Tmethod_sym *TRprocedure(Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// alg_header: 
-			TRalg_header($2); 
+	Tid *TRalg_header(char *);
 	// func_header: 
-			TRfunc_header($2, $4, $8); 
+	Tmethod_sym *TRfunc_header(char *, Tstruct_sym_val_list *, Tstruct_sym_val *); 
 	// proc_header: 
-			TRproc_header($2, $4); 
+	Tmethod_sym *TRproc_header(char *, Tstruct_sym_val_list *); 
 	// interface_block: 
 	// 		NULL;  
-			TRinterface_block_in($2, $4); 
-			TRinterface_block_out($2, $4); 
+	Tinterface_sym *TRinterface_block_in(Tstruct_sym_val_list *, Tinterface_sym *); 
+	Tinterface_sym *TRinterface_block_out(Tstruct_sym_val_list *, Tinterface_sym *); 
 	// proc_arg: 
 	// 		NULL;  
-			TRproc_arg_in($2); 
-			TRproc_arg_out($2); 
-			TRproc_arg_inout($2); 
+	Tinterface_sym *TRproc_arg_in(Tstruct_sym_val_list *); 
+	Tinterface_sym *TRproc_arg_out(Tstruct_sym_val_list *); 
+	Tinterface_sym *TRproc_arg_inout(Tstruct_sym_val_list *); 
 	// proc_arg_list: 
-			TRproc_arg_list($1, $3);  
-			TRproc_arg_list(NULL, $1); 
+	Tinterface_sym *TRproc_arg_list(Tinterface_sym *, Tinterface_sym *);  
+// 	Tinterface_sym *TRproc_arg_list(NULL, Tinterface_sym *); 
 	// in_arg_list: 
 	// 		NULL;  
-			TRin_arg_list($1, $3); 
-			TRin_arg_list(NULL, $1); 
+	Tstruct_sym_val_list *TRin_arg_list(Tstruct_sym_val_list *, Tstruct_sym_val *); 
+// 	Tstruct_sym_val_list *TRin_arg_list(NULL, Tstruct_sym_val *); 
 	// out_arg_list: 
 	// 		NULL;  
-			TRout_arg_list($1, $3); 
-			TRout_arg_list(NULL, $1); 
+	Tstruct_sym_val_list *TRout_arg_list(Tstruct_sym_val_list *, Tstruct_sym_val *); 
+// 	Tstruct_sym_val_list *TRout_arg_list(NULL, Tstruct_sym_val *); 
 	// inout_arg_list: 
 	// 		NULL;  
-			TRinout_arg_list($1, $3); 
-			TRinout_arg_list(NULL, $1); 
+	Tstruct_sym_val_list *TRinout_arg_list(Tstruct_sym_val_list *, Tstruct_sym_val *); 
+// 	Tstruct_sym_val_list *TRinout_arg_list(NULL, Tstruct_sym_val *); 
 	// in_var_dcl: 
-			TRin_var_dcl($1, $3, NULL, NULL); 
-			TRin_var_dcl($1, $3, $5, NULL); 
-			TRin_var_dcl($1, $3, $6, $5); 
-			TRin_var_dcl_array($1, $3, $4, $6); 
+// 	Tstruct_sym_val *TRin_var_dcl(Tid_list *, char *, NULL, NULL); 
+// 	Tstruct_sym_val *TRin_var_dcl(Tid_list *, char *, char *, NULL); 
+	Tstruct_sym_val *TRin_var_dcl(Tid_list *, char *, char *, char *); 
+	Tstruct_sym_val *TRin_var_dcl_array(Tid_list *, Tint_val_list *, char *); 
 	// out_var_dcl: 
-			TRout_var_dcl($1, $3, NULL, NULL); 
-			TRout_var_dcl($1, $3, $5, NULL); 
-			TRout_var_dcl($1, $3, $6, $5); 
-			TRout_varl_dcl_array($1, $3, $4, $6); 
+// 	Tstruct_sym_val *TRout_var_dcl(Tid_list *, char *, NULL, NULL); 
+// 	Tstruct_sym_val *TRout_var_dcl(Tid_list *, char *, char *, NULL); 
+	Tstruct_sym_val *TRout_var_dcl(Tid_list *, char *, char *, char *); 
+	Tstruct_sym_val *TRout_varl_dcl_array(Tid_list *, Tint_val_list *, char *); 
 	// inout_var_dcl: 
-			TRinout_var_dcl($1, $3, NULL, NULL); 
-			TRinout_var_dcl($1, $3, $5, NULL); 
-			TRinout_var_dcl($1, $3, $6, $5); 
-			TRinout_var_dcl_array($1, $3, $4, $6) 
+// 	Tstruct_sym_val *TRinout_var_dcl(Tid_list *, char *, NULL, NULL); 
+// 	Tstruct_sym_val *TRinout_var_dcl(Tid_list *, char *, char *, NULL); 
+	Tstruct_sym_val *TRinout_var_dcl(Tid_list *, char *, char *, char *); 
+	Tstruct_sym_val *TRinout_var_dcl_array(Tid_list *, Tint_val_list *, char *); 
 	// id_list: 
-			TRid_list($1, $3); 
-			TRid_list(NULL, $1); 
+	Tid_list *TRid_list(Tid_list *, char *); 
+// 	Tid_list *TRid_list(NULL, char *); 
 	// int_val_list: 
-			TRint_val_list($1, $3); 
-			TRint_val_list(NULL, $1); 
+	Tint_val_list *TRint_val_list(Tint_val_list *, Tint_id_val *); 
+// 	Tint_val_list *TRint_val_list(NULL, Tint_id_val *); 
 	// int_id_val: 
-			TRint_id_val($1); 
+	Tint_id_val *TRint_id_val_int(char *);
+	Tint_id_val *TRint_id_val_id(char *); 
 	// declarations_block: 
-			TRdeclarations_block($1, $2, $3); 
+	Tdeclarations_sym *TRdeclarations_block($1, $2, $3); 
 	// consts_block: 
 	// 		NULL;  
 	// const_dcl_list: 
 	// 		NULL;  
-			TRconst_dcl_list_bool($1, $2, $4); 
-			TRconst_dcl_list_int($1, $2, $4); 
-			TRconst_dcl_list_float($1, $2, $4); 
-			TRconst_dcl_list_char($1, $2, $4); 
-			TRconst_dcl_list_str($1, $2, $4); 
-			TRconst_dcl_list_reg($1, $2, $4); 
+	Tstruct_sym_val_list *TRconst_dcl_list_bool($1, $2, $4); 
+	Tstruct_sym_val_list *TRconst_dcl_list_int($1, $2, $4); 
+	Tstruct_sym_val_list *TRconst_dcl_list_float($1, $2, $4); 
+	Tstruct_sym_val_list *TRconst_dcl_list_char($1, $2, $4); 
+	Tstruct_sym_val_list *TRconst_dcl_list_str($1, $2, $4); 
+	Tstruct_sym_val_list *TRconst_dcl_list_reg($1, $2, $4); 
 	// types_block: 
 	// 		NULL;  
 	// types_dcl_list: 
 	// 		NULL;  
-			TRtypes_dcl_list_enum($1, $2, $5); 
-			TRtypes_dcl_list_var($1, $2, $4, NULL); 
-			TRtypes_dcl_list_var($1, $2, $4, $6); 
-			TRtypes_dcl_list_array($1, $2, $5, $7); 
-			TRtypes_dcl_list_reg($1, $2, $4); 
+	Tstruct_sym_list *TRtypes_dcl_list_enum($1, $2, $5); 
+	Tstruct_sym_list *TRtypes_dcl_list_var($1, $2, $4, NULL); 
+	Tstruct_sym_list *TRtypes_dcl_list_var($1, $2, $4, $6); 
+	Tstruct_sym_list *TRtypes_dcl_list_array($1, $2, $5, $7); 
+	Tstruct_sym_list *TRtypes_dcl_list_reg($1, $2, $4); 
 	// str_list: 
-			TRstr_list($1, $3); 
-			TRlist(NULL, $1); 
+	Tstr_list *TRstr_list($1, $3); 
+	Tstr_list *TRlist(NULL, $1); 
 	// vars_block: 
 	// 		NULL;  
 	// vars_dcl: 
 	// 		NULL;  
-			TRvars_dcl_var($1, $2, $4, NULL); 
-			TRvars_dcl_var($1, $2, $4, $6); 
-			TRvars_dcl_array($1, $2, $5, $7); 
-			TRvars_dcl_reg($1, $2, $4); 
+	Tstruct_sym_val_list *TRvars_dcl_var($1, $2, $4, NULL); 
+	Tstruct_sym_val_list *TRvars_dcl_var($1, $2, $4, $6); 
+	Tstruct_sym_val_list *TRvars_dcl_array($1, $2, $5, $7); 
+	Tstruct_sym_val_list *TRvars_dcl_reg($1, $2, $4); 
 	// register: 
-			TRregister($3); 
-			TRregister($4); 
+	Ttype_sym *TRregister($3); 
+	Ttype_sym *TRregister($4); 
 	// sentence_list: 
 	// 		NULL;  
-			TRsentence_list($1); 
-			TRsentence_list(NULL); 
+	Tsentence_list *TRsentence_list($1); 
+	// 		NULL;  
 	// sentence: 
-			TRsentence_if($1); 
-			TRsentence_assign($1); 
-			TRsentence_mult($1); 
-			TRsentence_io($1); 
-			TRsentence_while($1); 
-			TRsentence_fromto($1); 
-			TRsentence_func($1); 
-			TRsentence_proc($1); 
+	Tsentence *TRsentence_if($1); 
+	Tsentence *TRsentence_assign($1); 
+	Tsentence *TRsentence_mult($1); 
+	Tsentence *TRsentence_io($1); 
+	Tsentence *TRsentence_while($1); 
+	Tsentence *TRsentence_fromto($1); 
+	Tsentence *TRsentence_func($1); 
+	Tsentence *TRsentence_proc($1); 
 	// if_statement: 
-			TRif_statement($2, $4, $5, $9); 
-			TRif_statement($2, $4, NULL, $8); 
+	Tsentence *TRif_statement($2, $4, $5, $9); 
+	Tsentence *TRif_statement($2, $4, NULL, $8); 
 	// elif_statement: 
-			TRelif_statement($2, $4); 
+	Telif_statement *TRelif_statement($2, $4); 
 	// elif_statement_list: 
-			TRelif_statement_list($1, $2); 
-			TRelif_statement_list(NULL, $1); 
+	Telif_statement_list *TRelif_statement_list($1, $2); 
+	Telif_statement_list *TRelif_statement_list(NULL, $1); 
 	// assign_statement: 
-			TRassign_statement_assign($1, $3); 
-			TRassign_statement_expr($1, $3); 
-			TRassign_statement_mult($1, $3); 
+	Tsentence *TRassign_statement_assign($1, $3); 
+	Tsentence *TRassign_statement_expr($1, $3); 
+	/* TODO: Tsentence *TRassign_statement_mult($1, $3); 
 	// mult_assign_list: 
 			TRmult_assign_list($1, $3); 
 			TRmult_assign_list_expr($1, $3); 
 			TRmult_assign_list_expr($1, NULL); 
-			TRmult_assign_list($1, NULL); 
+			TRmult_assign_list($1, NULL);  */
 	// mult_assign_statement: 
-			TRmult_assign_statement($1, $3); 
+	Tsentence *TRmult_assign_statement($1, $3);
 	// output_input_statement: 
-			TRoutput_input_statement($1, $2); 
+	Tsentence *TRoutput_input_statement($1, $2); 
 	// while_loop: 
-			TRwhile_loop($2, $4); 
+	Tsentence *TRwhile_loop($2, $4); 
+	// fromto_assign_statement: 
+	Tassign_statement *TRfromto_assign_statement($2, $4, $6); 
 	// fromto_loop: 
-			TRfromto_loop($2, $4, $6); 
+	Tsentence *TRfromto_loop($2, $4, $6); 
 	// function_call: 
-			TRfunction_call($1, $3); 
+	Tsentence *TRfunction_call($1, $3); 
 	// variable_call: 
-			TRvariable_call($1, $2); 
-			TRvariable_call($1, NULL); 
+	Tsentence *TRvariable_call($1, $2); 
+	Tsentence *TRvariable_call($1, NULL); 
 	// struct_call: 
-			TRstruct_call($1, $3); 
-			TRstruct_call(NULL, $1); 
+	Tsentence *TRstruct_call($1, $3); 
+	Tsentence *TRstruct_call(NULL, $1); 
 	// variable_list: 
-			TRvariable_list($1, $3); 
-			TRvariable_list(NULL, $1); 
+	Tvar_call *TRvariable_list($1, $3); 
+	Tvar_call *TRvariable_list(NULL, $1); 
 	// procedure_call: 
-			TRprocedure_call($1, $3); 
+	Tsentence *TRprocedure_call($1, $3); 
 	// expr_list: 
 	// 		NULL;  
-			TRexpr_list($1, $3); 
-			TRexpr_list(NULL, $1); 
+	Texpr_list *TRexpr_list($1, $3); 
+	Texpr_list *TRexpr_list(NULL, $1); 
 	// expr_bool: 
-			TRexpr_bool_val($1); 
-			TRexpr_bool_struct($1); 
-			TRexpr_bool($1, $2, NULL); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool($2, $1, $3); 
-			TRexpr_bool_fcall($1); 
+	Texpr_bool *TRexpr_bool_val($1); 
+	Texpr_bool *TRexpr_bool_struct($1); 
+	Texpr_bool *TRexpr_bool($1, $2, NULL); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool($2, $1, $3); 
+	Texpr_bool *TRexpr_bool_fcall($1); 
 	// expr: 
-			TRexpr_int($1); 
-			TRexpr_expr_bool($1); 
-			TRexpr_float($1); 
-			TRexpr_str($1); 
-			TRexpr_struct($1); 
-			TRexpr($2, $1, $3); 
-			TRexpr($2, $1, $3); 
-			TRexpr($2, $1, $3); 
-			TRexpr($2, $1, $3); 
-			TRexpr($2, $1, $3); 
-			TRexpr($2, $1, $3); 
-			TRexpr($1, $2, NULL); 
-			TRexpr_fcall($1); 
+	Texpr *TRexpr_int($1); 
+	Texpr *TRexpr_expr_bool($1); 
+	Texpr *TRexpr_float($1); 
+	Texpr *TRexpr_str($1); 
+	Texpr *TRexpr_struct($1); 
+	Texpr *TRexpr($2, $1, $3); 
+	Texpr *TRexpr($2, $1, $3); 
+	Texpr *TRexpr($2, $1, $3); 
+	Texpr *TRexpr($2, $1, $3); 
+	Texpr *TRexpr($2, $1, $3); 
+	Texpr *TRexpr($2, $1, $3); 
+	Texpr *TRexpr($1, $2, NULL); 
+	Texpr *TRexpr_fcall($1); 
 	#endif
