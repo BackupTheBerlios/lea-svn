@@ -4,6 +4,7 @@
  * \brief Lea lexical analyzer
  *
  * \author Eduardo Robles Elvira <edulix@iespana.es>
+ * \author GNU FLEX MAN PAGE
  *
  * This is part of Lea. Lea is free software; 
  * you can redistribute it and/or
