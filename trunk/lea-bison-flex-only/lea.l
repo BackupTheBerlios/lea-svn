@@ -46,6 +46,18 @@ ID			{L}+{H}*
 	char *string_buf_ptr;
 %}
 
+
+%{/*
+   * Eat up all C-style comments
+   */
+%}
+"/*"					{ printf("BEGIN(comment)\n"); BEGIN(comment);	}
+<comment>([^*])+		{  }
+<comment>"*"+[^*/\n]*	{  }
+<comment>"*/"			{ printf("BEGIN(INITIAL)\n"); BEGIN(INITIAL);	}
+<comment>"*/"\n			{ printf("BEGIN(INITIAL)\n"); BEGIN(INITIAL);	}
+"//".*\n				{ printf("ONE-LINE COMMENT\n"); }
+
 %{/*
    * This is for scripting  to work:
    * TODO: this should only apply when it's on the first line!
@@ -55,7 +67,6 @@ ID			{L}+{H}*
 ^"#!/"({ID}\/)*{ID}\n	{ printf("SCRIPT LINE\n"); }
 ^[ \t]*\n				{ printf("NULL LINE\n"); }
 [ \t]+					{  }
-
 
 prog					{ printf("PROG\n"); return PROG;		}
 alg						{ printf("ALG\n"); return ALG;		}
@@ -81,6 +92,8 @@ entsal[ \t]+			{ printf("INOUT\n"); return INOUT;		}
 cons					{ printf("CONSTS\n"); return CONSTS;	}
 tipos					{ printf("TYPES\n"); return TYPES;		}
 tabla					{ printf("ARRAY\n"); return ARRAY;		}
+reg						{ printf("REG\n"); return REG;			}
+freg					{ printf("ENDREG\n"); return ENDREG;	}
 var						{ printf("VARS\n"); return VARS;		}
 prin					{ printf("START\n"); return START;		}
 fin						{ printf("END\n"); return END;		}

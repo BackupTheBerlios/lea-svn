@@ -40,8 +40,8 @@
 	node_list *nl;
 }*/
 
-%token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START END OF
-%token PRINT READ IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID IS_NULL ARRAY
+%token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START OF
+%token PRINT READ IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID IS_NULL ARRAY REG ENDREG
 
 %token INT_VAL
 %token BOOL_VAL
@@ -52,11 +52,11 @@
 /*%type <no>			program prog_header algorithm function procedure alg_header func_header
 %type <no>			proc_header interface_block in_var_dcl out_var_dcl inout_var_dcl 
 %type <no>			declarations_block consts_block const_dcl_list types_block vars_block 
-%type <no>			sentence_list_block sentence if_statement output_statement input_statement
+%type <no>			sentence_list_block sentence if_statement output_statement input_statement register
 %type <no>			while_loop fromto_assign_statement fromto_loop function_call procedure_call expr expr_bool
 %type <nl>			library proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list id_list
 %type <nl>			array_dimensions int_val_list types_dcl str_list vars_dcl sentence_list elif_statement
-%type <nl>			elif_statement_list assign_statement mult_assign_statement expr_list
+%type <nl>			elif_statement_list assign_statement mult_assign_statement expr_list mult_assign mult_assign_list
 */
 %start program
 
@@ -251,6 +251,9 @@ const_dcl_list: /* empty */
 	| const_dcl_list
 	id_list ':' STR_VAL '\n'
 		{  }
+	| const_dcl_list
+	id_list ':' register
+		{  }
 ;
 
 types_block: /* empty */
@@ -270,6 +273,9 @@ types_dcl_list: /* empty */
 		{  }
 	| types_dcl_list
 	id_list ':' ARRAY array_dimensions OF ID '\n'
+		{  }
+	| types_dcl_list
+	id_list ':' register
 		{  }
 ;
 
@@ -294,7 +300,16 @@ vars_dcl: /* empty */
 	| vars_dcl
 	id_list ':' ARRAY array_dimensions OF ID '\n'
 		{  }
+	| vars_dcl
+	id_list ':' register
+		{  }
 ;
+
+register:
+	REG '\n'
+	vars_dcl
+	ENDREG '\n'
+		{  }
 
 sentence_list_block:
 	START '\n'
@@ -359,7 +374,23 @@ assign_statement:
 		{  }
 	| ID ASSIGN expr
 		{  }
-	| ID ASSIGN '{' expr_list '}'
+	| ID ASSIGN mult_assign
+		{  }
+;
+
+mult_assign:
+	'{' mult_assign_list '}'
+		{  }
+;
+
+mult_assign_list:
+	mult_assign ',' mult_assign_list
+		{  }
+	| expr ',' mult_assign_list
+		{  }
+	| expr
+		{  }
+	| mult_assign
 		{  }
 ;
 
