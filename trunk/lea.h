@@ -47,6 +47,7 @@
 	 * Types of values for a karnaugh map entry
 	 */
 	typedef enum{F=0, T=1, I=2} kbool;
+	typedef bool node;
 	
 	/**
 	 * Symbols table

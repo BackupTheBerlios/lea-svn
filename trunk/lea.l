@@ -25,8 +25,9 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "y.tab.h"
-	#include "lea.lex.h"
+	//#include "lea.lex.h"
 	#define MAX_STR_CONST 1024
+	#define lexical_error(a) printf("%s\n", a)
 %}
 
 %option always-interactive
@@ -45,24 +46,27 @@ ID			{L}+{H}*
 	char *string_buf_ptr;
 %}
 
-%{/*
-   * This is for scripting  to work:
-   * TODO: this should only apply when it's on the first line!
-   * TODO: this should determine login_prompt var!
-   */
-%}
-^"#!/"({ID}\/)*{ID}$	{  }
-[ \t]+					{  }
 
 %{/*
    * Eat up all C-style comments
    */
 %}
 "/*"					{ BEGIN(comment);	}
-<comment>([^*])+		{ }
-<comment>"*"+[^*/\n]*	{ }
-<comment>"*"+"/"		{ BEGIN(INITIAL);	}
-"//".*$					{ }
+<comment>([^*])+		{  }
+<comment>"*"+[^*/\n]*	{  }
+<comment>"*/"			{ BEGIN(INITIAL);	}
+<comment>"*/"\n			{ BEGIN(INITIAL);	}
+"//".*\n				{ }
+
+%{/*
+   * This is for scripting  to work:
+   * TODO: this should only apply when it's on the first line!
+   * TODO: this should determine login_prompt var!
+   */
+%}
+^"#!/"({ID}\/)*{ID}\n	{ }
+^[ \t]*\n				{ }
+[ \t]+					{  }
 
 prog					{ return PROG;		}
 alg						{ return ALG;		}
@@ -87,14 +91,14 @@ entsal[ \t]+			{ return INOUT;		}
 
 cons					{ return CONSTS;	}
 tipos					{ return TYPES;		}
+tabla					{ return ARRAY;		}
+reg						{ return REG;			}
+freg					{ return ENDREG;	}
 var						{ return VARS;		}
 prin					{ return START;		}
 fin						{ return END;		}
 
 [ \t]+de[ \t]+			{ return OF;		}
-
-escribir				{ return PRINT;		}
-leer					{ return READ;		}
 
 si						{ return IF;		}
 otras					{ return ELSE;		}
@@ -108,7 +112,7 @@ desde					{ return FROM;		}
 hasta					{ return TO;		}
 fd						{ return ENDFROMTO;	}
 
-[+\-*/%^()<>:\[\]|=,\n]	{ return yytext[0];	}
+[+\-*/%^()<>:\[\]|=,\n{}]	{ return yytext[0];	}
 ;						{ return '\n';		}
 "y"						{ return AND_OP;	}
 "o"						{ return OR_OP;		}
@@ -119,26 +123,26 @@ fd						{ return ENDFROMTO;	}
 "<>"					{ return NOT_EQ;	}
 
 verdadero				{
-							yylval.bool_val = true;
+							//yylval.bool_val = true;
 							return BOOL_VAL;
 						}
 falso					{
-							yylval.bool_val = false;
+							//yylval.bool_val = false;
 							return BOOL_VAL;
 						}
 
 {D}+					{
-							yylval.int_val = atoi(yytext);
+							//yylval.int_val = atoi(yytext);
 							return INT_VAL;
 }
 
-{D}+.{D}*				{
-							yylval.float_val = atof(yytext);
+{D}+\.{D}*				{
+							//yylval.float_val = atof(yytext);
 							return FLOAT_VAL;
 }
 
 \'[^\']\'				{
-							yylval.char_val = strdup(yytext[1]);
+							//yylval.char_val = strdup(yytext[1]);
 							return CHAR_VAL;
 }
 \'\\[0-7]{1,3}\'		{
@@ -149,7 +153,7 @@ falso					{
 							if (result > 0xff)
 								lexical_error("constant out of range");
 							
-							yylval.char_val = result;
+							//yylval.char_val = result;
 							return CHAR_VAL;
 }
 
@@ -158,29 +162,29 @@ falso					{
 }
 
 \'\\n\'					{
-							yylval.char_val = '\n';
+							//yylval.char_val = '\n';
 							return CHAR_VAL;
 }
 
 \\t						{
-							yylval.char_val = '\t';
+							//yylval.char_val = '\t';
 							return CHAR_VAL;
 }
 \\r						{
-							yylval.char_val = '\r';
+							//yylval.char_val = '\r';
 							return CHAR_VAL;
 }
 \\b						{
-							yylval.char_val = '\b';
+							//yylval.char_val = '\b';
 							return CHAR_VAL;
 }
 \\f						{
-							yylval.char_val = '\f';
+							//yylval.char_val = '\f';
 							return CHAR_VAL;
 }
 
 {ID}					{
-							yylval.str_val = strdup(yytext);
+							//yylval.str_val = strdup(yytext);
 							return ID;
 }
 
@@ -192,7 +196,7 @@ falso					{
 <str>\"					{
 							BEGIN(INITIAL);
 							*string_buf_ptr = '\0';
-							yylval.str_val = string_buf_ptr;
+							//yylval.str_val = string_buf_ptr;
 							return STR_VAL;
 }
 
@@ -208,7 +212,7 @@ falso					{
 							if (result > 0xff)
 								lexical_error("constant out of range");
 							
-							*string_buf_ptr++ = resultad;
+							*string_buf_ptr++ = result;
 }
 
 <str>\\[0-9]+			{
