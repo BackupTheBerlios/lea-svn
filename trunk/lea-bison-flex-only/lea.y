@@ -55,14 +55,14 @@
 %type <no>			sentence_list_block sentence if_statement output_input_statement register
 %type <no>			while_loop fromto_assign_statement fromto_loop function_call procedure_call expr expr_bool
 %type <nl>			library proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list id_list
-%type <nl>			array_dimensions int_val_list types_dcl str_list vars_dcl sentence_list elif_statement
+%type <nl>			array_dimensions int_id_val_list types_dcl str_list vars_dcl sentence_list elif_statement
 %type <nl>			elif_statement_list assign_statement mult_assign_statement expr_list mult_assign mult_assign_list
 */
 
 /**
  * Note: to generate a list of rules as the following one, just execute $ ACTION=print_rules ./handy.awk lea.y
  
-program prog_header library algorithm function procedure alg_header func_header proc_header interface_block proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list in_var_dcl out_var_dcl inout_var_dcl id_list array_dimensions int_val_list int_id_val declarations_block consts_block const_dcl_list types_block types_dcl_list str_list vars_block vars_dcl register sentence_list_block sentence_list sentence if_statement cond_start elif_statement elif_statement_list assign_statement mult_assign mult_assign_list mult_assign_statement output_input_statement while_loop fromto_assign_statement fromto_loop function_call variable_call struct_call variable_list procedure_call expr_list expr_bool expr EPSILON
+program prog_header library algorithm function procedure alg_header func_header proc_header interface_block proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list in_var_dcl out_var_dcl inout_var_dcl id_list array_dimensions int_id_val_list int_id_val declarations_block consts_block const_dcl_list types_block types_dcl_list str_list vars_block vars_dcl register sentence_list_block sentence_list sentence if_statement cond_start elif_statement elif_statement_list assign_statement mult_assign mult_assign_list mult_assign_statement output_input_statement while_loop fromto_assign_statement fromto_loop function_call variable_call struct_call variable_list procedure_call expr_list expr_bool expr EPSILON
  */
 
 %start program
@@ -236,12 +236,12 @@ id_list:
 ;
 
 array_dimensions:
-	'[' int_val_list ']'
+	'[' int_id_val_list ']'
 		{ $$ = $2; }
 ;
 
 int_val_list:
-	int_val_list ',' int_id_val
+	int_id_val_list ',' int_id_val
 		{ $$ = TRint_val_list($1, $3); }
 	| int_id_val
 		{ $$ = TRint_val_list(NULL, $1); }
@@ -323,7 +323,7 @@ str_list:
 	str_list ',' ID
 		{ $$ = TRstr_list($1, $3); }
 	| ID
-		{ $$ = TRlist(NULL, $1); }
+		{ $$ = TRstr_list(NULL, $1); }
 ;
 
 vars_block:
@@ -390,28 +390,28 @@ sentence_list:
 	EPSILON
 		{ $$ = NULL; }
 	| sentence_list sentence
-		{ $$ = TRsentence_list($1); }
+		{ $$ = TRsentence_list($1, $2); }
 	| IS_NULL '\n'
 		{ $$ = NULL; }
 ;
 
 sentence:
 	if_statement
-		{ $$ = TRsentence_if($1); }
+		{ $$ = $1; }
 	| assign_statement '\n'
-		{ $$ = TRsentence_assign($1); }
+		{ $$ = $1; }
 	| mult_assign_statement
-		{ $$ = TRsentence_mult($1); }
+		{ $$ = $1; }
 	| output_input_statement
-		{ $$ = TRsentence_io($1); }
+		{ $$ = $1; }
 	| while_loop
-		{ $$ = TRsentence_while($1); }
+		{ $$ = $1; }
 	| fromto_loop
-		{ $$ = TRsentence_fromto($1); }
+		{ $$ = $1; }
 	| function_call '\n'
-		{ $$ = TRsentence_func($1); }
+		{ $$ = $1; }
 	| procedure_call
-		{ $$ = TRsentence_proc($1); }
+		{ $$ = $1; }
 ;
 
 if_statement:
