@@ -35,7 +35,7 @@ User-input/code ---strings---->
 #####################
  ----> Mostly done
  @ No error recovery yet
-	Pretty similar problem as in the Lexical parser, applied to gramatics.
+	Pretty similar problem as in the Lexical parser, applied to grammatics.
 	
  @ Support debuggers ?
  	Idem as in the Lexical Parser analogue point.
