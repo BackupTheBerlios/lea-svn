@@ -82,6 +82,11 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 		df: reg
 			v: entero
 		freg
+		df:
+			reg
+				v: entero
+				file: fichero de real
+			freg
 	prin
 		a := {1, 2, 3}
 		a[3] := 2
