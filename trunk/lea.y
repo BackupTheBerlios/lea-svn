@@ -214,6 +214,8 @@ consts_block: /* empty */
 const_dcl:
 	id_list   ':' BOOL_VAL '\n'
 		{ $$ = dcl_bool_const($1, $3); }
+	| id_list ':' INT_VAL '\n'
+		{ $$ = dcl_int_const($1, $3); }
 	| id_list ':' FLOAT_VAL '\n'
 		{ $$ = dcl_float_const($1, $3); }
 	| id_list ':' CHAR_VAL '\n'
