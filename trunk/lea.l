@@ -1,7 +1,7 @@
 %{
 /**
  * \file lea.y
- * \brief Lea Lexical analyzer
+ * \brief Lea lexical analyzer
  *
  * \author Eduardo Robles Elvira <edulix@iespana.es>
  *
@@ -25,19 +25,25 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "y.tab.h"
+	//#include "lea.lex.h"
+	#define MAX_STR_CONST 1024
 %}
 
 %option always-interactive
 
-%x comment
+%x comment str
+%s proc
 
 D			[0-9]
 L			[a-zA-Z_]
-H			[a-fA-F0-9]
+H			[a-zA-Z0-9_]
 ID			{L}+{H}*
 
 %%
-
+%{
+	char string_buf[MAX_STR_CONST];
+	char *string_buf_ptr;
+%}
 
 %{/*
    * This is for scripting  to work:
@@ -45,82 +51,145 @@ ID			{L}+{H}*
    * TODO: this should determine login_prompt var!
    */
 %}
-^"#!/"({ID}\/)*{ID}$ /* empty */
-
-
-%{/*
-   * Eat up all C-style comments
-   */
-%}
-"/*" {
-	BEGIN(comment);
-}
-
+^"#!/"({ID}\/)*{ID}$	{  }
+[ \t]+					{  }
 
 %{/*
    * Eat up all C-style comments
    */
 %}
-<comment>([^*])+ /* empty */
+"/*"					{ BEGIN(comment);	}
+<comment>([^*])+		{ }
+<comment>"*"+[^*/\n]*	{ }
+<comment>"*"+"/"		{ BEGIN(INITIAL);	}
+"//".*$					{ }
 
-<comment>"*"+[^*/\n]* /* empty */
+alg						{ return ALG;		}
 
-<comment>"*"+"/" {
-	BEGIN(INITIAL);
+func					{ return FUNC;		}
+entrada[ \t]+de[ \t]+	{ return IN_STREAM;	}
+salida[ \t]+de[ \t]+	{ return OUT_STREAM; }
+dev						{ return DEV;		}
+
+proc					{
+							BEGIN(proc);
+							return PROC;
+						}
+<proc>;					{ return yytext[0];	}
+<proc>ent[ \t]+			{ return ENT;		}
+<proc>sal[ \t]+			{ return SAL;		}
+<proc>entsal[ \t]+		{ return ENTSAL;	}
+<proc>fin				{
+							BEGIN(INITIAL);
+							return END;
+						}
+
+cons					{ return CONS;		}
+tipos					{ return TYPES;		}
+var						{ return VAR;		}
+prin					{ return START;		}
+fin						{ return END;		}
+
+entero					{ return INT;		}
+logico					{ return BOOL;		}
+verdadero				{ return BTRUE;		}
+falso					{ return BFALSE;	}
+caracter				{ return CHAR;		}
+cadena					{ return STRING;	}
+real					{ return FLOAT;		}
+flujo[ \t]+de[ \t]+		{ return STREAM;	}
+tabla					{ return ARRAY;		}
+[ \t]+de[ \t]+			{ return ARRAY_OF;	}
+
+escribir				{ return PRINT;		}
+leer					{ return READ;		}
+
+si						{ return IF;		}
+otras					{ return ELSE;		}
+nula					{ return NULL;		}
+fsi						{ return ENDIF;		}
+
+mientras				{ return WHILE;		}
+fm						{ return ENDWHILE;	}
+
+desde					{ return FROM;		}
+hasta					{ return TO;		}
+fd						{ return ENDFROMTO;	}
+
+[+\-*/%^()<>:\[\]|,\n]	{ return yytext[0];	}
+;						{ return '\n';		}
+"y"						{ return AND_OP;	}
+"o"						{ return OR_OP;		}
+"no"					{ return NOT_OP;	}
+":=" 					{ return ASSIGN;	}
+"<="					{ return LE_OP		}
+">="					{ return GE_OP		}
+
+{D}+					{
+							yylval.integer_val = atoi(yytext);
+							return INT;
 }
 
-
-%{/*
-   * Eat up blank spaces, also
-   */
-%}
-[ \t]+ /* empty */
-
-
-%{/*
-   * Integer value recogniced
-   */
-%}
-[0-9]+ {
-	yylval.integer_val = atoi(yytext);
-	return INT;
+{D}+.{D}*				{
+							yylval.float_val = atof(yytext);
+							return FLOAT;
 }
 
-
-%{/*
-   * Algebraical operator recogniced
-   */
-%}
-[+\-*/()\n] {
-	return yytext[0];
+{ID}					{
+							yylval.string_name = strdup(yytext);
+							return INT_VAR;
 }
 
-
-%{/*
-   * Assignation operator recogniced
-   */
-%}
-":=" {
-	return EQ;
+\"						{
+							string_buf_ptr = string_buf;
+							BEGIN(str);
 }
 
-
-%{/*
-   * Variable identifier recogniced
-   */
-%}
-{ID} {
-	yylval.string_name = strdup(yytext);
-	return INT_VAR;
+<str>\"					{
+							BEGIN(INITIAL);
+							*string_buf_ptr = '\0';
+							yylval.string = string_buf_ptr;
+							return STR;
 }
 
+<str>\n					{
+							lexical_error("constant string without an end");
+}
+
+<str>\\[0-7]{1,3}		{
+							int result;
+							
+							sscanf(yytext + 1, "%o", &result);
+							
+							if (result > 0xff)
+								lexical_error("constant out of range");
+							
+							*string_buf_ptr++ = resultado;
+}
+
+<str>\\[0-9]+			{
+							lexical_error("erroneous escape sequence");
+}
+
+<str>\\n				{ *string_buf_ptr++ = '\n'; }
+<str>\\t				{ *string_buf_ptr++ = '\t'; }
+<str>\\r				{ *string_buf_ptr++ = '\r'; }
+<str>\\b				{ *string_buf_ptr++ = '\b'; }
+<str>\\f				{ *string_buf_ptr++ = '\f'; }
+
+<str>\\(.|\n)			{ *string_buf_ptr++ = yytext[1]; }
+
+<str>[^\\\n\"]+			{
+							char *yptr = yytext;
+							
+							while (*yptr)
+								*string_buf_ptr++ = *yptr++;
+}
 
 %{/*
    * Throw everything else to the parser
    */
 %}
-. {
-	return yytext;
-}
+.						{ lexical_error("unknown error");	}
 
 %%
