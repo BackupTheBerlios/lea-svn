@@ -83,7 +83,7 @@ proc					{
 <proc>;					{ printf("' "); return ';';		}
 <proc>fin				{
 							BEGIN(INITIAL);
-							printf("END "); return END;
+							printf("END \n"); return END;
 						}
 ent[ \t]+				{ printf("IN "); return IN;		}
 sal[ \t]+				{ printf("OUT "); return OUT;		}

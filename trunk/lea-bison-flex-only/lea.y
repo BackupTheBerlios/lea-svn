@@ -84,7 +84,9 @@ prog_header:
 		{  }
 ;
 
-library: /* empty */
+library:
+	EPSILON
+		{  }
 	| library algorithm
 		{  }
 	| library function
@@ -130,7 +132,9 @@ proc_header:
 		{  }
 ;
 
-interface_block: /* empty */
+interface_block:
+	EPSILON
+		{  }
 	| IN in_arg_list '\n'
 	interface_block
 		{  }
@@ -139,7 +143,9 @@ interface_block: /* empty */
 		{  }
 ;
 
-proc_arg: /* empty */
+proc_arg:
+	EPSILON
+		{  }
 	| IN in_arg_list 
 		{  }
 	| OUT out_arg_list
@@ -148,28 +154,34 @@ proc_arg: /* empty */
 		{  }
 ;
 
-proc_arg_list: /* empty */
+proc_arg_list:
 	proc_arg_list ';' proc_arg
 		{  }
 	| proc_arg
 		{  }
 ;
 
-in_arg_list : /* empty */
+in_arg_list:
+	EPSILON
+		{  }
 	| in_arg_list ',' in_var_dcl
 		{  }
 	| in_var_dcl
 		{  }
 ;
 
-out_arg_list : /* empty */
+out_arg_list:
+	EPSILON
+		{  }
 	| out_arg_list ',' out_var_dcl
 		{  }
 	| out_var_dcl
 		{  }
 ;
 
-inout_arg_list : /* empty */
+inout_arg_list:
+	EPSILON
+		{  }
 	| inout_arg_list ',' inout_var_dcl
 		{  }
 	| inout_var_dcl
@@ -242,13 +254,17 @@ declarations_block:
 		{  }
 ;
 
-consts_block: /* empty */
+consts_block:
+	EPSILON
+		{  }
 	| CONSTS '\n'
 		const_dcl_list
 		{  }
 ;
 
-const_dcl_list: /* empty */
+const_dcl_list:
+	EPSILON
+		{  }
 	| const_dcl_list
 	id_list ':' BOOL_VAL '\n'
 		{  }
@@ -269,12 +285,16 @@ const_dcl_list: /* empty */
 		{  }
 ;
 
-types_block: /* empty */
+types_block:
+	EPSILON
+		{  }
 	| TYPES '\n'
 		types_dcl_list
 		{  }
 ;
-types_dcl_list: /* empty */
+types_dcl_list:
+	EPSILON
+		{  }
 	| types_dcl_list
 	id_list ':' '(' str_list ')' '\n'
 		{  }
@@ -299,13 +319,17 @@ str_list:
 		{  }
 ;
 
-vars_block: /* empty */
+vars_block:
+	EPSILON
+		{  }
 	| VARS '\n'
 		vars_dcl
 		{  }
 ;
 
-vars_dcl: /* empty */
+vars_dcl:
+	EPSILON
+		{  }
 	| vars_dcl
 	id_list ':' ID '\n'
 		{  }
@@ -340,7 +364,9 @@ sentence_list_block:
 	END
 ;
 
-sentence_list: /* empty */
+sentence_list:
+	EPSILON
+		{  }
 	| sentence_list sentence
 		{  }
 	| IS_NULL '\n'
@@ -486,7 +512,9 @@ procedure_call:
 		{  }
 ;
 
-expr_list: /* empty */
+expr_list:
+	EPSILON
+		{  }
 	| expr_list ',' expr
 		{  }
 	| expr
@@ -551,6 +579,9 @@ expr:
 		{  }
 	| function_call
 		{  }
+;
+
+EPSILON:
 ;
 
 %%
