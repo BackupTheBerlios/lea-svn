@@ -61,7 +61,12 @@ The structure of our language processor, our interpreter, is the following:
 
 3. language translator
 ######################
- ----> Not implemented yet
+ ----> Being developed
+
+ @ Decide which type of organization will use the symbol table:
+	- Binary trees? B-trees? Hash tables? SQL DDBB (sqlite)? Linked lists (no need of separate symbol table)?
+	- Will we put all the symbols together or we'll separate local (to funcs/procs) and global symbols in different
+	tables ?
 
  @ Deal with some grammatical error exceptions
 	See the analogue point in the Grammatical parser point.
