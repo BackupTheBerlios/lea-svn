@@ -56,7 +56,7 @@
 %type <no>			while_loop fromto_loop function_call procedure_call expr expr_bool
 %type <nl>			library proc_arg_list in_arg_list out_arg_list inout_arg_list id_list types_dcl
 %type <nl>			str_list vars_dcl sentence_list elif_statement_list assign_statement 
-%type <nl>			mult_assign_statement
+%type <nl>			mult_assign_statement expr_list
 
 %start program
 
@@ -323,7 +323,7 @@ mult_assign_statement:
 ;
 
 output_statement:
-	PRINT expr '\n'
+	PRINT expr_list '\n'
 		{ $$ = output_statement_node($2); }
 ;
 
@@ -388,6 +388,11 @@ expr:
 		{ $$ = $2; }
 	| function_call
 		{ $$ = check_type_node($1); }
+;
+
+expr_list:
+	| expr expr_list
+		{ $$ = expr_list_pair($1, $2); }
 ;
 
 expr_bool:
