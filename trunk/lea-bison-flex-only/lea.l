@@ -51,12 +51,12 @@ ID			{L}+{H}*
    * Eat up all C-style comments
    */
 %}
-"/*"					{ printf("BEGIN(comment)\n"); BEGIN(comment);	}
+"/*"					{ printf("BEGIN(comment) "); BEGIN(comment);	}
 <comment>([^*])+		{  }
 <comment>"*"+[^*/\n]*	{  }
-<comment>"*/"			{ printf("BEGIN(INITIAL)\n"); BEGIN(INITIAL);	}
-<comment>"*/"\n			{ printf("BEGIN(INITIAL)\n"); BEGIN(INITIAL);	}
-"//".*\n				{ printf("ONE-LINE COMMENT\n"); }
+<comment>"*/"			{ printf("BEGIN(INITIAL) "); BEGIN(INITIAL);	}
+<comment>"*/"\n			{ printf("BEGIN(INITIAL) \n"); BEGIN(INITIAL);	}
+"//".*\n				{ printf("ONE-LINE COMMENT \n"); }
 
 %{/*
    * This is for scripting  to work:
@@ -64,87 +64,89 @@ ID			{L}+{H}*
    * TODO: this should determine login_prompt var!
    */
 %}
-^"#!/"({ID}\/)*{ID}\n	{ printf("SCRIPT LINE\n"); }
-^[ \t]*\n				{ printf("NULL LINE\n"); }
+^"#!/"({ID}\/)*{ID}\n	{ printf("SCRIPT LINE \n"); }
+^[ \t]*\n				{ printf("\nNULL LINE \n"); }
 [ \t]+					{  }
 
-prog					{ printf("PROG\n"); return PROG;		}
-alg						{ printf("ALG\n"); return ALG;		}
-func					{ printf("FUNC\n"); return FUNC;		}
-entrada[ \t]+de[ \t]+	{ printf("IN_STREAM\n"); return IN_STREAM;	}
-salida[ \t]+de[ \t]+	{ printf("OUT_STREAM\n"); return OUT_STREAM; }
-entrada[ \t]+y[ \t]+salida[ \t]+de[ \t]+	{ printf("INOUT_STREAM\n"); return INOUT_STREAM; }
-dev						{ printf("DEV\n"); return DEV;		}
+prog					{ printf("PROG "); return PROG;		}
+alg						{ printf("ALG "); return ALG;		}
+func					{ printf("FUNC "); return FUNC;		}
+entrada[ \t]+de[ \t]+	{ printf("IN_STREAM "); return IN_STREAM;	}
+salida[ \t]+de[ \t]+	{ printf("OUT_STREAM "); return OUT_STREAM; }
+entrada[ \t]+y[ \t]+salida[ \t]+de[ \t]+	{ printf("INOUT_STREAM "); return INOUT_STREAM; }
+dev						{ printf("DEV "); return DEV;		}
 
 proc					{
 							BEGIN(proc);
-							printf("PROC\n"); return PROC;
+							printf("PROC "); return PROC;
 						}
-<proc>;					{ printf("'\n"); return ';';		}
+<proc>;					{ printf("' "); return ';';		}
 <proc>fin				{
 							BEGIN(INITIAL);
-							printf("END\n"); return END;
+							printf("END "); return END;
 						}
-ent[ \t]+				{ printf("IN\n"); return IN;		}
-sal[ \t]+				{ printf("OUT\n"); return OUT;		}
-entsal[ \t]+			{ printf("INOUT\n"); return INOUT;		}
-ent\/sal[ \t]+			{ printf("INOUT\n"); return INOUT;		}
+ent[ \t]+				{ printf("IN "); return IN;		}
+sal[ \t]+				{ printf("OUT "); return OUT;		}
+entsal[ \t]+			{ printf("INOUT "); return INOUT;		}
+ent\/sal[ \t]+			{ printf("INOUT "); return INOUT;		}
 
-cons					{ printf("CONSTS\n"); return CONSTS;	}
-tipos					{ printf("TYPES\n"); return TYPES;		}
-tabla					{ printf("ARRAY\n"); return ARRAY;		}
-reg						{ printf("REG\n"); return REG;			}
-freg					{ printf("ENDREG\n"); return ENDREG;	}
-var						{ printf("VARS\n"); return VARS;		}
-prin					{ printf("START\n"); return START;		}
+cons					{ printf("CONSTS "); return CONSTS;	}
+tipos					{ printf("TYPES "); return TYPES;		}
+tabla					{ printf("ARRAY "); return ARRAY;		}
+reg						{ printf("REG "); return REG;			}
+freg					{ printf("ENDREG "); return ENDREG;	}
+var						{ printf("VARS "); return VARS;		}
+prin					{ printf("START "); return START;		}
 fin						{ printf("END\n"); return END;		}
 
-[ \t]+de[ \t]+			{ printf("OF\n"); return OF;		}
+[ \t]+de[ \t]+			{ printf("OF "); return OF;		}
 
-si						{ printf("IF\n"); return IF;		}
-otras					{ printf("ELSE\n"); return ELSE;		}
-nula					{ printf("IS_NULL\n"); return IS_NULL;	}
-fsi						{ printf("ENDIF\n"); return ENDIF;		}
+si						{ printf("IF "); return IF;		}
+otras					{ printf("ELSE "); return ELSE;		}
+nula					{ printf("IS_NULL "); return IS_NULL;	}
+fsi						{ printf("ENDIF "); return ENDIF;		}
 
-mientras				{ printf("WHILE\n"); return WHILE;		}
-fm						{ printf("ENDWHILE\n"); return ENDWHILE;	}
+mientras				{ printf("WHILE "); return WHILE;		}
+fm						{ printf("ENDWHILE "); return ENDWHILE;	}
 
-desde					{ printf("FROM\n"); return FROM;		}
-hasta					{ printf("TO\n"); return TO;		}
-fd						{ printf("ENDFROMTO\n"); return ENDFROMTO;	}
+desde					{ printf("FROM "); return FROM;		}
+hasta					{ printf("TO "); return TO;		}
+fd						{ printf("ENDFROMTO "); return ENDFROMTO;	}
 
-[+\-*/%^()<>:\[\]\.|=,\n{}]	{ printf("%d\n", yytext[0]); return yytext[0];	}
-;						{ printf("\n\n"); return '\n';		}
-"y"						{ printf("AND_OP\n"); return AND_OP;	}
-"o"						{ printf("OR_OP\n"); return OR_OP;		}
-"no"					{ printf("NOT_OP\n"); return NOT_OP;	}
-":=" 					{ printf("ASSIGN\n"); return ASSIGN;	}
-"<="					{ printf("LE_OP\n"); return LE_OP;		}
-">="					{ printf("GE_OP\n"); return GE_OP;		}
-"<>"					{ printf("NOT_EQ\n"); return NOT_EQ;	}
+[+\-*/%^()<>:\[\]\.|=,{}]	{ printf("%c ", yytext[0]); return yytext[0];	}
+
+\n						{ printf("\n"); return yytext[0];	}
+;						{ printf("\n "); return '\n';		}
+"y"						{ printf("AND_OP "); return AND_OP;	}
+"o"						{ printf("OR_OP "); return OR_OP;		}
+"no"					{ printf("NOT_OP "); return NOT_OP;	}
+":=" 					{ printf("ASSIGN "); return ASSIGN;	}
+"<="					{ printf("LE_OP "); return LE_OP;		}
+">="					{ printf("GE_OP "); return GE_OP;		}
+"<>"					{ printf("NOT_EQ "); return NOT_EQ;	}
 
 verdadero				{
 							//yylval.bool_val = true;
-							printf("BOOL_VAL\n"); return BOOL_VAL;
+							printf("BOOL_VAL "); return BOOL_VAL;
 						}
 falso					{
 							//yylval.bool_val = false;
-							printf("BOOL_VAL\n"); return BOOL_VAL;
+							printf("BOOL_VAL "); return BOOL_VAL;
 						}
 
 {D}+					{
 							//yylval.int_val = atoi(yytext);
-							printf("INT_VAL\n"); return INT_VAL;
+							printf("INT_VAL "); return INT_VAL;
 }
 
 {D}+\.{D}*				{
 							//yylval.float_val = atof(yytext);
-							printf("FLOAT_VAL\n"); return FLOAT_VAL;
+							printf("FLOAT_VAL "); return FLOAT_VAL;
 }
 
 \'[^\']\'				{
 							//yylval.char_val = strdup(yytext[1]);
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \'\\[0-7]{1,3}\'		{
 							int result;
@@ -155,7 +157,7 @@ falso					{
 								lexical_error("constant out of range");
 							
 							//yylval.char_val = result;
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 
 \'\\[0-9]+\'			{
@@ -164,29 +166,29 @@ falso					{
 
 \'\\n\'					{
 							//yylval.char_val = '\n';
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 
 \\t						{
 							//yylval.char_val = '\t';
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \\r						{
 							//yylval.char_val = '\r';
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \\b						{
 							//yylval.char_val = '\b';
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \\f						{
 							//yylval.char_val = '\f';
-							printf("CHAR_VAL\n"); return CHAR_VAL;
+							printf("CHAR_VAL "); return CHAR_VAL;
 }
 
 {ID}					{
 							//yylval.str_val = strdup(yytext);
-							printf("ID\n"); return ID;
+							printf("ID "); return ID;
 }
 
 \"						{
@@ -198,7 +200,7 @@ falso					{
 							BEGIN(INITIAL);
 							*string_buf_ptr = '\0';
 							//yylval.str_val = string_buf_ptr;
-							printf("STR_VAL\n"); return STR_VAL;
+							printf("STR_VAL "); return STR_VAL;
 }
 
 <str>\n					{

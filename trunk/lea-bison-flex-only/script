@@ -100,7 +100,7 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 			fm
 		| (a > b - 1) :
 			escribir a, b-1
-		| otras:
+		|otras:
 			nula
 		fsi
 		

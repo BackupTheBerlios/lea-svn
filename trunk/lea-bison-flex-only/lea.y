@@ -222,9 +222,16 @@ array_dimensions:
 ;
 
 int_val_list:
-	int_val_list ',' INT_VAL
+	int_val_list ',' int_id_val
 		{ }
-	| INT_VAL
+	| int_id_val
+		{ }
+;
+
+int_id_val:
+	INT_VAL
+		{ }
+	| ID
 		{ }
 ;
 
