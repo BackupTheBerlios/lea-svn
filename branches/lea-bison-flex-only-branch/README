@@ -1,0 +1,104 @@
+LEA interpreter
+Eduardo Robles Elvira <edulix@iespana.es>
+http://sf.net/projects/lea
+(c) Copyright 2005
+
+Licenced under the GPL - see 'COPYING'
+
+1. Goals
+--------
+
+LEA is an interpreter written in C using Bison and Flex of a spanish pseudocode-like language of the same name.
+
+2. State
+--------
+
+At the moment of this first release, LEA is not even alpha software. It doesn't even interprete anything - only
+the parser has been developed so far.
+
+The parser is provided in debug mode, so that it prints in stdin the token types it detects. If something
+erroneous is detected in the parser code, then the parser will end printing "syntax error" in stderr.
+
+3. Installation
+---------------
+
+You have to uncompress the tarball first. In any normal Linux distribution you can do it executing the
+following command in the directory where you placed the tarball:
+
+$ tar jxf <name-of-LEA-tarball>.tar.bz2
+
+Before installing the parser, you must compile it first. You will need to have Bison and Flex installed in your
+system. In order to compile LEA, execute the following command:
+
+cd LEA-CVS-Snapshot/ && make
+
+If the process finish sucessfully, a "lea" binary will be created in the working directory. You can already test
+the parser executing:
+
+$ ./lea simple-script
+
+(I prefer sampling the simple-script, because the other one that is included, "script", is a test script written in *syntaxically* valid LEA code, mostly gramatically valid code, and usually semantically invalid code)
+
+Finally, you'll need superuser permissions to do a system-wide install of the parser. Executing the following
+command, and typing the needed password when/if asked for it,  will do it:
+
+$ sudo make install
+
+This will just copy the LEA parser executable to /bin/. If you use a system like MS Windows, this might and will
+*not* work at all. Sorry, I don't support Windows normaly, let alone in pre-alpha releases.
+
+4. Use
+------
+
+There are three ways of using the parser:
+ 
+4.1. - Usual scripting
+----------------------
+Once the parser is properly installed, you can create LEA scripts and save them in a file, whose first line is a header like: "#/bin/lea" or a similar one, with the correct path to the parser. Then once you have a file with that
+header and your LEA code, in order to execute the script you need to give to it execution permissions:
+
+$ chmod +x <name-of-my-script-file>
+
+After that, to execute/parse your script, simply execute the following command:
+
+$ ./<name-of-my-script-file>
+
+For example:
+$ chmod +x sample-script
+and once sucessfully installed the parser:
+$ ./sample-script
+
+4.2 Interactive interpeter/parser
+---------------------------------
+
+If you execute the LEA parser without any argument, it will wait to you to enter your code, that it will parse
+line by line everytime you hit <Enter>:
+
+Execute "./lea" or "/bin/lea"
+
+$  /bin/lea
+<write your code here>
+
+For example:
+$ lea
+or (in sources directory):
+$ ./lea
+
+Note that the parser will not end if you enter syntaxically valid code, so you can terminate the execution of the
+parser hitting the <Ctrl>-<C> keys combination.
+
+4.3 Explicit LEA & script call
+------------------------------
+
+You can also pass to the LEA parser the path to the script you want to parse:
+
+$ /bin/lea </path/to/my/script-file>
+
+For example:
+$ lea simple-script
+
+5. Notes
+--------
+
+This LEA parser has also builtin support for C style comments so that you can make your code more reader-friendly
+and also supports "#/path/to/lea/executable" one-liners for propper scripting.
