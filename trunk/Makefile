@@ -1,6 +1,6 @@
 all: lea
 
-TMPS=lex.yy.c y.tab.c
+TMPS=lex.yy.c lea.tab.c
 OBJS=lea-translator.o
 LEX_SRC=lea.l
 YACC_SRC=$(LEX_SRC:.l=.y)
