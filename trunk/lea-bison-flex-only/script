@@ -75,7 +75,7 @@ func arithmetic_med_of_two_values_from_two_files(f, g: fichero de entrada de rea
 		b := truncar((i + j) / 2)
 	fin
 
-proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo de salida de caracter; entsal f:flujo de entrada y salida de real, g:tabla[5] de logico)
+proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo de salida de caracter; ent/sal f:flujo de entrada y salida de real, g:tabla[5] de logico)
 	tipos
 		a: tabla[5,4] de entero
 		a: (V,H)

@@ -88,6 +88,7 @@ proc					{
 ent[ \t]+				{ printf("IN\n"); return IN;		}
 sal[ \t]+				{ printf("OUT\n"); return OUT;		}
 entsal[ \t]+			{ printf("INOUT\n"); return INOUT;		}
+ent\/sal[ \t]+			{ printf("INOUT\n"); return INOUT;		}
 
 cons					{ printf("CONSTS\n"); return CONSTS;	}
 tipos					{ printf("TYPES\n"); return TYPES;		}
