@@ -1,1 +1,38 @@
-This has yet to be done :P
+TODO List
+#########
+
+
+The structure of our language processor, our interpreter, is the following:
+
+User-input/code ---strings----> 
+	Lexical analyzer ----tokens--->
+		grammatical parser ----structures---->
+			tree-generator ----parse-tree/symbol-table---->
+				execution-unit.
+
+
+1. Lexical analyzer
+###################
+ ----> Mostly done
+ @ The Linux/UNIX scripting capability is badly implemented
+	Needs to be implemented so that it can only be recognized if it's in the first line of a file being executed
+	via Linux directly (i.e. ./<script-name>)
+
+ @ No error recovery yet
+	Where possible, errors should be automatically recovered - For example a syntaxical error in a sentence
+	shouldn't stop the next sentence from being executed. It should also show the user exactly which are the
+	problematic lines and show as much hints as we can provide to allow him to quickly detect which was the
+	error.
+
+2. Grammatical parser
+#####################
+ ----> Mostly done
+ @ No error recovery yet
+	Pretty similar problem as in the Lexical parser, applied to gramatics.
+
+ @ Some gramatical checks are not being done here
+	This is not something I feel that needs to be fixed, but just to talk about it a bit and decide if it's the
+	actually the best way to do. There are some grammatical structure checks (being the mult_assign_statement
+	the most remarkable) that are just not being done by the the parser. The main reason behind this decission
+	is that this way it's easier to reuse other rules, and thus code it's probably more readeable. In the other
+	hand, we'll need to check that this grammar exceptions in the tree-generator code
