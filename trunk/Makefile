@@ -1,5 +1,8 @@
 all: lea
 
+TMP=lex.yy.c y.tab.c y.tab.h
+SRCS=lea-translator.c lex.yy.c y.tab.c
+OBJS=$(SRCS:.c=.o)
 LEX_SRC=lea.l
 YACC_SRC=$(LEX_SRC:.l=.y)
 OUT=$(LEX_SRC:.l=)
@@ -7,16 +10,16 @@ OUT=$(LEX_SRC:.l=)
 LEX=flex
 YACC=yacc
 
-CFLAGS+=-lm
+CFLAGS+=-lm -lfl
 #-g -Wall
 
-lea: $(LEX_SRC) $(YACC_SRC)
+lea: $(LEX_SRC) $(YACC_SRC) $(OBJS)
 	 $(LEX) $(LEX_SRC)
 	 $(YACC) --verbose -d $(YACC_SRC)
-	 $(CC) $(CFLAGS) -o $(OUT) lex.yy.c y.tab.c -lfl $(CFLAGS)
+	 $(CC) -o $(OUT) $(OBJS) $(CFLAGS)
 	 
 clean:
-	$(RM) -f lex.yy.c y.tab.c y.tab.h $(OUT)
+	$(RM) -f $(TMP) $(OUT)
 
 prueba:
 	$(CC) -o prueba prueba.c
