@@ -25,7 +25,9 @@
  */
 	#include <stdlib.h>
 	#include <string.h>
+ 	#include "lea-translator.h"
 	#include "y.tab.h"
+	
 	#define MAX_STR_CONST 1024
 	#define lexical_error(a) printf("%s\n", a)
 %}
@@ -150,7 +152,7 @@ falso					{
 
 \'[^\']\'				{
 							yylval.char_val = malloc(sizeof(char));
-							*(yylval.char_val) = strdup(yytext[1]);
+							*(yylval.char_val) = yytext[1];
 							printf("CHAR_VAL "); return CHAR_VAL;
 }
 \'\\[0-7]{1,3}\'		{

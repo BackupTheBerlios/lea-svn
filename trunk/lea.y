@@ -25,6 +25,7 @@
  */
 	#include <stdio.h>
 	#include <stdlib.h>
+ 	#include "lea-translator.h"
 	
 	#define yyerror(s) printf("%s\n", s)
 %}
@@ -68,11 +69,11 @@
 %token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START OF
 %token IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO IS_NULL ARRAY REG ENDREG
 
-%token <int_val> INT_VAL
-%token <bool_val> BOOL_VAL
-%token <float_val> FLOAT_VAL
-%token <char_val> CHAR_VAL
-%token <str_val> STR_VAL ID
+%token <int_val>	INT_VAL
+%token <bool_val>	BOOL_VAL
+%token <float_val>	FLOAT_VAL
+%token <char_val>	CHAR_VAL
+%token <str_val>	STR_VAL ID
 
 /*
  * The list above has been automagically genereted executing:
