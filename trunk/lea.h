@@ -1,16 +1,16 @@
 /**
- * \file calc.h
+ * \file lea.h
  * \brief Functions for the calculator
  *
  * \author Eduardo Robles Elvira <edulix@iespana.es>
  *
- * This is part of calc. calc is free software; 
+ * This is part of Lea. Lea is free software; 
  * you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
  * 
- * calc is distributed in the hope that it will be useful,
+ * Lea is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
