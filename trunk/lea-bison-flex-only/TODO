@@ -49,6 +49,6 @@ User-input/code ---strings---->
 
  @ EPSILON rules
 	An epsilon is meant to be a null rule. Epsilon rules should always contain the same action:
-	EPSION { $$ = NULL; }, because the rules that are up in the parse tree will call to functions of the symtable
+	EPSILON { $$ = NULL; }, because the rules that are up in the parse tree will call to functions of the symtable
 	generator that will that the EPSILON rules as one of its arguments, and this is the standard way to deal with
 	null rules.
