@@ -918,54 +918,154 @@ Texpr_bool *TRexpr_bool_fcall(Tsentence *function_call)
 }
 
 /**
- * \brief 
+ * \brief Allocates storage for an integer expresion value
  * 
- * \param		
- * \return	 
+ * \param	int_val	Value to preserve
+ * \return			Pointer to the expresion holding the given value
  */
 Texpr *TRexpr_int(int *int_val)
 {
-	Texpr *ret;
-
+	// Returning struct:
+	Texpr		*ret;
+	// Internal intermediate variable symbol:
+	Tvar_sym	*internal_sym;
+	// Fundamental storage structure:
+	Ttype		*storage;
+	
+	// Allocate needed memory
+	ret							=	malloc(sizeof(Texpr));
+	ret->type					=	malloc(sizeof(char));
+	
+	internal_sym				=	malloc(sizeof(Tvar_sym));
+	
+	storage						=	malloc(sizeof(Ttype));
+	storage->type				=	malloc(sizeof(char));
+	
+	// Initialization
+	*(storage->type)			=	Vintern_int_val;
+	storage->storage.int_val	=	int_val;
+	
+	// Note that internal vars don't have names:
+	internal_sym->name			=	(char *)NULL;
+	internal_sym->storage		=	storage;
+	
+	*(ret->type) 				=	OPvar_call;
+	ret->expr.var_call			=	internal_sym;
+	
 	return ret;
 }
 
 /**
- * \brief 
- * 
- * \param		
- * \return	 
+ * \brief Allocates storage for a boolean expresion value
+ *
+ * \param	bool_val	Value to preserve
+ * \return				Pointer to the expresion holding the given value
  */
 Texpr *TRexpr_expr_bool(bool *bool_val)
 {
-	Texpr *ret;
-
+	// Returning struct:
+	Texpr		*ret;
+	// Internal intermediate variable symbol:
+	Tvar_sym	*internal_sym;
+	// Fundamental storage structure:
+	Ttype		*storage;
+	
+	// Allocate needed memory
+	ret							=	malloc(sizeof(Texpr));
+	ret->type					=	malloc(sizeof(char));
+	
+	internal_sym				=	malloc(sizeof(Tvar_sym));
+	
+	storage						=	malloc(sizeof(Ttype));
+	storage->type				=	malloc(sizeof(char));
+	
+	// Initialization
+	*(storage->type)			=	Vintern_bool_val;
+	storage->storage.bool_val	=	bool_val;
+	
+	// Note that internal vars don't have names:
+	internal_sym->name			=	(char *)NULL;
+	internal_sym->storage		=	storage;
+	
+	*(ret->type) 				=	OPvar_call;
+	ret->expr.var_call			=	internal_sym;
+	
 	return ret;
 }
 
 /**
- * \brief 
- * 
- * \param		
- * \return	 
+ * \brief Allocates storage for a float expresion value
+ *
+ * \param	float_val	Value to preserve
+ * \return				Pointer to the expresion holding the given value
  */
 Texpr *TRexpr_float(float *float_val)
 {
-	Texpr *ret;
-
+	// Returning struct:
+	Texpr		*ret;
+	// Internal intermediate variable symbol:
+	Tvar_sym	*internal_sym;
+	// Fundamental storage structure:
+	Ttype		*storage;
+	
+	// Allocate needed memory
+	ret							=	malloc(sizeof(Texpr));
+	ret->type					=	malloc(sizeof(char));
+	
+	internal_sym				=	malloc(sizeof(Tvar_sym));
+	
+	storage						=	malloc(sizeof(Ttype));
+	storage->type				=	malloc(sizeof(char));
+	
+	// Initialization
+	*(storage->type)			=	Vintern_float_val;
+	storage->storage.float_val	=	float_val;
+	
+	// Note that internal vars don't have names:
+	internal_sym->name			=	(char *)NULL;
+	internal_sym->storage		=	storage;
+	
+	*(ret->type) 				=	OPvar_call;
+	ret->expr.var_call			=	internal_sym;
+	
 	return ret;
 }
 
 /**
- * \brief 
- * 
- * \param		
- * \return	 
+ * \brief Allocates storage for a str expresion value
+ *
+ * \param	str	Value to preserve
+ * \return		Pointer to the expresion holding the given value
  */
 Texpr *TRexpr_str(char *str)
 {
-	Texpr *ret;
-
+	// Returning struct:
+	Texpr		*ret;
+	// Internal intermediate variable symbol:
+	Tvar_sym	*internal_sym;
+	// Fundamental storage structure:
+	Ttype		*storage;
+	
+	// Allocate needed memory
+	ret							=	malloc(sizeof(Texpr));
+	ret->type					=	malloc(sizeof(char));
+	
+	internal_sym				=	malloc(sizeof(Tvar_sym));
+	
+	storage						=	malloc(sizeof(Ttype));
+	storage->type				=	malloc(sizeof(char));
+	
+	// Initialization
+	*(storage->type)			=	Vintern_str_val;
+	storage->storage.str_val	=	str;
+	
+	// Note that internal vars don't have names:
+	internal_sym->name			=	(char *)NULL;
+	internal_sym->storage		=	storage;
+	
+	*(ret->type) 				=	OPvar_call;
+	ret->expr.var_call			=	internal_sym;
+	
 	return ret;
 }
 
