@@ -130,22 +130,24 @@ proc_header:
 ;
 
 interface_block: /* empty */
-	| IN in_arg_list '\n' interface_block
+	| IN in_arg_list '\n'
+	interface_block
 		{ $$ = interface_block_in_pair($2, $4); }
-	| OUT out_arg_list '\n' interface_block
+	| OUT out_arg_list '\n'
+	interface_block
 		{ $$ = interface_block_out_pair($2, $4); }
 ;
 
 proc_arg_list: /* empty */
-	proc_arg_list
-	| IN in_arg_list ';' proc_arg_list 
-		{ $$ = proc_arg_list_in_pair($2, $4); }
-	proc_arg_list
-	| OUT out_arg_list ';' proc_arg_list
-		{ $$ = proc_arg_list_out_pair($2, $4); }
-	proc_arg_list
-	| INOUT inout_arg_list ';' proc_arg_list
-		{ $$ = proc_arg_list_inout_pair($2, $4); }
+	| proc_arg_list
+	IN in_arg_list ';'  
+		{ $$ = proc_arg_list_in_pair($1, $3); }
+	|proc_arg_list
+	OUT out_arg_list ';' 
+		{ $$ = proc_arg_list_out_pair($1, $3); }
+	| proc_arg_list
+	INOUT inout_arg_list ';' 
+		{ $$ = proc_arg_list_inout_pair($1, $3); }
 ;
 
 in_arg_list : /* empty */
@@ -217,21 +219,21 @@ consts_block: /* empty */
 ;
 
 const_dcl_list: /* empty */
-	const_dcl_list
-	| id_list ':' BOOL_VAL '\n'
-		{ $$ = dcl_bool_const($1, $3, $5); }
-	const_dcl_list
-	| id_list ':' INT_VAL '\n'
-		{ $$ = dcl_int_const($1, $3, $5); }
-	const_dcl_list
-	| id_list ':' FLOAT_VAL '\n'
-		{ $$ = dcl_float_const($1, $3, $5); }
-	const_dcl_list
-	| id_list ':' CHAR_VAL '\n'
-		{ $$ = dcl_char_const($1, $3, $5); }
-	const_dcl_list
-	| id_list ':' STR_VAL '\n'
-		{ $$ = dcl_str_const($1, $3, $5); }
+	| const_dcl_list
+	id_list ':' BOOL_VAL '\n'
+		{ $$ = dcl_bool_const($1, $2, $4); }
+	| const_dcl_list
+	id_list ':' INT_VAL '\n'
+		{ $$ = dcl_int_const($1, $2, $4); }
+	| const_dcl_list
+	id_list ':' FLOAT_VAL '\n'
+		{ $$ = dcl_float_const($1, $2, $4); }
+	| const_dcl_list
+	id_list ':' CHAR_VAL '\n'
+		{ $$ = dcl_char_const($1, $2, $4); }
+	| const_dcl_list
+	id_list ':' STR_VAL '\n'
+		{ $$ = dcl_str_const($1, $2, $4); }
 ;
 
 types_block: /* empty */
@@ -240,18 +242,18 @@ types_block: /* empty */
 		{ $$ = types_block_node($3); }
 ;
 types_dcl: /* empty */
-	types_dcl
-	| id_list ':' '(' str_list ')' '\n'
-		{ $$ = types_dcl_pair($1, $4); }
-	types_dcl
-	| id_list ':' ID
-		{ $$ = types_dcl_node($1, $3); }
-	types_dcl
-	| id_list ':' ID IN_STREAM ID
-		{ $$ = types_dcl_node($1, $3, $5); }
-	types_dcl
-	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = types_dcl_node($1, $3, $4, $6); }
+	| types_dcl
+	id_list ':' '(' str_list ')' '\n'
+		{ $$ = types_dcl_pair($1, $2, $5); }
+	| types_dcl
+	id_list ':' ID
+		{ $$ = types_dcl_node($1, $2, $4); }
+	| types_dcl
+	id_list ':' ID IN_STREAM ID
+		{ $$ = types_dcl_node($1, $2, $4, $6); }
+	| types_dcl
+	id_list ':' ARRAY array_dimensions OF ID
+		{ $$ = types_dcl_node($1, $2, $4, $5, $7); }
 ;
 
 str_list: /* empty */
@@ -262,13 +264,13 @@ str_list: /* empty */
 vars_block: /* empty */
 	| VARS '\n'
 		vars_dcl
-		{ $$ = vars_block_node($1, $3); }
+		{ $$ = vars_block_node($3); }
 ;
 
 vars_dcl: /* empty */
-	| id_list ':' ID '\n'
-	var_dcl
-		{ $$ = dcl_var_pair($1, $3); }
+	| var_dcl
+	id_list ':' ID '\n'
+		{ $$ = dcl_var_pair($1, $2, $4); }
 ;
 
 sentence_list_block:
@@ -279,19 +281,28 @@ sentence_list_block:
 
 sentence_list: /* empty */
 	| sentence_list sentence
+	{ $$ = sentence_list_pair($1, $2); }
 ;
 
 sentence:
 	if_statement
+		{ $$ = $1; }
 	| assign_statement
+		{ $$ = $1; }
 	| mult_assign
+		{ $$ = $1; }
 	| input_statement
+		{ $$ = $1; }
 	| output_statement
+		{ $$ = $1; }
 	| while_loop
+		{ $$ = $1; }
 	| fromto_loop
+		{ $$ = $1; }
 	| function_call '\n'
 		{ $$ = $1; }
 	| procedure_call
+		{ $$ = $1; }
 ;
 
 if_statement:
@@ -301,14 +312,14 @@ if_statement:
 	ELSE '\n' 
 		sentence_list
 	ENDIF '\n'
-		{ $$ = if_statement_node($2, $3, $4, $6); }
+		{ $$ = if_statement_node($2, $4, $5, $8); }
 ;
 
 elif_statement_list: /* empty */
 	| '|' expr_bool '\n'
 		sentence_list
 	elif_statement_list
-		{ $$ = elif_statement_list_pair($2, $3, $4); }
+		{ $$ = elif_statement_list_pair($2, $4, $5); }
 ;
 
 assign_statement:
@@ -338,14 +349,14 @@ while_loop:
 	WHILE expr_bool '\n'
 		sentence_list
 	ENDWHILE '\n'
-		{ $$ = while_loop_node($2, $3); }
+		{ $$ = while_loop_node($2, $4); }
 ;
 
 fromto_loop:
 	FROM expr TO expr_bool '\n'
 		sentence_list
 	ENDFROMTO '\n'
-		{ $$ = fromto_loop_node($2, $4, $5); }
+		{ $$ = fromto_loop_node($2, $4, $6); }
 ;
 
 function_call:
@@ -389,8 +400,8 @@ expr:
 ;
 
 expr_list:
-	| expr_list expr
-		{ $$ = expr_list_pair($1, $2); }
+	| expr_list ',' expr
+		{ $$ = expr_list_pair($1, $3); }
 ;
 
 expr_bool:
