@@ -149,7 +149,7 @@ fd						{ return ENDFROMTO;	}
 							BEGIN(INITIAL);
 							*string_buf_ptr = '\0';
 							yylval.string = string_buf_ptr;
-							return STR;
+							return STRING;
 }
 
 <str>\n					{
