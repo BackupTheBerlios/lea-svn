@@ -18,6 +18,7 @@ User-input/code ---strings---->
 1. Lexical analyzer
 ###################
  ----> Mostly done
+ 
  @ The Linux/UNIX scripting capability is badly implemented
 	Needs to be implemented so that it can only be recognized if it's in the first line of a file being executed
 	via Linux directly (i.e. ./<script-name>)
@@ -34,6 +35,7 @@ User-input/code ---strings---->
 2. Grammatical parser
 #####################
  ----> Mostly done
+ 
  @ No error recovery yet
 	Pretty similar problem as in the Lexical parser, applied to grammatics.
 	
@@ -52,3 +54,26 @@ User-input/code ---strings---->
 	EPSILON { $$ = NULL; }, because the rules that are up in the parse tree will call to functions of the symtable
 	generator that will that the EPSILON rules as one of its arguments, and this is the standard way to deal with
 	null rules.
+
+
+3. Symbol table generator
+#########################
+ ----> Not implemented yet
+
+ @ Deal with some grammatical error exceptions
+	See the analogue point in the Grammatical parser point.
+ 
+ @ Deal with semantic errors
+	The use of variables that have not been declared, by-zero divisions, use of variables not yet initialized, etc
+	are user errors that may happen, and a propper error handler must deal with them.
+ 
+ @ Optimizations
+	This is just a thought, and is not really planned to be implemented.
+
+4. Execution unit
+#################
+ ----> Not implemented yet
+
+ @ Deal with execution time errors
+	There's a need to check wether if i.e. the files trying to be opened exist, etc, and if an error occurs in
+	this stage, there must be a propperly implemented error handler that will deal with it.
