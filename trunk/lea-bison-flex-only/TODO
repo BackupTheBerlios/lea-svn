@@ -10,7 +10,7 @@ User-input/code ---strings---->
 		
 		grammatical parser ----parse-tree---->
 			
-			tree generator ----symbol-table---->
+			symbol table generator ----symbol-table---->
 				
 				execution unit.
 
@@ -46,3 +46,9 @@ User-input/code ---strings---->
 	the most remarkable) that are just not being done by the the parser. The main reason behind this decission
 	is that this way it's easier to reuse other rules, and thus code it's probably more readeable. In the other
 	hand, we'll need to check that this grammar exceptions in the tree-generator code
+
+ @ EPSILON rules
+	An epsilon is meant to be a null rule. Epsilon rules should always contain the same action:
+	EPSION { $$ = NULL; }, because the rules that are up in the parse tree will call to functions of the symtable
+	generator that will that the EPSILON rules as one of its arguments, and this is the standard way to deal with
+	null rules.
