@@ -486,6 +486,42 @@ procedure_call:
 		{  }
 ;
 
+expr_list: /* empty */
+	| expr_list ',' expr
+		{  }
+	| expr
+		{  }
+;
+
+expr_bool:
+	BOOL_VAL
+		{  }
+	| '(' expr_bool ')'
+		{  }
+	| struct_call
+		{  }
+	| NOT_OP expr_bool %prec NEG
+		{  }
+	| expr_bool AND_OP expr_bool
+		{  }
+	| expr_bool OR_OP expr_bool
+		{  }
+	| expr '=' expr
+		{  }
+	| expr '<' expr
+		{  }
+	| expr '>' expr
+		{  }
+	| expr LE_OP expr
+		{  }
+	| expr GE_OP expr
+		{  }
+	| expr NOT_EQ expr
+		{  }
+	| function_call
+		{  }
+;
+
 expr:
 	INT_VAL
 		{  }
@@ -512,43 +548,6 @@ expr:
 	| '-' expr %prec NEG
 		{  }
 	| '(' expr ')'
-		{  }
-	| function_call
-		{  }
-;
-
-expr_list: /* empty */
-	| expr_list ',' expr
-		{  }
-	| expr
-		{  }
-;
-
-expr_bool:
-	BOOL_VAL
-		{  }
-	| struct_call
-		{  }
-	// TODO: "(no <something>)" doesn't work !
-	| NOT_OP expr_bool %prec NEG
-		{  }
-	| expr_bool AND_OP expr_bool
-		{  }
-	| expr_bool OR_OP expr_bool
-		{  }
-	| expr '=' expr
-		{  }
-	| expr '<' expr
-		{  }
-	| expr '>' expr
-		{  }
-	| expr LE_OP expr
-		{  }
-	| expr GE_OP expr
-		{  }
-	| expr NOT_EQ expr
-		{  }
-	| '(' expr_bool ')'
 		{  }
 	| function_call
 		{  }

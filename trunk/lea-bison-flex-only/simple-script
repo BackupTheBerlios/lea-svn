@@ -94,7 +94,7 @@ prog antispam
 			f := falso
 			l := 1
 			
-			mientras l <= MAX_ARRAY y no f
+			mientras l <= MAX_ARRAY y (no f)
 				si long(t[l]) = 0:
 					enc:=cierto
 				| otras:
