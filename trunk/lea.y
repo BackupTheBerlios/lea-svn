@@ -37,9 +37,8 @@
 	char					*char_val;
 	char					*str_val;
 /*
- * The list above has been automagically genereted executing:
+ * The list above has been partially automagically generated executing:
  * $ ACTION=print_union_types ./handy.awk lea-translator.h
- * NOTE: tabulation added manually
  */
 	Tprogram				*Tprogram;
 	Tmethod_sym				*Tmethod_sym;
@@ -75,7 +74,7 @@
 %token <str_val>	STR_VAL ID
 
 /*
- * The list above has been automagically genereted executing:
+ * The list above has been partially automagically generated executing:
  * $ ACTION=print_rule_types ./handy.awk lea.y
  * NOTE: tabulation added manually
  */
