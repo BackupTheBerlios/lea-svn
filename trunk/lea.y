@@ -35,13 +35,13 @@
 	float float_val;
 	char char_val;
 	char *string_val;
-    node *no;
-    node_block *nb;
-    node_list *nl;
+	node *no;
+	node_block *nb;
+	node_list *nl;
 }
 
 %token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START END OF
-%token PRINT READ IF ELSE NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID
+%token PRINT READ IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID IS_NULL
 
 %token <int_val>	INT_VAL
 %token <bool_var>	BOOL_VAL
@@ -49,9 +49,14 @@
 %token <char_val>	CHAR_VAL
 %token <str_val>	STR_VAL
 
-%type <no>			algorithm
-%type <nb>			
-%type <nl>			
+%type <no>			program prog_header algorithm function procedure alg_header func_header
+%type <no>			proc_header interface_block in_var_dcl out_var_dcl inout_var_dcl 
+%type <no>			declarations_block consts_block const_dcl types_block vars_block 
+%type <no>			sentence_list_block sentence if_statement output_statement input_statement
+%type <no>			while_loop fromto_loop function_call procedure_call expr expr_bool
+%type <nl>			library proc_arg_list in_arg_list out_arg_list inout_arg_list id_list types_dcl
+%type <nl>			str_list vars_dcl sentence_list elif_statement_list assign_statement 
+%type <nl>			mult_assign_statement
 
 %start program
 
@@ -74,325 +79,344 @@
 program:
 	prog_header
 	declarations_block
-	sentences_block
+	sentence_list_block
 	library
-		{ $$ = declare_prog($1, $2, $3, $4); }
+		{ $$ = decl_prog($1, $2, $3, $4); }
 ;
 
 prog_header:
 	PROG ID '\n'
-		{ $$ = add_prog_header($2); }
+		{ $$ = decl_prog_header($2); }
 ;
 
 library: /* empty */
 	| library algorithm
-		{ $$ == add_alg($2);}
+		{ $$ == library_pair($1, $2); }
 	| library function
-		{ $$ == add_func($2); }
+		{ $$ == library_pair($1, $2); }
 	| library procedure
-		{ $$ == add_proc($2); }
+		{ $$ == library_pair($1, $2); }
 ;
 
 algorithm:
 	alg_header
 	interface_block
 	declarations_block
-	sentences_block
-		{ $$ = declare_alg($1, $2, $3, $4); }
+	sentence_list_block
+		{ $$ = decl_alg($1, $2, $3, $4); }
 ;
 
 function:
 	func_header
 	declarations_block
-	sentences_block
-		{ $$ = declare_func($1, $2, $3, $4); }
+	sentence_list_block
+		{ $$ = decl_func($1, $2, $3); }
 ;
 
 procedure:
 	proc_header
 	declarations_block
-	sentences_block
-		{ $$ = declare_proc($1, $2, $3, $4); }
+	sentence_list_block
+		{ $$ = decl_proc($1, $2, $3); }
 ;
 
 alg_header:
 	ALG ID '\n'
-		{ $$ = add_alg_header($2); }
+		{ $$ = decl_alg_header($2); }
 ;
 
 func_header:
-	FUNC ID '(' linked_in_args ')'  DEV '(' linked_out_args ')' '\n'
-		{ $$ = add_func_header($2, $4, $8); }
+	FUNC ID '(' in_arg_list ')'  DEV '(' out_arg_list ')' '\n'
+		{ $$ = decl_func_header($2, $4, $8); }
 ;
 
 proc_header:
 	PROC ID '(' proc_arg_list ')' '\n'
-		{ $$ = add_proc_header($2, $4); }
+		{ $$ = decl_proc_header($2, $4); }
 ;
 
 interface_block: /* empty */
-	| IN linked_in_args '\n' interface_block
-		{ $$ = add_interface_linked_arg_node($2, $3); }
-	| OUT linked_out_args '\n' interface_block
-		{ $$ = add_interface_linked_arg_node($2, $3); }
+	| IN in_arg_list '\n' interface_block
+		{ $$ = interface_block_in_pair($2, $4); }
+	| OUT out_arg_list '\n' interface_block
+		{ $$ = interface_block_out_pair($2, $4); }
 ;
 
 proc_arg_list: /* empty */
-	| IN linked_in_args ';' proc_arg_list 
-		{ $$ = add_proc_linked_arg_node($2, $3); }
-	| OUT linked_out_args ';' proc_arg_list
-		{ $$ = add_proc_linked_arg_node($2, $3); }
-	| INOUT linked_inout_args ';' proc_arg_list
-		{ $$ = add_proc_linked_arg_node($2, $3); }
+	| IN in_arg_list ';' proc_arg_list 
+		{ $$ = proc_arg_list_in_pair($2, $4); }
+	| OUT out_arg_list ';' proc_arg_list
+		{ $$ = proc_arg_list_out_pair($2, $4); }
+	| INOUT inout_arg_list ';' proc_arg_list
+		{ $$ = proc_arg_list_inout_pair($2, $4); }
 ;
 
-linked_in_args : NULL
-	| in_var_dcl ',' linked_in_args
-		{ $$ = add_linked_in_arg_node($1, $2); }
+in_arg_list : /* empty */
+	| in_var_dcl ',' in_arg_list
+		{ $$ = in_arg_list_pair($1, $3); }
 	| in_var_dcl
-		{ $$ = add_linked_in_arg_node($1); }
+		{ $$ = in_arg_list_node($1); }
 ;
 
-linked_out_args : NULL
-	| out_var_dcl ',' linked_out_args
-		{ $$ = add_linked_out_arg_node($1, $2); }
+out_arg_list : /* empty */
+	| out_var_dcl ',' out_arg_list
+		{ $$ = out_arg_list_pair($1, $3); }
 	| out_var_dcl ','
-		{ $$ = add_linked_out_arg_node($1); }
+		{ $$ = out_arg_list_node($1); }
 ;
 
-linked_inout_args : /* empty */
-	| inout_var_dcl ',' linked_inout_args
-		{ $$ = add_linked_inout_arg_node($1, $2); }
+inout_arg_list : /* empty */
+	| inout_var_dcl ',' inout_arg_list
+		{ $$ = inout_arg_list_pair($1, $3); }
 	| inout_var_dcl
-		{ $$ = add_linked_inout_arg_node($1); }
+		{ $$ = inout_arg_list_node($1); }
 ;
 
 in_var_dcl:
-	ids   ':' ID
-		{ $$ = declare_var($1, $3); }
-	| ids ':' ID IN_STREAM ID
-		{ $$ = declare_var($1, $3, $5); }
-	| ids  ':' ARRAY array_dimensions OF ID
-		{ $$ = declare_var($1, $3, $4, $6); }
+	id_list   ':' ID
+		{ $$ = dcl_in_var($1, $3); }
+	| id_list ':' ID IN_STREAM ID
+		{ $$ = dcl_in_var($1, $3, $5); }
+	| id_list  ':' ARRAY array_dimensions OF ID
+		{ $$ = dcl_in_var($1, $3, $4, $6); }
 ;
 
 out_var_dcl:
-	ids   ':' ID
-		{ $$ = declare_var($1, $3); }
-	| ids ':' ID OUT_STREAM ID
-		{ $$ = declare_var($1, $3, $5); }
-	| ids ':' ARRAY array_dimensions OF ID
-		{ $$ = declare_var($1, $3, $4, $6); }
+	id_list   ':' ID
+		{ $$ = dcl_out_var($1, $3); }
+	| id_list ':' ID OUT_STREAM ID
+		{ $$ = dcl_out_var($1, $3, $5); }
+	| id_list ':' ARRAY array_dimensions OF ID
+		{ $$ = dcl_out_var($1, $3, $4, $6); }
 ;
 
 inout_var_dcl:
-	ids   ':' ID
-		{ $$ = declare_var($1, $3); }
-	| ids ':' ID INOUT_STREAM ID
-		{ $$ = declare_var($1, $3, $5); }
-	| ids ':' ARRAY array_dimensions OF ID
-		{ $$ = declare_var($1, $3, $4, $6); }
+	id_list   ':' ID
+		{ $$ = dcl_inout_var($1, $3); }
+	| id_list ':' ID INOUT_STREAM ID
+		{ $$ = dcl_inout_var($1, $3, $5); }
+	| id_list ':' ARRAY array_dimensions OF ID
+		{ $$ = dcl_inout_var($1, $3, $4, $6); }
 ;
 
-ids:
-	ID ',' ids
-		{ $$ = add_linked_id_node($1, $3); }
+id_list:
+	ID ',' id_list
+		{ $$ = id_list_pair($1, $3); }
 	ID
-		{ $$ = add_linked_id_node($1); }
+		{ $$ = id_list_node($1); }
 ;
 
 declarations_block:
 	consts_block
 	types_block
 	vars_block
-		{ $$ = add_declarations_block($1, $2, $3); }
+		{ $$ = declarations_block_node($1, $2, $3); }
 ;
 
 consts_block: /* empty */
 	| CONSTS '\n'
 		const_dcl
-		{ $$ = add_consts_block($3); }
+		{ $$ = consts_block_node($3); }
 ;
 
 const_dcl:
-	ids   ':' BOOL_VAL '\n'
-		{ $$ = declare_const($1, $3); }
-	| ids ':' FLOAT_VAL '\n'
-		{ $$ = declare_const($1, $3); }
-	| ids ':' CHAR_VAL '\n'
-		{ $$ = declare_const($1, $3); }
-	| ids ':' STR_VAL '\n'
-		{ $$ = declare_const($1, $3); }
+	id_list   ':' BOOL_VAL '\n'
+		{ $$ = dcl_bool_const($1, $3); }
+	| id_list ':' FLOAT_VAL '\n'
+		{ $$ = dcl_float_const($1, $3); }
+	| id_list ':' CHAR_VAL '\n'
+		{ $$ = dcl_char_const($1, $3); }
+	| id_list ':' STR_VAL '\n'
+		{ $$ = dcl_str_const($1, $3); }
 ;
 
 types_block: /* empty */
 	| TYPES '\n'
 		type_dcl
-		{ $$ = add_types_block($3); }
+		{ $$ = types_block_node($3); }
 ;
 types_dcl: /* empty */
-	| ids ':' '(' strs ')' '\n'
+	| id_list ':' '(' str_list ')' '\n'
 	types_dcl
-		{ $$ = add_linked_type_node($1, $4); }
+		{ $$ = types_dcl_pair($1, $4); }
+	| id_list ':' ID
+	types_dcl
+		{ $$ = types_dcl_node($1, $3); }
+	| id_list ':' ID IN_STREAM ID
+	types_dcl
+		{ $$ = types_dcl_node($1, $3, $5); }
+	| id_list ':' ARRAY array_dimensions OF ID
+	types_dcl
+		{ $$ = types_dcl_node($1, $3, $4, $6); }
 ;
 
-strs:
-	ID ',' strs
-		{ $$ = add_linked_str_node($1, $3); }
+str_list:
+	ID ',' str_list
+		{ $$ = str_list_pair($1, $3); }
 	| ID
-		{ $$ = add_linked_str_node($1); }
+		{ $$ = str_list_node($1); }
 ;
 
 vars_block: /* empty */
 	| VARS '\n'
 		vars_dcl
-		{ $$ = add_vars_block($1, $3); }
+		{ $$ = vars_block_node($1, $3); }
 ;
 
 vars_dcl: /* empty */
-	| ids ':' ID '\n'
+	| id_list ':' ID '\n'
 	var_dcl
-		{ $$ = declare_var($1, $3); }
+		{ $$ = dcl_var_pair($1, $3); }
 ;
 
-sentences_block: /* empty */
+sentence_list_block: /* empty */
 	START '\n'
-		sentences
+		sentence_list
 	END '\n'
 ;
 
-sentences: /* empty */
-	| sentence sentences
+sentence_list: /* empty */
+	| sentence sentence_list
 ;
 
 sentence:
 	conditional_statement
 	| assign_statement
+	| mult_assign
 	| input_statement
 	| output_statement
 	| while_loop
 	| fromto_loop
-	| function_call
+	| function_call '\n'
+		{ $$ = $1; }
 	| procedure_call
 ;
 
 if_statement:
 	IF expr_bool '\n'
-		sentences
-	elif_statements
+		sentence_list
+	elif_statement_list
 	ELSE '\n' 
-		sentences
+		sentence_list
 	ENDIF '\n'
-		{ $$ = if_node($2, $3, $4, $6); }
+		{ $$ = if_statement_node($2, $3, $4, $6); }
 ;
 
-elif_statements:
-	'|' expr_bool '\n'
-		sentences
-		{ $$ = elif_node($2, $3); }
+elif_statement_list: /* empty */
 	| '|' expr_bool '\n'
-		sentences
-	elif_statements
-		{ $$ = elif_node($2, $3, $4); }
+		sentence_list
+	elif_statement_list
+		{ $$ = elif_statement_list_pair($2, $3, $4); }
 ;
 
 assign_statement:
-	| ID ASSIGN expr assign_statement
-		{ $$ = assign_node($1, $3, $4); }
+	ID ASSIGN expr assign_statement
+		{ $$ = assign_statement_pair($1, $3, $4); }
 	| ID ASSIGN expr '\n'
-		{ $$ = assign_node($1, $3); }
+		{ $$ = assign_statement_node($1, $3); }
+;
+
+
+mult_assign_statement:
+	| id_list ASSIGN expr_list '\n'
+		{ $$ = mult_assign_statement_node($1, $3); }
 ;
 
 output_statement:
 	PRINT expr '\n'
-		{ $$ = print($2); }
+		{ $$ = output_statement_node($2); }
 ;
 
 input_statement:
 	READ expr '\n'
-		{ $$ = read($2); }
+		{ $$ = input_statement_node($2); }
 ;
 
 while_loop:
 	WHILE expr_bool '\n'
-		sentences
+		sentence_list
 	ENDWHILE '\n'
-		{ $$ = while_node($2, $3); }
+		{ $$ = while_loop_node($2, $3); }
 ;
 
 fromto_loop:
 	FROM expr TO expr_bool '\n'
-		sentences
+		sentence_list
 	ENDFROMTO '\n'
-		{ $$ = fromto_node($2, $4, $5); }
+		{ $$ = fromto_loop_node($2, $4, $5); }
 ;
 
 function_call:
-	ID '(' arg_list ')' '\n'
-		{ $$ = func_call($1, $3); }
+	ID '(' arg_list ')'
+		{ $$ = function_call_node($1, $3); }
 ;
 
 
 procedure_call:
 	ID '(' arg_list ')' '\n'
-		{ $$ = proc_call($1, $3); }
+		{ $$ = procedure_call_node($1, $3); }
 ;
 
 expr:
 	INT_VAL
-		{ $$ = integer_val($1); }
+		{ $$ = expr_int_node($1); }
 	| BOOL_VAL
-		{ $$ = boolean_val($1); }
+		{ $$ = expr_bool_node($1); }
 	| FLOAT_VAL
-		{ $$ = float_val($1); }
+		{ $$ = expr_float_node($1); }
 	| CHAR_VAL
-		{ $$ = char_val($1); }
+		{ $$ = expr_char_node($1); }
 	| STR_VAL
-		{ $$ = string_val($1); }
+		{ $$ = expr_str_node($1); }
 	| ID
-		{ $$ = get_identifier($1); }
+		{ $$ = expr_get_id_node($1); }
 	| expr '+' expr
-		{ $$ = binary_node('+',$1, $3); }
+		{ $$ = expr_plus_op_node($1, $3); }
 	| expr '-' expr
-		{ $$ = binary_node('-', $1, $3); }
+		{ $$ = expr_min_op_node($1, $3); }
 	| expr '*' expr
-		{ $$ = binary_node('*', $1, $3); }
+		{ $$ = expr_times_op_node($1, $3); }
 	| expr '/' expr
-		{ $$ = binary_node('/', $1, $3); }
+		{ $$ = expr_div_op_node($1, $3); }
 	| expr '%' expr
-		{ $$ = binary_node('%', $1, $3); }
+		{ $$ = expr_rest_op_node($1, $3); }
 	| expr '^' expr
-		{ $$ = binary_node('^', $1, $3); }
+		{ $$ = expr_pow_op_node($1, $3); }
 	| '-' expr %prec NEG
-		{ $$ = binary_node('-', $1); }
+		{ $$ = expr_rest_op_node($1); }
 	| '(' expr ')'
-		{ $$ = $1; }
+		{ $$ = $2; }
+	| function_call
+		{ $$ = check_type_node($1); }
 ;
 
 expr_bool:
 	BOOL_VAL
-		{ $$ = boolean_val($1); }
+		{ $$ = expr_bool_node($1); }
 	| ID
-		{ $$ = get_identifier($1); }
+		{ $$ = expr_bool_get_id_node($1); }
 	| NOT_OP expr_bool
-		{ $$ = bool_node(1, $1); }
+		{ $$ = expr_bool_not_op_node($1); }
 	| expr_bool AND_OP expr_bool
-		{ $$ = bool_node(2, $1, $3); }
+		{ $$ = expr_bool_and_op_node($1, $3); }
 	| expr_bool OR_OP expr_bool
-		{ $$ = bool_node(3, $1, $3); }
+		{ $$ = expr_bool_or_op_node($1, $3); }
 	| expr_bool '=' expr_bool
-		{ $$ = bool_node(4, $1, $3); }
+		{ $$ = expr_bool_eq_op_node($1, $3); }
 	| expr_bool '<' expr_bool
-		{ $$ = bool_node(5, $1, $3); }
+		{ $$ = expr_bool_l_op_node($1, $3); }
 	| expr_bool '>' expr_bool
-		{ $$ = bool_node(6, $1, $3); }
+		{ $$ = expr_bool_g_op_node($1, $3); }
 	| expr_bool LE_OP expr_bool
-		{ $$ = bool_node(7, $1, $3); }
+		{ $$ = expr_bool_le_op_node($1, $3); }
 	| expr_bool GE_OP expr_bool
-		{ $$ = bool_node(8, $1, $3); }
+		{ $$ = expr_bool_ge_op_node($1, $3); }
 	| expr_bool NOT_EQ expr_bool
-		{ $$ = bool_node(9, $1, $3); }
+		{ $$ = expr_bool_not_eq_node($1, $3); }
 	'(' expr_bool ')'
+		{ $$ = $2; }
+	| function_call
+		{ $$ = expor_bool_check_node($1); }
 ;
 
 %%
@@ -410,7 +434,7 @@ int main(int argc, char *argv[])
 		} else
 			user_prompt=F;
 	} else
-		user_prompt=T;
+		user_prompt=F;
 	
 	prompt();
 	yyparse();

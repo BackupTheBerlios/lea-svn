@@ -98,7 +98,7 @@ leer					{ return READ;		}
 
 si						{ return IF;		}
 otras					{ return ELSE;		}
-nula					{ return NULL;		}
+nula					{ return IS_NULL;	}
 fsi						{ return ENDIF;		}
 
 mientras				{ return WHILE;		}
