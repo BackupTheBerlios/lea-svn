@@ -136,6 +136,8 @@
 	 *    used by the user but not declared implicitly
 	 *
 	 *  - Internal types never have a name (ie. char*name=NULL;)
+	 *
+	 *  - There's some redundancy in these types. But it's benign ;-)
 	 */
 	
 	/**
@@ -303,6 +305,7 @@
 		// Array of pointers  (containing as many elements as the first dimension
 		// does) to sub-arrays or other types:
 		Tarray_type *type_sym; 
+		 //this is a bit redundant 'cause this info also is at every element of *elements in Tarray_sym:
 		Tother_sym *elements, *last_element;
 	} Tarray_sym;
 	

@@ -583,7 +583,7 @@ Tother_type *TRregister(Tother_sym_list *vars_list)
  * \param		
  * \return	 
  */
-Tsentence_list *TRsentence_list(Tsentence_list *, Tsentence *)
+Tsentence_list *TRsentence_list(Tsentence_list *previous_list, Tsentence *actual)
 {
 	Tsentence_list *ret;
 
@@ -596,7 +596,7 @@ Tsentence_list *TRsentence_list(Tsentence_list *, Tsentence *)
  * \param		
  * \return	 
  */
-Tsentence *TRif_statement(Texpr_bool *, Tsentence_list *, Telif_statement_list *, Tsentence_list *)
+Tsentence *TRif_statement(Texpr_bool *if_expr, Tsentence_list *if_sentence_list, Telif_statement_list *el_if_list, Tsentence_list *else_sentence_list)
 {
 	Tsentence *ret;
 
@@ -609,7 +609,7 @@ Tsentence *TRif_statement(Texpr_bool *, Tsentence_list *, Telif_statement_list *
  * \param		
  * \return	 
  */
-Telif_statement *TRelif_statement(Texpr_bool *, Tsentence_list *)
+Telif_statement *TRelif_statement(Texpr_bool *elif_expr, Tsentence_list *elif_sentence_list)
 {
 	Telif_statement *ret;
 
@@ -622,7 +622,7 @@ Telif_statement *TRelif_statement(Texpr_bool *, Tsentence_list *)
  * \param		
  * \return	 
  */
-Telif_statement_list *TRelif_statement_list(Telif_statement_list *, Telif_statement *)
+Telif_statement_list *TRelif_statement_list(Telif_statement_list *previous_list, Telif_statement *actual)
 {
 	Telif_statement_list *ret;
 
@@ -635,7 +635,7 @@ Telif_statement_list *TRelif_statement_list(Telif_statement_list *, Telif_statem
  * \param		
  * \return	 
  */
-Tsentence *TRassign_statement_assign(Tsentence *, Tsentence *)
+Tsentence *TRassign_statement_assign(Tsentence *var_call, Tsentence *assign_statement)
 {
 	Tsentence *ret;
 
@@ -648,7 +648,7 @@ Tsentence *TRassign_statement_assign(Tsentence *, Tsentence *)
  * \param		
  * \return	 
  */
-Tsentence *TRassign_statement_expr(Tsentence *, Texpr *)
+Tsentence *TRassign_statement_expr(Tsentence *var_list, Texpr *expr)
 {
 	Tsentence *ret;
 
@@ -661,7 +661,7 @@ Tsentence *TRassign_statement_expr(Tsentence *, Texpr *)
  * \param		
  * \return	 
  */
-Tsentence *TRmult_assign_statement(Tvar_call_list *, Texpr_list *)
+Tsentence *TRmult_assign_statement(Tvar_call_list *var_list, Texpr_list *expr_list)
 {
 	Tsentence *ret;
 
@@ -674,7 +674,7 @@ Tsentence *TRmult_assign_statement(Tvar_call_list *, Texpr_list *)
  * \param		
  * \return	 
  */
-Tsentence *TRoutput_input_statement(char *, Texpr_list *)
+Tsentence *TRoutput_input_statement(char *name, Texpr_list *expr_list)
 {
 	Tsentence *ret;
 
@@ -687,7 +687,7 @@ Tsentence *TRoutput_input_statement(char *, Texpr_list *)
  * \param		
  * \return	 
  */
-Tsentence *TRwhile_loop(Texpr_bool *, Tsentence_list *)
+Tsentence *TRwhile_loop(Texpr_bool *expr_bool, Tsentence_list *sentence_list)
 {
 	Tsentence *ret;
 
@@ -700,7 +700,7 @@ Tsentence *TRwhile_loop(Texpr_bool *, Tsentence_list *)
  * \param		
  * \return	 
  */
-Tassign_statement *TRfromto_assign_statement(Tsentence *, Texpr *)
+Tassign_statement *TRfromto_assign_statement(Tsentence *var_call, Texpr *expr)
 {
 	Tassign_statement *ret;
 
@@ -713,7 +713,7 @@ Tassign_statement *TRfromto_assign_statement(Tsentence *, Texpr *)
  * \param		
  * \return	 
  */
-Tsentence *TRfromto_loop(Tassign_statement *, Texpr *, Tsentence_list *)
+Tsentence *TRfromto_loop(Tassign_statement *fromto_statement, Texpr *expr, Tsentence_list *sentence_list)
 {
 	Tsentence *ret;
 
@@ -726,7 +726,7 @@ Tsentence *TRfromto_loop(Tassign_statement *, Texpr *, Tsentence_list *)
  * \param		
  * \return	 
  */
-Tsentence *TRfunction_call(char *, Texpr_list *)
+Tsentence *TRfunction_call(char *name, Texpr_list *expr_list)
 {
 	Tsentence *ret;
 
@@ -739,7 +739,7 @@ Tsentence *TRfunction_call(char *, Texpr_list *)
  * \param		
  * \return	 
  */
-Tsentence *TRvariable_call(char *, Texpr_list *)
+Tsentence *TRvariable_call(char *name, Texpr_list *expr_list)
 {
 	Tsentence *ret;
 
@@ -752,7 +752,7 @@ Tsentence *TRvariable_call(char *, Texpr_list *)
  * \param		
  * \return	 
  */
-Tsentence *TRstruct_call(Tsentence *, Tsentence *)
+Tsentence *TRstruct_call(Tsentence *previous_list, Tsentence *next_list)
 {
 	Tsentence *ret;
 
@@ -765,7 +765,7 @@ Tsentence *TRstruct_call(Tsentence *, Tsentence *)
  * \param		
  * \return	 
  */
-Tvar_call_list *TRvariable_list(Tvar_call_list *, Tvar_call *)
+Tvar_call_list *TRvariable_list(Tvar_call_list *previous_list, Tvar_call *next_list)
 {
 	Tvar_call_list *ret;
 
@@ -778,7 +778,7 @@ Tvar_call_list *TRvariable_list(Tvar_call_list *, Tvar_call *)
  * \param		
  * \return	 
  */
-Tsentence *TRprocedure_call(char *, Texpr_list *)
+Tsentence *TRprocedure_call(char *name, Texpr_list *arg_list)
 {
 	Tsentence *ret;
 
@@ -791,7 +791,7 @@ Tsentence *TRprocedure_call(char *, Texpr_list *)
  * \param		
  * \return	 
  */
-Texpr_list *TRexpr_list(Texpr_list *, Texpr *)
+Texpr_list *TRexpr_list(Texpr_list *previous_list, Texpr *actual)
 {
 	Texpr_list *ret;
 
@@ -804,7 +804,7 @@ Texpr_list *TRexpr_list(Texpr_list *, Texpr *)
  * \param		
  * \return	 
  */
-Texpr_bool *TRexpr_bool_val(bool *)
+Texpr_bool *TRexpr_bool_val(bool *val)
 {
 	Texpr_bool *ret;
 
@@ -817,7 +817,7 @@ Texpr_bool *TRexpr_bool_val(bool *)
  * \param		
  * \return	 
  */
-Texpr_bool *TRexpr_bool_struct(Tsentence *)
+Texpr_bool *TRexpr_bool_struct(Tsentence *struct_call)
 {
 	Texpr_bool *ret;
 
@@ -830,7 +830,7 @@ Texpr_bool *TRexpr_bool_struct(Tsentence *)
  * \param		
  * \return	 
  */
-Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *)
+Texpr_bool *TRexpr_bool(char type, Texpr_bool *left_expr, Texpr_bool *right_expr)
 {
 	Texpr_bool *ret;
 
@@ -843,7 +843,7 @@ Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *)
  * \param		
  * \return	 
  */
-Texpr_bool *TRexpr_bool_fcall(Tsentence *)
+Texpr_bool *TRexpr_bool_fcall(Tsentence *function_call)
 {
 	Texpr_bool *ret;
 
@@ -856,7 +856,7 @@ Texpr_bool *TRexpr_bool_fcall(Tsentence *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_int(int *)
+Texpr *TRexpr_int(int *int_val)
 {
 	Texpr *ret;
 
@@ -869,7 +869,7 @@ Texpr *TRexpr_int(int *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_expr_bool(Texpr_bool *)
+Texpr *TRexpr_expr_bool(Texpr_bool *expr_bool)
 {
 	Texpr *ret;
 
@@ -882,7 +882,7 @@ Texpr *TRexpr_expr_bool(Texpr_bool *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_float(float *)
+Texpr *TRexpr_float(float *float_val)
 {
 	Texpr *ret;
 
@@ -895,7 +895,7 @@ Texpr *TRexpr_float(float *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_str(char *)
+Texpr *TRexpr_str(char *str)
 {
 	Texpr *ret;
 
@@ -908,7 +908,7 @@ Texpr *TRexpr_str(char *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_struct(Tsentence *)
+Texpr *TRexpr_struct(Tsentence *struct_call)
 {
 	Texpr *ret;
 
@@ -921,7 +921,7 @@ Texpr *TRexpr_struct(Tsentence *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr(char, Texpr *, Texpr *)
+Texpr *TRexpr(char type, Texpr *left_expr, Texpr *right_expr)
 {
 	Texpr *ret;
 
@@ -934,7 +934,7 @@ Texpr *TRexpr(char, Texpr *, Texpr *)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_fcall(Tsentence *)
+Texpr *TRexpr_fcall(Tsentence *function_call)
 {
 	Texpr *ret;
 
