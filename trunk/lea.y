@@ -25,7 +25,7 @@
  */
 	#include <stdio.h>
 	#include <stdlib.h>
- 	#include "lea-translator.h"
+	#include "lea-translator.h"
 	
 	#define yyerror(s) printf("%s\n", s)
 %}
@@ -38,7 +38,7 @@
 	char					*str_val;
 /*
  * The list above has been automagically genereted executing:
- * $ ACTION=print_rule_types ./handy.awk lea.y
+ * $ ACTION=print_union_types ./handy.awk lea-translator.h
  * NOTE: tabulation added manually
  */
 	Tprogram				*Tprogram;
@@ -81,20 +81,23 @@
  * NOTE: tabulation added manually
  */
 %type <Tstr_list>				str_list
-%type <Tvar_call_list>			variable_list
+%type <Texpr>					expr
 %type <Tother_type_list>		types_dcl_list
 %type <Tid_list>				id_list
 %type <Tprogram>				program
-%type <Tsentence>				assign_statement fromto_loop procedure_call
 %type <Telif_statement>			elif_statement
+%type <Tsentence>				if_statement assign_statement mult_assign_statement output_input_statement while_loop fromto_loop function_call variable_call struct_call procedure_call
 %type <Tint_id_val_list>		int_val_list
 %type <Texpr_list>				expr_list
 %type <Tdeclarations_sym>		declarations_block
+%type <Tint_id_val>				int_id_val
 %type <Tassign_statement>		fromto_assign_statement
 %type <Texpr_bool>				expr_bool
-%type <Tinterface_sym>			interface_block
-%type <Tother_sym_list>			in_arg_list const_dcl_list vars_reg_dcl
-%type <Tmethod_sym>				library
+%type <Tinterface_sym>			interface_block proc_arg proc_arg_list
+%type <Tvar_sym_list>			variable_list
+%type <Tother_sym_list>			in_arg_list out_arg_list inout_arg_list const_dcl_list vars_dcl vars_reg_dcl
+%type <Tmethod_sym>				library algorithm function procedure func_header proc_header
+%type <Tother_sym>				in_var_dcl out_var_dcl inout_var_dcl
 %type <Telif_statement_list>	elif_statement_list
 %type <Tsentence_list>			sentence_list
 %type <Tother_type>				register
