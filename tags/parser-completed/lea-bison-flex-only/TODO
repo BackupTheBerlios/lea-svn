@@ -1,0 +1,79 @@
+TODO List
+#########
+
+
+The structure of our language processor, our interpreter, is the following:
+
+0 User-input/code ---strings---->
+
+1	lexical analyzer ----tokens--->
+
+2		grammatical parser ----translation-calls---->
+
+3			language translator (translation-tree & symbol-table generator) ----translated-program---->
+
+4				 interpreter (execution unit).
+
+
+1. Lexical analyzer
+###################
+ ----> Mostly done
+ 
+ @ The Linux/UNIX scripting capability is badly implemented
+	Needs to be implemented so that it can only be recognized if it's in the first line of a file being executed
+	via Linux directly (i.e. ./<script-name>)
+
+ @ No error recovery yet
+	Where possible, errors should be automatically recovered - For example a syntaxical error in a sentence
+	shouldn't stop the next sentence from being executed. It should also show the user exactly which are the
+	problematic lines and show as much hints as we can provide to allow him to quickly detect which was the
+	error.
+ @ Support debuggers ?
+	We haven't got even error recovery yet at all. So this is still an utopia. But needs to be kept in mind so
+	that it doesn't turn an huge task of code refactoring to implement in the end. 
+
+2. Grammatical parser
+#####################
+ ----> Mostly done
+ 
+ @ No error recovery yet
+	Pretty similar problem as in the Lexical parser, applied to grammatics.
+	
+ @ Support debuggers ?
+ 	Idem as in the Lexical Parser analogue point.
+
+ @ Some gramatical checks are not being done here
+	This is not something I feel that needs to be fixed, but just to talk about it a bit and decide if it's the
+	actually the best way to do. There are some grammatical structure checks (being the mult_assign_statement
+	the most remarkable) that are just not being done by the the parser. The main reason behind this decission
+	is that this way it's easier to reuse other rules, and thus code it's probably more readeable. In the other
+	hand, we'll need to check that this grammar exceptions in the tree-generator code
+
+ @ EPSILON rules
+	An epsilon is meant to be a null rule. Epsilon rules should always contain the same action:
+	EPSILON { $$ = NULL; }, because the rules that are up in the parse tree will call to functions of the symtable
+	generator that will that the EPSILON rules as one of its arguments, and this is the standard way to deal with
+	null rules.
+
+
+3. language translator
+######################
+ ----> Not implemented yet
+
+ @ Deal with some grammatical error exceptions
+	See the analogue point in the Grammatical parser point.
+ 
+ @ Deal with semantic errors
+	The use of variables that have not been declared, by-zero divisions, use of variables not yet initialized, etc
+	are user errors that may happen, and a propper error handler must deal with them.
+ 
+ @ Optimizations
+	This is just a thought, and is not really planned to be implemented.
+
+4. Interpreter
+##############
+ ----> Not implemented yet
+
+ @ Deal with execution time errors
+	There's a need to check wether if i.e. the files trying to be opened exist, etc, and if an error occurs in
+	this stage, there must be a propperly implemented error handler that will deal with it.
