@@ -356,23 +356,28 @@ sentence:
 ;
 
 if_statement:
-	IF expr_bool ':' '\n'
+	IF expr_bool cond_start
 		sentence_list
 	elif_statement_list
-	'|' ELSE ':' '\n' 
+	'|' ELSE cond_start
 		sentence_list
 	ENDIF '\n'
 		{  }
-	| IF expr_bool ':' '\n'
+	| IF expr_bool cond_start
 		sentence_list
-	'|' ELSE ':' '\n' 
+	'|' ELSE cond_start
 		sentence_list
 	ENDIF '\n'
 		{  }
 ;
 
+cond_start:
+	':' '\n'
+	| ':'
+;
+
 elif_statement:
-	'|' expr_bool ':' '\n'
+	'|' expr_bool cond_start
 		sentence_list
 		{  }
 ;

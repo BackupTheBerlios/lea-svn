@@ -37,7 +37,7 @@ prog prueba
 		continue := verdadero
 		intialise_two_files(c, d)
 		
-		mientras (continue y i < MAX)
+		mientras continue y i < MAX
 			i:=i+1
 			
 			leer a
@@ -86,8 +86,7 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 		llamada_a_un_func_o_proc(45, 4., a)
 		escribir pi
 		
-		si (a = b):
-			leer a
+		si (a = b): leer a
 		| ( a <= llamada_a_un_func_o_proc(45, 4., a) ):
 			mientras llamada_a_un_func_o_proc(45, 4., a)
 				a, b := b+1, a-1
@@ -98,7 +97,7 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 			nula
 		fsi
 		
-		desde (a:=1) hasta (5)
+		desde (a:=1) hasta 5
 			leer pi
 		fd
 	fin
