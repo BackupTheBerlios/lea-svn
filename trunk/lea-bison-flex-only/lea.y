@@ -347,17 +347,30 @@ vars_dcl:
 	id_list ':' ARRAY array_dimensions OF ID '\n'
 		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
 	| vars_dcl
-	id_list ':' register
+	id_list ':' register  //TODO: !!!!!
 		{ $$ = TRvars_dcl_reg($1, $2, $4); }
+;
+vars_reg_dcl:
+	EPSILON
+		{ $$ = NULL; }
+	| vars_reg_dcl
+	id_list ':' ID '\n'
+		{ $$ = TRvars_dcl_var($1, $2, $4, NULL); }
+	| vars_reg_dcl
+	id_list ':' ID OF ID '\n'
+		{ $$ = TRvars_dcl_var($1, $2, $4, $6); }
+	| vars_reg_dcl
+	id_list ':' ARRAY array_dimensions OF ID '\n'
+		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
 ;
 
 register:
 	REG '\n'
-	vars_dcl
+		vars_reg_dcl
 	ENDREG '\n'
 		{ $$ = TRregister($3); }
 	| '\n' REG '\n'
-	vars_dcl
+		vars_reg_dcl
 	ENDREG '\n'
 		{ $$ = TRregister($4); }
 ;
@@ -564,8 +577,8 @@ expr_bool:
 expr:
 	INT_VAL
 		{ $$ = TRexpr_int($1); }
-	| BOOL_VAL
-		{ $$ = TRexpr_bool($1); }
+	| expr_bool
+		{ $$ = TRexpr_expr_bool($1); }
 	| FLOAT_VAL
 		{ $$ = TRexpr_float($1); }
 	| STR_VAL
