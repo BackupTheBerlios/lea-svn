@@ -64,8 +64,8 @@ ID			{L}+{H}*
 <comment>"*"+"/"		{ BEGIN(INITIAL);	}
 "//".*$					{ }
 
+prog					{ return PROG;		}
 alg						{ return ALG;		}
-
 func					{ return FUNC;		}
 entrada[ \t]+de[ \t]+	{ return IN_STREAM;	}
 salida[ \t]+de[ \t]+	{ return OUT_STREAM; }
@@ -120,11 +120,11 @@ fd						{ return ENDFROMTO;	}
 
 verdadero				{
 							yylval.bool_val = true;
-							return BOOL_VAR;
+							return BOOL_VAL;
 						}
 falso					{
 							yylval.bool_val = false;
-							return BOOL_VAR;
+							return BOOL_VAL;
 						}
 
 {D}+					{

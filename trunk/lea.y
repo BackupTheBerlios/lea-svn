@@ -38,8 +38,10 @@
     node *no;
     node_block *nb;
     node_list *nl;
-	
 }
+
+%token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START END OF
+%token PRINT READ IF ELSE NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO ID
 
 %token <int_val>	INT_VAL
 %token <bool_var>	BOOL_VAL
@@ -77,6 +79,11 @@ program:
 		{ $$ = declare_prog($1, $2, $3, $4); }
 ;
 
+prog_header:
+	PROG ID '\n'
+		{ $$ = add_prog_header($2); }
+;
+
 library: /* empty */
 	| library algorithm
 		{ $$ == add_alg($2);}
@@ -110,17 +117,17 @@ procedure:
 
 alg_header:
 	ALG ID '\n'
-		{ $$ = ID; }
+		{ $$ = add_alg_header($2); }
 ;
 
 func_header:
 	FUNC ID '(' linked_in_args ')'  DEV '(' linked_out_args ')' '\n'
-		{ $$ = declare_func_header($2, $4, $8); }
+		{ $$ = add_func_header($2, $4, $8); }
 ;
 
 proc_header:
 	PROC ID '(' proc_arg_list ')' '\n'
-		{ $$ = declare_proc_header($2, $4); }
+		{ $$ = add_proc_header($2, $4); }
 ;
 
 interface_block: /* empty */
@@ -141,16 +148,16 @@ proc_arg_list: /* empty */
 
 linked_in_args : NULL
 	| in_var_dcl ',' linked_in_args
-		{ $$ = add_func_linked_in_arg_node($1, $2); }
+		{ $$ = add_linked_in_arg_node($1, $2); }
 	| in_var_dcl
-		{ $$ = add_func_linked_in_arg_node($1); }
+		{ $$ = add_linked_in_arg_node($1); }
 ;
 
 linked_out_args : NULL
 	| out_var_dcl ',' linked_out_args
-		{ $$ = add_func_linked_out_arg_node($1, $2); }
+		{ $$ = add_linked_out_arg_node($1, $2); }
 	| out_var_dcl ','
-		{ $$ = add_func_linked_out_arg_node($1); }
+		{ $$ = add_linked_out_arg_node($1); }
 ;
 
 linked_inout_args : /* empty */
@@ -232,6 +239,8 @@ types_dcl: /* empty */
 strs:
 	ID ',' strs
 		{ $$ = add_linked_str_node($1, $3); }
+	| ID
+		{ $$ = add_linked_str_node($1); }
 ;
 
 vars_block: /* empty */
@@ -257,7 +266,7 @@ sentences: /* empty */
 ;
 
 sentence:
-	| conditional_statement
+	conditional_statement
 	| assign_statement
 	| input_statement
 	| output_statement
@@ -268,51 +277,53 @@ sentence:
 ;
 
 if_statement:
-	IF expr_bool
+	IF expr_bool '\n'
 		sentences
 	elif_statements
-	ELSE
-		expr
-	ENDIF
+	ELSE '\n' 
+		sentences
+	ENDIF '\n'
 		{ $$ = if_node($2, $3, $4, $6); }
 ;
 
 elif_statements:
-	'|' expr_bool
+	'|' expr_bool '\n'
 		sentences
 		{ $$ = elif_node($2, $3); }
-	'|' expr_bool
+	| '|' expr_bool '\n'
 		sentences
 	elif_statements
 		{ $$ = elif_node($2, $3, $4); }
 ;
 
 assign_statement:
-	| ID ASSIGN expr
+	| ID ASSIGN expr assign_statement
+		{ $$ = assign_node($1, $3, $4); }
+	| ID ASSIGN expr '\n'
 		{ $$ = assign_node($1, $3); }
 ;
 
 output_statement:
-	PRINT expr
+	PRINT expr '\n'
 		{ $$ = print($2); }
 ;
 
 input_statement:
-	READ expr
+	READ expr '\n'
 		{ $$ = read($2); }
 ;
 
 while_loop:
-	WHILE expr_bool
+	WHILE expr_bool '\n'
 		sentences
-	ENDWHILE
+	ENDWHILE '\n'
 		{ $$ = while_node($2, $3); }
 ;
 
 fromto_loop:
-	FROM expr TO expr_bool
+	FROM expr TO expr_bool '\n'
 		sentences
-	ENDFROMTO
+	ENDFROMTO '\n'
 		{ $$ = fromto_node($2, $4, $5); }
 ;
 
@@ -364,23 +375,23 @@ expr_bool:
 	| ID
 		{ $$ = get_identifier($1); }
 	| NOT_OP expr_bool
-		{ $$ = bool_node('!', $1); }
+		{ $$ = bool_node(1, $1); }
 	| expr_bool AND_OP expr_bool
-		{ $$ = bool_node('^', $1, $3); }
+		{ $$ = bool_node(2, $1, $3); }
 	| expr_bool OR_OP expr_bool
-		{ $$ = bool_node('´', $1, $3); }
+		{ $$ = bool_node(3, $1, $3); }
 	| expr_bool '=' expr_bool
-		{ $$ = bool_node('=', $1, $3); }
+		{ $$ = bool_node(4, $1, $3); }
 	| expr_bool '<' expr_bool
-		{ $$ = bool_node('<', $1, $3); }
+		{ $$ = bool_node(5, $1, $3); }
 	| expr_bool '>' expr_bool
-		{ $$ = bool_node('>', $1, $3); }
+		{ $$ = bool_node(6, $1, $3); }
 	| expr_bool LE_OP expr_bool
-		{ $$ = bool_node('{', $1, $3); }
+		{ $$ = bool_node(7, $1, $3); }
 	| expr_bool GE_OP expr_bool
-		{ $$ = bool_node('}', $1, $3); }
+		{ $$ = bool_node(8, $1, $3); }
 	| expr_bool NOT_EQ expr_bool
-		{ $$ = bool_node('¨', $1, $3); }
+		{ $$ = bool_node(9, $1, $3); }
 	'(' expr_bool ')'
 ;
 
