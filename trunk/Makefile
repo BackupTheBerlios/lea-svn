@@ -1,25 +1,21 @@
 all: lea
 
-TMP=lex.yy.c y.tab.c y.tab.h
-SRCS=lea-translator.c lex.yy.c y.tab.c
-OBJS=$(SRCS:.c=.o)
+TMPS=lex.yy.c y.tab.c
+OBJS=lea-translator.o
 LEX_SRC=lea.l
 YACC_SRC=$(LEX_SRC:.l=.y)
 OUT=$(LEX_SRC:.l=)
 
 LEX=flex
-YACC=yacc
+YACC=bison
 
-CFLAGS+=-lm -lfl
-#-g -Wall
+lea: $(OBJS)
+	$(LEX) $(LEX_SRC)
+	$(YACC) --verbose -d $(YACC_SRC)
+	$(CC) -o $(OUT) $(TMPS) $(OBJS) -lfl -lm $(CFLAGS)
 
-lea: $(LEX_SRC) $(YACC_SRC) $(OBJS)
-	 $(LEX) $(LEX_SRC)
-	 $(YACC) --verbose -d $(YACC_SRC)
-	 $(CC) -o $(OUT) $(OBJS) $(CFLAGS)
-	 
 clean:
-	$(RM) -f $(TMP) $(OUT)
+	$(RM) -f $(TMPS) $(OUT) *.o *~
 
 prueba:
 	$(CC) -o prueba prueba.c
