@@ -68,7 +68,7 @@ $ chmod +x sample-script
 and once sucessfully installed the parser:
 $ ./sample-script
 
-4.2 Interactive intrepeter/parser
+4.2 Interactive interpeter/parser
 ---------------------------------
 
 If you execute the LEA parser without any argument, it will wait to you to enter your code, that it will parse

@@ -10,9 +10,9 @@ The structure of our language processor, our interpreter, is the following:
 
 2		grammatical parser ----translation-calls---->
 
-3			language translator (translation-tree & symbol-table generator) ----translated-program---->
+3			language translator (abstract Tree) ----translated-program---->
 
-4				 interpreter (execution unit).
+4				 interpreter (execution unit that reads the abstract tree).
 
 
 1. Lexical analyzer

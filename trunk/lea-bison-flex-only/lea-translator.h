@@ -1,6 +1,6 @@
 /**
- * \file lea-interpreter.h
- * \brief Translator to intermediate language header
+ * \file lea-translator.h
+ * \brief Translator to Abstract Tree header
  *
  * \author Eduardo Robles Elvira <edulix@iespana.es>
  *
@@ -410,7 +410,7 @@
 	} Texpr;
 	
 	/**
-	 * \brief program type definition
+	 * \brief Tprogram type definition
 	 */
 	typedef struct {
 		Tid *name;
@@ -575,87 +575,28 @@
 		} function;
 	} Treserved_call;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/*
+	 * List types to keep an eye in for sorting the list of its elements
+	 * in order to apply quicksort and then binary search:
+	 *  - Tstruct_sym_list
+	 *  - Tstruct_sym_val_list
+	 *  - Tlibrary
+	 * And also the structures that directly use them:
+	 *  - Treg_type_sym
+	 *  - Treg_sym
+	 *  - Tprogram
+	 *  - Tinterface_sym
+	 *  - Tdeclarations_sym
+	 */
+	 
 	/****************************
 	*     Vars declarations     *
 	****************************/
 	/**
-	* \brief Intermediate Language Tree
+	* \brief Abstract Tree
 	*/
 	
-	Tprogram ILtree;
-	
-	
-	/**
-	* \brief Symbol table
-	*/
-	
-	TSymtab symtable;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	Tprogram abstract_tree;
 	
 	/****************************
 	*    Function prototypes    *
@@ -836,7 +777,7 @@
 			TRexpr_bool_fcall($1); 
 	// expr: 
 			TRexpr_int($1); 
-			TRexpr_bool($1); 
+			TRexpr_expr_bool($1); 
 			TRexpr_float($1); 
 			TRexpr_str($1); 
 			TRexpr_struct($1); 

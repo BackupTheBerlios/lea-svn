@@ -49,7 +49,8 @@ function print_rules()
 }
 
 # /**
-#  * \brief Print the list of function calls in a yacc/bison file, marking with a comment which rules are them in
+#  * \brief Print the list of function calls of a yacc/bison file (readed from stdin), 
+#  * indicating with a comment which rules are them in
 #  */
 function print_action_rules()
 {
