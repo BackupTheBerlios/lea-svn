@@ -1,12 +1,20 @@
-#include <stdlib.h>
 #include <stdio.h>
 
-int main(int argc, char **argv)
+char *print();
+
+int main(void)
 {
-	char *mystring=malloc(200);
-	while(fscanf(stdin, "%s", mystring))
-	{
-		printf("%s\n", mystring);
-	}
+	printf("%c\n", print()[0]);
+	
 	return 0;
+}
+
+
+char *print()
+{
+	char *t = (char *)malloc(10);
+	
+	t=strcpy(t, "Hola");
+	
+	return t;
 }

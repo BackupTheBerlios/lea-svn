@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with nbsmtp; if not, write to the Free Software
+ * along with Lea; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  * See COPYING for details.
@@ -123,26 +123,26 @@ fd						{ return ENDFROMTO;	}
 "<>"					{ return NOT_EQ;	}
 
 verdadero				{
-							//yylval.bool_val = true;
+							yylval.bool_val = true;
 							return BOOL_VAL;
 						}
 falso					{
-							//yylval.bool_val = false;
+							yylval.bool_val = false;
 							return BOOL_VAL;
 						}
 
 {D}+					{
-							//yylval.int_val = atoi(yytext);
+							yylval.int_val = atoi(yytext);
 							return INT_VAL;
 }
 
 {D}+\.{D}*				{
-							//yylval.float_val = atof(yytext);
+							yylval.float_val = atof(yytext);
 							return FLOAT_VAL;
 }
 
 \'[^\']\'				{
-							//yylval.char_val = strdup(yytext[1]);
+							yylval.char_val = strdup(yytext[1]);
 							return CHAR_VAL;
 }
 \'\\[0-7]{1,3}\'		{
@@ -153,7 +153,7 @@ falso					{
 							if (result > 0xff)
 								lexical_error("constant out of range");
 							
-							//yylval.char_val = result;
+							yylval.char_val = result;
 							return CHAR_VAL;
 }
 
@@ -162,29 +162,29 @@ falso					{
 }
 
 \'\\n\'					{
-							//yylval.char_val = '\n';
+							yylval.char_val = '\n';
 							return CHAR_VAL;
 }
 
 \\t						{
-							//yylval.char_val = '\t';
+							yylval.char_val = '\t';
 							return CHAR_VAL;
 }
 \\r						{
-							//yylval.char_val = '\r';
+							yylval.char_val = '\r';
 							return CHAR_VAL;
 }
 \\b						{
-							//yylval.char_val = '\b';
+							yylval.char_val = '\b';
 							return CHAR_VAL;
 }
 \\f						{
-							//yylval.char_val = '\f';
+							yylval.char_val = '\f';
 							return CHAR_VAL;
 }
 
 {ID}					{
-							//yylval.str_val = strdup(yytext);
+							yylval.str_val = strdup(yytext);
 							return ID;
 }
 
@@ -196,7 +196,7 @@ falso					{
 <str>\"					{
 							BEGIN(INITIAL);
 							*string_buf_ptr = '\0';
-							//yylval.str_val = string_buf_ptr;
+							yylval.str_val = string_buf_ptr;
 							return STR_VAL;
 }
 

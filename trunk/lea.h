@@ -1,6 +1,6 @@
 /**
- * \file lea.h
- * \brief Functions for the calculator
+ * \file eval_operations.h
+ * \brief Functions to execute to eval nodes/node_lists
  *
  * \author Eduardo Robles Elvira <edulix@iespana.es>
  *
@@ -16,197 +16,268 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with nbsmtp; if not, write to the Free Software
+ * along with Lea; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  * See COPYING for details.
  */
- 
-#ifndef LEA_H
-	#define LEA_H
+#ifndef EVAL_OPERATIONS_H
+	#define EVAL_OPERATIONS_H
 	
 	#include <stdlib.h>
 	#include <string.h>
 	
 	/**
-	 * Symbol type definition
-	 * It stores each variable name and value
+	 * \brief storage type definition
+	 * It contains all the essential types of information
 	 */
+	typedef union {
+			int *int_val;
+			bool *bool_val;
+			float *float_val;
+			char *char_val;
+			char **str_val;
+			node **node_ptr;
+		} storage;
 	
+	/**
+	 * \brief node type definition
+	 * A node just contains information. Everything else is built around
+	 * and according to nodes structure!
+	 */
+	typedef struct str_node node;
+	
+	struct str_node {
+		kind node_kind;
+		storage node_storage;
+		node* (*eval)();
+		node* (*free)();
+	};
+	 
+	/**
+	 * \brief boolean type definition
+	 */
+	typedef enum {false, true} bool;
+	
+	/**
+	 * \brief kind type definition
+	 * Defines all the types of information that can be stored in a node
+	 */
+	typedef enum {
+		Int_val,
+		Bool_val,
+		Float_val,
+		Char_val,
+		Str_val,
+		Expr_bool,
+		Expr_list,
+		Expr,
+		Procedure_call,
+		Function_call,
+		Fromto_loop,
+		While_loop,
+		Output_input_statement,
+		Mult_assign_statement,
+		Mult_assign_list,
+		Assign_statement,
+		Elif_statement_list,
+		Elif_statement,
+		If_statement,
+		Sentence,
+		Sentence_list,
+		Sentence_list_block,
+		Register,
+		Vars_dcl,
+		Vars_block,
+		Str_list,
+		Types_dcl_list,
+		Types_block,
+		Const_dcl_list,
+		Const_block,
+		Declarations_block,
+		Int_val_list,
+		Array_dimensions,
+		Id_list,
+		Inout_var_dcl,
+		Out_var_dcl,
+		In_var_dcl,
+		Inout_arg_list,
+		Out_arg_list,
+		In_arg_list,
+		Proc_arg_list,
+		Proc_arg,
+		Interface_block,
+		Proc_header,
+		Func_header,
+		Alg_header,
+		Procedure,
+		Function,
+		Algorithm,
+		Library,
+		Proc_header,
+		Program
+	} kind;
+	
+	/**
+	 * \brief Expr_bool type definition
+	 */
 	typedef struct {
-		char *name;
-		int value;
-	} symrec;
-	
-	/**
-	 * boolean type
-	 */
-	typedef enum{false, true} bool;
-	
-	/**
-	 * Types of values for a karnaugh map entry
-	 */
-	typedef enum{F=0, T=1, I=2} kbool;
-	typedef bool node;
-	
-	/**
-	 * Symbols table
-	 */
-	
-	symrec *sptr;
-	
-	/**
-	 * Pointer to the first unused symbol/next symbol to use
-	 */
-	
-	symrec *actual;
-	
-	/**
-	 * Buffer size
-	 * When all the Symbols in the Symbols table are already used, 
-	 * this is the number of symbols we'll add to the table
-	 */
-	
-	const int buffer = 10;
-	
-	/**
-	 * Number of actual records in the Symbols table.
-	 */
-	
-	int n_records = 0;
-	
-	/**
-	 * Determines if we'll print the login prompt or not.
-	 * NOTE: in our implementation, if it's set to I we'll
-	 * also print the login prompt
-	 */
-	
-	kbool user_prompt=I;
-	
-	
-	/*
-	 * Function prototypes
-	 */
-	void add_sym(char *name, int value); 
-	int get_sym(char *name);
-	void set_sym(char *name, int value);
-	int exists_symbol(char *name);
-	void init_table();
-	void prompt();
-	
-	/*
-	 * Function declarations
-	 */
-	
-	/**
-	 * Add a new var to the array of them
-	 * \param[in]	name	Identifier for the new var
-	 * \param[in]	value	Initial value of the var
-	 */
-	void add_sym(char *name, int value)
-	{
-		// If we've run out of symbols, add <buffer> more,
-		// readjusting 'n_records' and 'actual'.
-		if (actual >= &sptr[n_records-2])
-		{
-			n_records += buffer;
-			sptr = realloc(sptr, sizeof(symrec) * (n_records));
-			actual = &sptr[n_records - 9];
-		}
+		// This will be an array of 1 or 2 elements of pointers to nodes
+		Expr	**exprs;
 		
-		// Set this symbol's values
-		actual->name = malloc(strlen(name));
-		actual->name = name;
-		actual->value = value;
+		// This var will say what type of expr_bool will store each node
+		// That is: b, i, n, ^, o, =, <, >, l, g, !.
+		char	type;
 		
-		// Make 'actual' point  to next symbol to be used
-		actual++;
-	}
+		bool*	(*eval)();
+		void	(*free)();
+	} Expr_bool;
 	
 	/**
-	 * Get a var from the array of them by its identifier
-	 * 
-	 * \param[in]	name	Variable identifier
-	 * \return 				Value of that variable, or 0 if it's not in the
-	 *						array of vars.
+	 * \brief Expr_list type definition
 	 */
-	int get_sym(char *name)
-	{
-		int i;
-		
-		// Go across the array of vars
-		for (i = 0; &sptr[i] < actual; i++)
-		{
-			// If actual var is the one we're looking for, return it's value
-			if (strcmp(sptr[i].name, name) == 0)
-				return sptr[i].value;
-		}
-		
-		// If there's no var with that name in our array of vars, return 0 (as a default value)
-		return 0;
-	}
+	typedef struct {
+		Expr	*actual, *next;
+	} Expr_list;
 	
 	/**
-	 * Sets a var to a value. 
-	 * If the var doesn't exist in the array of them, create it and assign the
-	 * given value.
-	 * \param[in]	name	Identifier of the given var
-	 * \param[in]	value	Initial value of the var
-	 * \see void add_sym(char *name, int value)
+	 * \brief expr_return_types type definition
 	 */
-	void set_sym(char *name, int value)
-	{
-		int i = exists_symbol(name);
-		
-		if (i >= 0)
-			sptr[i].value = value;
-		else
-			add_sym(name, value);
-	}
+	typedef union {
+		bool	*b;, *bb[2];
+		int		*i;, *ii[2];
+		float	*f, *ff[2];
+		char	*c, *cc[2], **s, **s[2];
+	} expr_return_types;
 	
 	/**
-	 * Let you know if a variable with a given name is in the array
-	 * of them, and if so, which is the index position in the array.
-	 * \param[in]	name	Identifier of the var to locate
-	 * \return				Returns -1 if no variable with such a name
-	 *						exists in the array of vars. Otherwise,
-	 *						returns the the index position in the array.
+	 * \brief Expr type definition
 	 */
-	int exists_symbol(char *name)
-	{
-		int i;
+	typedef struct {
 		
-		for (i = 0; &sptr[i] < actual; i++)
-		{
-			if(strcmp(sptr[i].name, name) == 0)
-				return i;
-		}
+		// This var will say what type of expr will store each node
+		// That is: i, b, f, s, d, +, -, *, /, %, ^, n.
+		char				type;
 		
-		return -1;
-	}
+		expr_return_types	(*eval)();
+		void				(*free)();
+	} Expr;
 	
 	/**
-	 * Initialise the array of vars.
-	 * It allocates some memory for it and set properly enviromental
-	 * variables.
+	 * \brief Procedure_call type definition
 	 */
-	void init_table()
-	{
-		// Allocate memory according to buffer
-		n_records = buffer;
-		sptr = realloc(sptr, sizeof(symrec) * (n_records));
-		
-		// set actual to next variable symbol to use
-		actual = sptr;
-	}
+	typedef struct {
+		Str_val		*id;
+		Expr_list	*expr_list;
+	} Procedure_call;
 	
 	/**
-	 * Prints a prompt to the user if user_prompt var is not set 0
+	 * \brief Fromto_loop type definition
 	 */
-	void prompt()
-	{
-		if (user_prompt != 0)
-			printf("> ");
-	}
-
+	typedef struct {
+		Assign_statement	*from;
+		Expr				*to;
+		Sentence_list		*sentence_list;
+	} Fromto_loop;
+	
+	/**
+	 * \brief While_loop type definition
+	 */
+	typedef struct {
+		Expr_bool			*condition;
+		Sentence_list		*sentence_list;
+	} While_loop;
+	
+	/**
+	 * \brief Output_input_statement type definition
+	 */
+	typedef struct {
+		Expr_list	*expr_list;
+	} Output_input_statement;
+	
+	/**
+	 * \brief mult_assign_statement type definition
+	 */
+	typedef struct {
+		Id_list		*id_list;
+		Expr_list	*expr_list;
+	} mult_assign_statement;
+	
+	/**
+	 * \brief Mult_assign_list type definition
+	 */
+	typedef struct {
+		union	list {
+			*Expr,
+			*Mult_assign_list
+		};
+	
+		// This var will say what type of Mult_assign_list will store each node
+		// That is: m, e, M, E.
+		char	*type;
+	} Mult_assign_list;
+	
+	/**
+	 * \brief Assign_statement type definition
+	 */
+	typedef struct {
+		Str_val		*id;
+		
+		union		list {
+			*Expr,
+			*Mult_assign_list,
+			*Assign_statement
+		};
+	
+		// This var will say what type of Assign_statement will store each node
+		// That is: e, m, a
+		char	*type;
+	} Assign_statement;
+	
+	/**
+	 * \brief Elif_statement_list type definition
+	 */
+	typedef struct {
+		Elif_statement	**Elif_statements;
+		bool			*pair_or_node;
+	} Elif_statement_list;
+	
+	/**
+	 * \brief Elif_statement type definition
+	 */
+	typedef struct {
+		Expr_bool		*condition;
+		Sentence_list	*sentence_list;
+	} Elif_statement;
+	
+	/**
+	 * \brief If_statement type definition
+	 */
+	typedef struct {
+		Expr_bool				*condition;
+		Sentence_list			*sentence_list;
+		Elif_statement_list		*elif_statement_list;
+		Sentence_list			*else_sentence_list;
+	} If_statement;
+	
+	/**
+	 * \brief Sentence type definition
+	 */
+	typedef struct {
+		union 		sentence {
+			*If_statement,
+			*Assign_statement,
+			*Mult_assign_statement,
+			*Ouput_input_statement,
+			*While_loop while_loop,
+			*Fromto_loop,
+			*Function_call,
+			*Procedure_call
+		};
+	
+		// This var will say what type of Sentence will store each node
+		// That is: m, o, w, t, f, p.
+		char		*type;
+	} Sentence;
+	
 #endif

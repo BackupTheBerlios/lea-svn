@@ -18,7 +18,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with nbsmtp; if not, write to the Free Software
+ * along with Lea; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  * See COPYING for details.
@@ -363,7 +363,13 @@ if_statement:
 	'|' ELSE ':' '\n' 
 		sentence_list
 	ENDIF '\n'
-		{ $$ = if_statement_node($2, $$5, $6, $11); }
+		{ $$ = if_statement_node($2, $5, $6, $11); }
+	| IF expr_bool ':' '\n'
+		sentence_list
+	'|' ELSE ':' '\n' 
+		sentence_list
+	ENDIF '\n'
+		{ $$ = if_statement_node($2, $5, $10); }
 ;
 
 elif_statement:
@@ -457,7 +463,7 @@ expr:
 	| STR_VAL
 		{ $$ = expr_node('s', $1); }
 	| ID
-		{ $$ = expr_node('i', $1); }
+		{ $$ = expr_node('d', $1); }
 	| expr '+' expr
 		{ $$ = expr_pair('+', $1, $3); }
 	| expr '-' expr
