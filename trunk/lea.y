@@ -198,11 +198,9 @@ inout_var_dcl:
 		{ $$ = dcl_inout_var($1, $3, $4, $6); }
 ;
 
-id_list:
-	ID ',' id_list
+id_list: /* empty */
+	| ID ',' id_list
 		{ $$ = id_list_pair($1, $3); }
-	ID
-		{ $$ = id_list_node($1); }
 ;
 
 declarations_block:
@@ -249,11 +247,9 @@ types_dcl: /* empty */
 		{ $$ = types_dcl_node($1, $3, $4, $6); }
 ;
 
-str_list:
+str_list: /* empty */
 	ID ',' str_list
 		{ $$ = str_list_pair($1, $3); }
-	| ID
-		{ $$ = str_list_node($1); }
 ;
 
 vars_block: /* empty */
