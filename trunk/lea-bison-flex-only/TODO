@@ -4,15 +4,15 @@ TODO List
 
 The structure of our language processor, our interpreter, is the following:
 
-User-input/code ---strings----> 
+0 User-input/code ---strings---->
 
-	lexical analyzer ----tokens--->
-		
-		grammatical parser ----parse-tree---->
-			
-			symbol table generator ----symbol-table---->
-				
-				execution unit.
+1	lexical analyzer ----tokens--->
+
+2		grammatical parser ----translation-calls---->
+
+3			language translator (translation-tree & symbol-table generator) ----translated-program---->
+
+4				 interpreter (execution unit).
 
 
 1. Lexical analyzer
@@ -56,8 +56,8 @@ User-input/code ---strings---->
 	null rules.
 
 
-3. Symbol table generator
-#########################
+3. language translator
+######################
  ----> Not implemented yet
 
  @ Deal with some grammatical error exceptions
@@ -70,8 +70,8 @@ User-input/code ---strings---->
  @ Optimizations
 	This is just a thought, and is not really planned to be implemented.
 
-4. Execution unit
-#################
+4. Interpreter
+##############
  ----> Not implemented yet
 
  @ Deal with execution time errors
