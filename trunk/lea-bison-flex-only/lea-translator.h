@@ -159,16 +159,10 @@
 	} Tstr_val;
 	
 	/**
-	 * \brief Tid type definition
-	 * This type is always used for identifiers
-	 */
-	typedef char *Tid;
-	
-	/**
 	 * \brief Tid_list type definition
 	 */
 	typedef struct {
-		Tid *actual;
+		char *actual;
 		Tid_list *next;
 	} Tid_list;
 	
@@ -179,7 +173,7 @@
 	 *
 	 * The best example of its usefulness is Tarray_dimensions, which it was
 	 * developed for.
-	 * *
+	 *
 	 * In this structure char *type can be:
 	 *  -  Vvar_call (for val.var_call)
 	 *  -  Vint_val (for val.int_val)
@@ -197,7 +191,7 @@
 	 */
 	typedef struct {
 		Tstr_val *actual;
-		Tstr_val *next;
+		Tstr_list *next;
 	} Tstr_list;
 	
 	/**
@@ -206,13 +200,11 @@
 	 * constant (or global variable if we're inside a function), we need to use
 	 * Tint_id_val type for setting the actual dimension.
 	 *
-	 * By the way, we directly make this type a linked list (with 
-	 * Tarray_dimensions *next;) because it would solely be used that way.
+	 * By the way, we don't use a linked list (Tint_id_val) but a "dynamic"
+	 * pointer to store the dimensions because we already know how many dimensions
+	 * are and it's a static number.
 	 */
-	typedef struct {
-		Tint_id_val *actual_dimension;
-		Tarray_dimensions *next;
-	} Tarray_dimensions;
+	typedef Tint_id_val *Tarray_dimensions;
 	
 	/**
 	 * \brief Tint_id_val_list type definition
@@ -229,10 +221,7 @@
 	 * \brief Tvar_call type definition
 	 * Note that constants and vars are both called via this type
 	 */
-	typedef union {
-		Tid *name;
-		Tvar_sym *symbol;
-	} Tvar_call;
+	typedef Tvar_sym Tvar_call;
 	
 	/**
 	 * \brief Tvar_call_list type definition
@@ -240,7 +229,7 @@
 	 */
 	typedef struct {
 		Tvar_call *actual;
-		Tvar_call *next;
+		Tvar_call_list *next;
 	} Tvar_call_list;
 	
 	/**
@@ -253,7 +242,7 @@
 	 * Symbols are meant to be part of the symbol table
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Ttype *storage;
 	} Tvar_sym;
 	
@@ -263,7 +252,7 @@
 	 * used only internaly to speed up the enumerated type
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		char *int_val;
 	} Tenum_element;
 	
@@ -273,7 +262,7 @@
 	 * we've defined *storage as a "dynamic" array instead of as a linked list  
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tenum_element *storage;
 	} Tenum_type;
 	
@@ -282,16 +271,16 @@
 	 * Symbols are meant to be part of the symbol table
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tenum_type *type_sym;
-		Tid *storage;
+		char *storage;
 	} Tenum_sym;
 	
 	/**
 	 * \brief Tarray_type type definition
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tarray_dimensions *dimensions;
 		Tother_type *type_sym;
 	} Tarray_type;
@@ -299,19 +288,22 @@
 	/**
 	 * \brief Tarray_sym type definition
 	 * Symbols are meant to be part of the symbol table
+	 * Note that whenever we have fixed number of elements, we stop using linked lists
+	 * and use pointers (that can be properly used as "dynamic" arrays), like in
+	 * Tother_sym *elements;.
 	 *
 	 * In this structure char *type can be:
 	 *  -  Varray_type (for type_sym.array)
 	 *  -  Vother_type (for type_sym.other)
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		union {
 			Tarray_type *array;
 			Tother_type *other;
 		} type_sym;
 		char *type;
-		Tother_sym_list *storage;
+		Tother_sym *elements;
 	} Tarray_sym;
 	
 	/**
@@ -320,7 +312,7 @@
 	 * implementation indistinctively
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tother_type *type_sym;
 	} Tfile_type;
 	
@@ -345,7 +337,7 @@
 	 *  -  Vreg_type (for kind.reg)
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		union {
 			Ttype *other;
 			Tenum_type *enumerated;
@@ -371,7 +363,7 @@
 	 * some times make things less insane!
 	 */
 	typedef struct{
-		Tid *name;
+		char *name;
 		union {
 			Tvar_sym *normal;
 			Tenum_sym *enumerated;
@@ -388,7 +380,7 @@
 	 */
 	typedef struct {
 		Tother_type *actual;
-		Tother_type *next;
+		Tother_type_list *next;
 	} Tother_type_list;
 	
 	/**
@@ -396,14 +388,14 @@
 	 */
 	typedef struct {
 		Tother_sym *actual;
-		Tother_sym *next;
+		Tother_sym_list *next;
 	} Tother_sym_list;
 	
 	/**
 	 * \brief Treg_type_sym type definition
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tother_type_list *list;
 	} Treg_type_sym;
 	
@@ -411,7 +403,7 @@
 	 * \brief Treg_sym type definition
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Treg_type_sym *type;
 		Tother_sym_list *store;
 	} Treg_sym;
@@ -424,7 +416,7 @@
 	 * as a Treg_call!
 	 */
 	typedef union {
-		Tid *name;
+		char *name;
 		Treg_sym *symbol;
 	} Treg_call;
 	
@@ -501,7 +493,7 @@
 	 * \brief Tprogram type definition
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tdeclarations_sym *declarations;
 		Tsentence_list *sentences;
 		Tlibrary *library;
@@ -521,7 +513,7 @@
 	 *  - OPalg/OPfunc/OPproc
 	 */
 	typedef struct {
-		Tid *name;
+		char *name;
 		Tinterface_sym *interface;
 		Tdeclarations_sym *declarations;
 		Tsentence_list *sentences;
@@ -550,7 +542,7 @@
 	 */
 	typedef struct {
 		Tsentence *actual;
-		Tsentence *next;
+		Tsentence_list *next;
 	} Tsentence_list;
 	 
 	/**
@@ -591,7 +583,7 @@
 	 */
 	typedef struct {
 		Telif_statement *actual;
-		Telif_statement *next;
+		Telif_statement_list *next;
 	} Telif_statement_list;
 	 
 	/**
@@ -615,7 +607,7 @@
 	 */
 	typedef struct {
 		Texpr *actual;
-		Texpr *next;
+		Texpr_list *next;
 	} Texpr_list;
 	 
 	/**
@@ -649,7 +641,7 @@
 	typedef struct {
 		Texpr_list *arg_list;
 		union {
-			Tid *name;
+			char *name;
 			Tmethod_sym *symbol;
 		} function;
 	} Tmethod_call;
@@ -660,7 +652,7 @@
 	typedef struct {
 		Texpr_list *arg_list;
 		union {
-			Tid *name;
+			char *name;
 			void *(*function_ptr)();
 		} function;
 	} Treserved_call;
@@ -696,20 +688,16 @@
 	 * \Brief Prototypes of the (TR)translator functions
 	 */
 	// program: 
-	Tprogram *TRprogram(Tid *, Tdeclarations_sym *, Tsentence_list *, Tmethod_sym *); 
-	// prog_header: 
-	Tid *TRprog_header(char *);
+	Tprogram *TRprogram(char *, Tdeclarations_sym *, Tsentence_list *, Tmethod_sym *); 
 	// library: 
 	// 		NULL;  
 	Tmethod_sym *TRlibrary(Tmethod_sym *, Tmethod_sym *); 
 	// algorithm: 
-	Tmethod_sym *TRalgorithm(Tid *, Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
+	Tmethod_sym *TRalgorithm(char *, Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// function: 
 	Tmethod_sym *TRfunction(Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
 	// procedure: 
 	Tmethod_sym *TRprocedure(Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
-	// alg_header: 
-	Tid *TRalg_header(char *);
 	// func_header: 
 	Tmethod_sym *TRfunc_header(char *, Tother_sym_list *, Tother_sym *); 
 	// proc_header: 
@@ -747,7 +735,7 @@
 // 	Tother_sym *TRout_var_dcl(Tid_list *, char *, NULL, NULL); 
 // 	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, NULL); 
 	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, char *); 
-	Tother_sym *TRout_varl_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
+	Tother_sym *TRout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// inout_var_dcl: 
 // 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, NULL, NULL); 
 // 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, NULL); 
@@ -760,7 +748,7 @@
 	Tint_id_val_list *TRint_val_list(Tint_id_val_list *, Tint_id_val *); 
 // 	Tint_id_val_list *TRint_val_list(NULL, Tint_id_val *); 
 	// int_id_val: 
-	Tint_id_val *TRint_id_val_int(char *);
+	Tint_id_val *TRint_id_val_int(int *);
 	Tint_id_val *TRint_id_val_id(char *); 
 	// declarations_block: 
 	Tdeclarations_sym *TRdeclarations_block(Tother_sym_list *, Tother_type_list *, Tother_sym_list *); 
@@ -779,26 +767,21 @@
 	// types_dcl_list: 
 	// 		NULL;  
 	Tother_type_list *TRtypes_dcl_list_enum(Tother_type_list *, Tid_list *, Tstr_list *); 
-// 	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, Tid *, NULL); 
-	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, Tid *, Tid *); 
-	Tother_type_list *TRtypes_dcl_list_array(Tother_type_list *, Tid_list *, Tint_id_val_list *, Tid *); 
+// 	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, char *, NULL); 
+	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, char *, char *); 
+	Tother_type_list *TRtypes_dcl_list_array(Tother_type_list *, Tid_list *, Tint_id_val_list *, char *); 
 	Tother_type_list *TRtypes_dcl_list_reg(Tother_type_list *, Tid_list *, Tother_type *); 
 	// str_list: 
-	Tstr_list *TRstr_list(Tstr_list *, Tid *); 
-// 	Tstr_list *TRstr_list(NULL, Tid *); 
+	Tstr_list *TRstr_list(Tstr_list *, char *); 
+// 	Tstr_list *TRstr_list(NULL, char *); 
 	// vars_block: 
 	// 		NULL;  
 	// vars_dcl: 
 	// 		NULL;  
-// 	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, Tid *, NULL); 
-	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, Tid *, Tid *); 
-	Tother_sym_list *TRvars_dcl_array(Tother_sym_list *, Tid_list *, Tint_id_val_list *, Tid *); 
-	Tother_sym_list *TRvars_dcl_reg(Tother_sym_list *, Tid_list *, Tother_type *);
-	// vars_reg_dcl: 
-	// 		NULL;  
-// 	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, Tid *, NULL); 
-	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, Tid *, Tid *); 
-	Tother_sym_list *TRvars_dcl_array(Tother_sym_list *, Tid_list *, Tint_id_val_list *, Tid *); 
+// 	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, char *, NULL); 
+	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, char *, char *); 
+	Tother_sym_list *TRvars_dcl_array(Tother_sym_list *, Tid_list *, Tint_id_val_list *, char *); 
+	Tother_sym_list *TRvars_dcl_reg(Tother_sym_list *, Tid_list *, Tother_type *); 
 	// register: 
 // 	Tother_type *TRregister(Tother_sym_list *); 
 	Tother_type *TRregister(Tother_sym_list *); 
@@ -826,7 +809,7 @@
 	// mult_assign_statement: 
 	Tsentence *TRmult_assign_statement(Tvar_call_list *, Texpr_list *);
 	// output_input_statement: 
-	Tsentence *TRoutput_input_statement(Tid *, Texpr_list *); 
+	Tsentence *TRoutput_input_statement(char *, Texpr_list *); 
 	// while_loop: 
 	Tsentence *TRwhile_loop(Texpr_bool *, Tsentence_list *); 
 	// fromto_assign_statement: 
@@ -834,18 +817,18 @@
 	// fromto_loop: 
 	Tsentence *TRfromto_loop(Tassign_statement *, Texpr *, Tsentence_list *); 
 	// TODO: is it correct to set this as  Tsentence *? function_call: 
-	Tsentence *TRfunction_call(Tid *, Texpr_list *); 
+	Tsentence *TRfunction_call(char *, Texpr_list *); 
 	// TODO: is it correct to set this as  Tsentence *? variable_call: 
-	Tsentence *TRvariable_call(Tid *, Texpr_list *); 
+	Tsentence *TRvariable_call(char *, Texpr_list *); 
 // 	Tsentence *TRvariable_call($1, Texpr_list *); 
 	// TODO: is it correct to set this as  Tsentence *? struct_call: 
 	Tsentence *TRstruct_call(Tsentence *, Tsentence *); 
-	Tsentence *TRstruct_call(NULL, Tsentence *); 
+// 	Tsentence *TRstruct_call(NULL, Tsentence *); 
 	// variable_list: 
 	Tvar_call_list *TRvariable_list(Tvar_call_list *, Tvar_call *); 
 // 	Tvar_call_list *TRvariable_list(NULL, Tvar_call *); 
 	// procedure_call: 
-	Tsentence *TRprocedure_call(Tid *, Texpr_list *); 
+	Tsentence *TRprocedure_call(char *, Texpr_list *); 
 	// expr_list: 
 	// 		NULL;  
 	Texpr_list *TRexpr_list(Texpr_list *, Texpr *); 

@@ -88,7 +88,7 @@ program:
 
 prog_header:
 	PROG ID '\n'
-		{ $$ = TRprog_header($2); }
+		{ $$ = $2; }
 ;
 
 library:
@@ -126,7 +126,7 @@ procedure:
 
 alg_header:
 	ALG ID '\n'
-		{ $$ = TRalg_header($2); }
+		{ $$ = $2; }
 ;
 
 func_header:
