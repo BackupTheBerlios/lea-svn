@@ -22,8 +22,8 @@
  * See COPYING for details.
  */
  
-#ifndef CALC_H
-	#define CALC_H
+#ifndef LEA_H
+	#define LEA_H
 	
 	#include <stdlib.h>
 	#include <string.h>
