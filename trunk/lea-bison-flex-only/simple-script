@@ -87,13 +87,22 @@ prog antispam
 		fin
 	
 	func count(t:tabla[MAX_ARRAY] de cadena) dev (l: entero)
+	var
+		f : logico
 	prin
-		si long(t[1]) <> 0:
-			l:=1
-			mientras (long(t[l]) <> 0)
-				l := l + 1
+		si (long(l[1]) <> 0):
+			f := falso
+			l := 1
+			
+			mientras l <= MAX_ARRAY y no f
+				si long(t[l]) = 0:
+					enc:=cierto
+				| otras:
+					l := l + 1
+				fsi
 			fm
 		|otras:
 			l:=0
 		fsi
+		
 	fin

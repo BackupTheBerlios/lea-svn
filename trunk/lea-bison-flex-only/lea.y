@@ -529,7 +529,8 @@ expr_bool:
 		{  }
 	| struct_call
 		{  }
-	| NOT_OP expr_bool
+	// TODO: "(no <something>)" doesn't work !
+	| NOT_OP expr_bool %prec NEG
 		{  }
 	| expr_bool AND_OP expr_bool
 		{  }
