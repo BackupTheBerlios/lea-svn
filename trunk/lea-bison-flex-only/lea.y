@@ -318,6 +318,10 @@ register:
 	vars_dcl
 	ENDREG '\n'
 		{  }
+	| '\n' REG '\n'
+	vars_dcl
+	ENDREG '\n'
+		{  }
 ;
 
 sentence_list_block:
