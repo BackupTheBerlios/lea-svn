@@ -85,37 +85,38 @@
 	#define OPgreater				44
 	#define OPle					45
 	#define OPge					46
+	#define OPne					47
 	
-	#define OPsum					47
-	#define OPsub					48
-	#define OPmult					49
-	#define OPdiv					50
-	#define OPmod					51
-	#define OPexp					52
+	#define OPsum					48
+	#define OPsub					49
+	#define OPmult					50
+	#define OPdiv					51
+	#define OPmod					52
+	#define OPexp					53
 	
-	#define Valg					53
-	#define Vfunc					54
-	#define Vproc					55
+	#define Valg					54
+	#define Vfunc					55
+	#define Vproc					56
 	
-	#define Vif_statement			56
-	#define Vassign_statement		57
-	#define Vmult_assign_statement	58
-	#define Vwhile_loop				59
-	#define Vfromto_loop			60
-	#define Vmethod_call			61
-	#define Vreserved_call			62
+	#define Vif_statement			57
+	#define Vassign_statement		58
+	#define Vmult_assign_statement	59
+	#define Vwhile_loop				60
+	#define Vfromto_loop			61
+	#define Vmethod_call			62
+	#define Vreserved_call			63
 	
-	#define Valgorithm				63
-	#define Vfunction				64
-	#define Vprocedure				65
+	#define Valgorithm				64
+	#define Vfunction				65
+	#define Vprocedure				66
 	
-	#define OPexpr					66
-	#define OPexpr_bool				67
-	#define OPop					68
-	#define OPvar_call				69
-	#define OParray_call			70
-	#define OPmethod_call			71
-	#define OPreserved_call			72
+	#define OPexpr					67
+	#define OPexpr_bool				68
+	#define OPop					69
+	#define OPvar_call				70
+	#define OParray_call			71
+	#define OPmethod_call			72
+	#define OPreserved_call			73
 	
 	/****************************
 	*     Types definitions     *
@@ -475,7 +476,7 @@
 	 * In this special case, we use a variable char *op; that implitily
 	 * specifies which type will be used in left and right vars:
 	 *  - OPnot (for right.expr_bool = NULL, left.expr_bool)
-	 *  - OPeq/OPless/OPgreater/OPle/OPge (for right.expr, left.expr)
+	 *  - OPeq/OPless/OPgreater/OPle/OPge/OPne (for right.expr, left.expr)
 	 *  - OPand/OPor (for right.expr_bool, left.expr_bool)
 	 */
 	struct Texpr_bool_op {

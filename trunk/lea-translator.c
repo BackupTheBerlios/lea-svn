@@ -827,28 +827,63 @@ Tsentence *TRprocedure_call(char *name, Texpr_list *arg_list)
 }
 
 /**
- * \brief 
+ * \brief Adds an element to a linked list of expresions
  * 
- * \param		
- * \return	 
+ * \param	next_list	Existing linked list of expresions
+ * \param	actual		Expresion element to add to the list
+ * \return				New linked list containing all the previous \
+ * expresions and the new one
  */
-Texpr_list *TRexpr_list(Texpr_list *previous_list, Texpr *actual)
+Texpr_list *TRexpr_list(Texpr_list *next_list, Texpr *actual)
 {
+	// Returning struct
 	Texpr_list *ret;
+	
+	// Allocate needed memory
+	ret	=	malloc(sizeof(Texpr_list));
+	
+	//Initialization
+	ret->next	=	next_list;
+	ret->actual	=	actual;
 
 	return ret;
 }
 
 /**
- * \brief 
+ * \brief Allocates storage for a boolean expresion value
  * 
- * \param		
- * \return	 
+ * \param	bool_val	Value to preserve
+ * \return				Pointer to the expresion holding the given value
  */
 Texpr_bool *TRexpr_bool_val(bool *val)
 {
+	// Returning struct
 	Texpr_bool *ret;
-
+	// Internal intermediate variable symbol:
+	Tvar_sym	*internal_sym;
+	// Fundamental storage structure:
+	Ttype		*storage;
+	
+	// Allocate needed memory
+	ret							=	malloc(sizeof(Texpr_bool));
+	ret->type					=	malloc(sizeof(char));
+	
+	internal_sym				=	malloc(sizeof(Tvar_sym));
+	
+	storage						=	malloc(sizeof(Ttype));
+	storage->type				=	malloc(sizeof(char));
+	
+	// Initialization
+	*(storage->type)			=	Vintern_bool_val;
+	storage->storage.bool_val	=	val;
+	
+	// Note that internal vars don't have names:
+	internal_sym->name			=	(char *)NULL;
+	internal_sym->storage		=	storage;
+	
+	*(ret->type) 				=	OPvar_call;
+	ret->expr_bool.var_call		=	internal_sym;
+	
 	return ret;
 }
 
@@ -866,41 +901,127 @@ Texpr_bool *TRexpr_bool_struct(Tsentence *struct_call)
 }
 
 /**
- * \brief 
+ * \brief Negates a boolean expresion
  * 
- * \param		
- * \return	 
+ * \param	expr_bool	Boolean expresion to negate
+ * \return				Returns a boolean expresion negating the given one
  */
 Texpr_bool *TRexpr_bool_not(Texpr_bool *expr_bool)
 {
-	Texpr_bool *ret;
-
+	// Returning value
+	Texpr_bool		*ret;
+	// Internal intermediate struct
+	Texpr_bool_op	*expr_bool_op;
+	
+	// Allocate needed memory
+	ret					=	malloc(sizeof(Texpr_bool));
+	ret->type			=	malloc(sizeof(char));
+	
+	expr_bool_op		=	malloc(sizeof(Texpr_bool_op));
+	expr_bool_op->op	=	malloc(sizeof(char));
+	
+	//Initialization
+	*(expr_bool_op->op)				=	OPnot;
+	expr_bool_op->left.expr_bool	=	expr_bool;
+	expr_bool_op->right.expr_bool	=	(Texpr_bool *)NULL;
+	
+	*(ret->type)					=	OPexpr_bool;
+	ret->expr_bool.expr_bool		=	expr_bool_op;
+	
 	return ret;
 }
 
 /**
- * \brief 
- * 
- * \param		
- * \return	 
+ * \brief Allocates storage for a boolean operation with two boolean operands
+ *
+ * \param	type		Operation
+ * \param	left_expr	Left boolean expresion in the operation
+ * \param	right_expr	Right boolean expresion in the operation
+ * \return				Pointer to the structure holding the boolean operation
  */
 Texpr_bool *TRexpr_bool_log(char type, Texpr_bool *left_expr, Texpr_bool *right_expr)
 {
+	// Returning struct
 	Texpr_bool *ret;
-
+	// Internal intermediate storage struct:
+	Texpr_bool_op *expr_bool_op;
+	
+	// Allocate needed memory
+	ret					=	malloc(sizeof(Texpr_bool));
+	ret->type			=	malloc(sizeof(char));
+	
+	expr_bool_op		=	malloc(sizeof(Texpr_bool_op));
+	expr_bool_op->op	=	malloc(sizeof(char));
+	
+	// Initialization
+	switch (type)
+	{
+		case '&':
+			*(expr_bool_op->op)	=	OPand;
+			break;
+		case '|':
+			*(expr_bool_op->op)	=	OPor;
+			break;
+	}
+	expr_bool_op->left.expr_bool	=	left_expr;
+	expr_bool_op->right.expr_bool	=	right_expr;
+	
+	*(ret->type)					=	OPexpr_bool;
+	ret->expr_bool.expr_bool		=	expr_bool_op;
+	
 	return ret;
 }
 
 /**
- * \brief 
- * 
- * \param		
- * \return	 
+ * \brief Allocates storage for a boolean operation with two operands
+ *
+ * \param	type		Operation
+ * \param	left_expr	Left expresion in the operation
+ * \param	right_expr	Right expresion in the operation
+ * \return				Pointer to the structure holding the boolean operation
  */
 Texpr_bool *TRexpr_bool(char type, Texpr *left_expr, Texpr *right_expr)
 {
+	// Returning struct:
 	Texpr_bool *ret;
-
+	// Internal intermediate storage struct:
+	Texpr_bool_op *expr_bool_op;
+	
+	// Allocate needed memory
+	ret			=	malloc(sizeof(Texpr_bool));
+	ret->type	=	malloc(sizeof(char));
+	
+	expr_bool_op		=	malloc(sizeof(Texpr_bool_op));
+	expr_bool_op->op	=	malloc(sizeof(char));
+	
+	// Initialization
+	switch (type)
+	{
+		case '=':
+			*(expr_bool_op->op)	=	OPeq;
+			break;
+		case '<':
+			*(expr_bool_op->op)	=	OPless;
+			break;
+		case '>':
+			*(expr_bool_op->op)	=	OPgreater;
+			break;
+		case 'l':
+			*(expr_bool_op->op)	=	OPle;
+			break;
+		case 'g':
+			*(expr_bool_op->op)	=	OPge;
+			break;
+		case 'n':
+			*(expr_bool_op->op)	=	OPne;
+			break;
+	}
+	expr_bool_op->left.expr		=	left_expr;
+	expr_bool_op->right.expr	=	right_expr;
+	
+	*(ret->type)				=	OPexpr_bool;
+	ret->expr_bool.expr_bool	=	expr_bool_op;
+	
 	return ret;
 }
 
@@ -1083,15 +1204,55 @@ Texpr *TRexpr_struct(Tsentence *struct_call)
 }
 
 /**
- * \brief 
- * 
- * \param		
- * \return	 
+ * \brief Allocates storage for an operation with two operands
+ *
+ * \param	type		Operation
+ * \param	left_expr	Left expresion in the operation
+ * \param	right_expr	Right expresion in the operation
+ * \return				Pointer to the structure holding the operation
  */
 Texpr *TRexpr(char type, Texpr *left_expr, Texpr *right_expr)
 {
+	// Returning struct:
 	Texpr *ret;
-
+	// Internal intermediate storage struct:
+	Texpr_op *expr_op;
+	
+	// Allocate needed memory
+	ret			=	malloc(sizeof(Texpr));
+	ret->type	=	malloc(sizeof(char));
+	
+	expr_op		=	malloc(sizeof(Texpr_op));
+	expr_op->op	=	malloc(sizeof(char));
+	
+	// Initialization
+	switch (type)
+	{
+		case '+':
+			*(expr_op->op)	=	OPsum;
+			break;
+		case '-':
+			*(expr_op->op)	=	OPsub;
+			break;
+		case '*':
+			*(expr_op->op)	=	OPmult;
+			break;
+		case '/':
+			*(expr_op->op)	=	OPdiv;
+			break;
+		case '%':
+			*(expr_op->op)	=	OPmod;
+			break;
+		case '^':
+			*(expr_op->op)	=	OPexp;
+			break;
+	}
+	expr_op->left	=	left_expr;
+	expr_op->right	=	right_expr;
+	
+	*(ret->type)	=	OPexpr;
+	ret->expr.expr	=	expr_op;
+	
 	return ret;
 }
 
