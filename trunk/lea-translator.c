@@ -869,7 +869,7 @@ Texpr *TRexpr_int(int *int_val)
  * \param		
  * \return	 
  */
-Texpr *TRexpr_expr_bool(Texpr_bool *expr_bool)
+Texpr *TRexpr_expr_bool(bool *bool_val)
 {
 	Texpr *ret;
 

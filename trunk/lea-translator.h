@@ -852,7 +852,7 @@
 	Texpr_bool *TRexpr_bool_fcall(Tsentence *); 
 	// expr: 
 	Texpr *TRexpr_int(int *); 
-	Texpr *TRexpr_expr_bool(Texpr_bool *); 
+	Texpr *TRexpr_expr_bool(bool *); 
 	Texpr *TRexpr_float(float *); 
 	Texpr *TRexpr_str(char *); 
 	Texpr *TRexpr_struct(Tsentence *); 

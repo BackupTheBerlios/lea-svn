@@ -55,14 +55,14 @@
 %type <no>			sentence_list_block sentence if_statement output_input_statement register
 %type <no>			while_loop fromto_assign_statement fromto_loop function_call procedure_call expr expr_bool
 %type <nl>			library proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list id_list
-%type <nl>			array_dimensions int_id_val_list types_dcl str_list vars_dcl sentence_list elif_statement
+%type <nl>			array_dimensions int_val_list types_dcl str_list vars_dcl sentence_list elif_statement
 %type <nl>			elif_statement_list assign_statement mult_assign_statement expr_list mult_assign mult_assign_list
 */
 
 /**
  * Note: to generate a list of rules as the following one, just execute $ ACTION=print_rules ./handy.awk lea.y
  
-program prog_header library algorithm function procedure alg_header func_header proc_header interface_block proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list in_var_dcl out_var_dcl inout_var_dcl id_list array_dimensions int_id_val_list int_id_val declarations_block consts_block const_dcl_list types_block types_dcl_list str_list vars_block vars_dcl register sentence_list_block sentence_list sentence if_statement cond_start elif_statement elif_statement_list assign_statement mult_assign mult_assign_list mult_assign_statement output_input_statement while_loop fromto_assign_statement fromto_loop function_call variable_call struct_call variable_list procedure_call expr_list expr_bool expr EPSILON
+program prog_header library algorithm function procedure alg_header func_header proc_header interface_block proc_arg proc_arg_list in_arg_list out_arg_list inout_arg_list in_var_dcl out_var_dcl inout_var_dcl id_list array_dimensions int_val_list int_id_val declarations_block consts_block const_dcl_list types_block types_dcl_list str_list vars_block vars_dcl register sentence_list_block sentence_list sentence if_statement cond_start elif_statement elif_statement_list assign_statement mult_assign mult_assign_list mult_assign_statement output_input_statement while_loop fromto_assign_statement fromto_loop function_call variable_call struct_call variable_list procedure_call expr_list expr_bool expr EPSILON
  */
 
 %start program
@@ -236,12 +236,12 @@ id_list:
 ;
 
 array_dimensions:
-	'[' int_id_val_list ']'
+	'[' int_val_list ']'
 		{ $$ = $2; }
 ;
 
 int_val_list:
-	int_id_val_list ',' int_id_val
+	int_val_list ',' int_id_val
 		{ $$ = TRint_val_list($1, $3); }
 	| int_id_val
 		{ $$ = TRint_val_list(NULL, $1); }
@@ -335,17 +335,8 @@ vars_block:
 ;
 
 vars_dcl:
-	EPSILON
-		{ $$ = NULL; }
-	| vars_dcl
-	id_list ':' ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, NULL); }
-	| vars_dcl
-	id_list ':' ID OF ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, $6); }
-	| vars_dcl
-	id_list ':' ARRAY array_dimensions OF ID '\n'
-		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
+	vars_reg_dcl
+		{ $$ = $1; }
 	| vars_dcl
 	id_list ':' register  //TODO: !!!!!
 		{ $$ = TRvars_dcl_reg($1, $2, $4); }
@@ -577,7 +568,10 @@ expr_bool:
 expr:
 	INT_VAL
 		{ $$ = TRexpr_int($1); }
-	| expr_bool
+	// TODO: Sometimes a expr_bool can also be considered an expr,
+	// usually when it reffers to a boolean variable, but if we
+	// add here expr_bool 91 reduce/reduce problems appear!
+	| BOOL_VAL
 		{ $$ = TRexpr_expr_bool($1); }
 	| FLOAT_VAL
 		{ $$ = TRexpr_float($1); }

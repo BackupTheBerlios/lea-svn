@@ -31,7 +31,8 @@ BEGIN {
 	
 	if (action ~ /^print_rules$/) { print_rules() } else 
 	if (action ~ /^print_action_rules$/) { print_action_rules() } else 
-	if (action ~ /^print_skeleton_functions$/) { print_skeleton_functions() }
+	if (action ~ /^print_skeleton_functions$/) { print_skeleton_functions() } else 
+	if (action ~ /^print_grammar_no_actions$/) { print_grammar_no_actions() }
 }
 
 # /**
@@ -102,6 +103,25 @@ function print_skeleton_functions()
 			print "\n/**\n * \\brief \n * \n * \\param\t\t\n * \\return\t \n */"
 			printf("%s\n{\n", gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*[ \t]*\*[a-zA-Z_][a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\));[ \t]*$/, "\\1","g", line))
 			printf("\t%s *ret;\n\n\treturn ret;\n}\n", gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]*\*[a-zA-Z_][a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line))
+		}
+	}
+}
+
+# /**
+#  * \brief Print a bison like file *but* without printing actions
+#  */
+
+function print_grammar_no_actions()
+{
+	print "%{\n/*This file was generated executing the following command in parent directory:\n ACTION=print_grammar_no_actions lea.y > lea-bison-flex-only/lea.y*/\n%}\n"
+	while(getline line)
+	{
+		if (line ~ /\{[ \t]*\$\$[ \t]*=[ \t]*[^}]+\}$/)
+		{
+			print "\t\t{  }"
+		} else
+		{
+			print line;
 		}
 	}
 }
