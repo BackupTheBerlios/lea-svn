@@ -92,8 +92,6 @@ fin						{ return END;		}
 
 entero					{ return INT;		}
 logico					{ return BOOL;		}
-verdadero				{ return BTRUE;		}
-falso					{ return BFALSE;	}
 caracter				{ return CHAR;		}
 cadena					{ return STRING;	}
 real					{ return FLOAT;		}
@@ -116,7 +114,7 @@ desde					{ return FROM;		}
 hasta					{ return TO;		}
 fd						{ return ENDFROMTO;	}
 
-[+\-*/%^()<>:\[\]|,\n]	{ return yytext[0];	}
+[+\-*/%^()<>:\[\]|=,\n]	{ return yytext[0];	}
 ;						{ return '\n';		}
 "y"						{ return AND_OP;	}
 "o"						{ return OR_OP;		}
@@ -125,19 +123,28 @@ fd						{ return ENDFROMTO;	}
 "<="					{ return LE_OP		}
 ">="					{ return GE_OP		}
 
+verdadero				{
+							yylval.bool_val = true;
+							return BOOL_VAR;
+						}
+falso					{
+							yylval.bool_val = false;
+							return BOOL_VAR;
+						}
+
 {D}+					{
-							yylval.integer_val = atoi(yytext);
-							return INT;
+							yylval.int_val = atoi(yytext);
+							return INT_VAL;
 }
 
 {D}+.{D}*				{
 							yylval.float_val = atof(yytext);
-							return FLOAT;
+							return FLOAT_VAL;
 }
 
 {ID}					{
-							yylval.string_name = strdup(yytext);
-							return INT_VAR;
+							yylval.str_val = strdup(yytext);
+							return ID;
 }
 
 \"						{
@@ -148,8 +155,8 @@ fd						{ return ENDFROMTO;	}
 <str>\"					{
 							BEGIN(INITIAL);
 							*string_buf_ptr = '\0';
-							yylval.string = string_buf_ptr;
-							return STRING;
+							yylval.str_val = string_buf_ptr;
+							return STR_VAL;
 }
 
 <str>\n					{

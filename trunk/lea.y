@@ -24,27 +24,43 @@
  */
 	#include <stdio.h>
 	#include <stdlib.h>
-	#include "calc.h"
+	#include "lea.h"
 	
 	#define yyerror(s) printf("%s\n", s)
 %}
 
 %union {
 	int integer_val;
-	char *string_name;
+	bool boolean_var;
+	float float_val;
+	char char_val;
+	char *string_val;
+	node *node_ptr;
+	
 }
 
-%token <integer_val> INT
-%token <string_name> INT_VAR
-%type <integer_val> int_exp
+%token <int_val>		INT_VAL
+%token <bool_var>		BOOL_VAL
+%token <float_val>		FLOAT_VAL
+%token <char_val>		CHAR_VAL
+%token <str_val>		STR_VAL
+%token <node_ptr>		var_node
 
-/*FCNT*/
+%start input
 
-/* for ":=" */
-%right EQ
+/*
+
+(((-5) + 6) - (56^(5*8)))
+*/
+
 %left '-' '+'
-%left '*'  '/'
-%nonassoc UMINUS
+%left '*'  '/' '%'
+%right '^'
+%right ASSIGN
+%right '=' GE_OP LE_OP
+%left AND_OP OR_OP NOT_OP
+
+%nonassoc NEG
 
 %%
 
@@ -71,7 +87,7 @@ int_exp: INT				{ $$ = $1;			}
 	| int_exp '*' int_exp	{ $$ = $1 * $3;		}
 	| int_exp '/' int_exp	{ $$ = $1 / $3;		}
 	| '(' int_exp ')'		{ $$ = $2;			}
-	| '-' int_exp %prec UMINUS {$$ = -$2;		}
+	| '-' int_exp %prec NEG {$$ = -$2;			}
 
 %%
 
