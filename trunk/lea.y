@@ -36,7 +36,6 @@
 	char char_val;
 	char *string_val;
 	node *no;
-	node_block *nb;
 	node_list *nl;
 }
 
