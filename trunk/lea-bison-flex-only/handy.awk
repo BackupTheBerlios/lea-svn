@@ -30,7 +30,8 @@ BEGIN {
 	"echo $ACTION" | getline action
 	
 	if (action ~ /^print_rules$/) { print_rules() } else 
-	if (action ~ /^print_action_rules$/) { print_action_rules() }
+	if (action ~ /^print_action_rules$/) { print_action_rules() } else 
+	if (action ~ /^print_skeleton_functions$/) { print_skeleton_functions() }
 }
 
 # /**
@@ -83,6 +84,24 @@ function print_action_rules()
 				
 				print line
 			}
+		}
+	}
+}
+
+# /**
+#  * \brief Print the skeleton of a list of functions based on its 
+#  * prototipe declarations
+#  */
+
+function print_skeleton_functions()
+{
+	while (getline line)
+	{
+		if (line ~ /^[ \t]*[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\*[a-zA-Z_][a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/)
+		{
+			print "\n/**\n * \\brief \n * \n * \\param\t\t\n * \\return\t \n */"
+			printf("%s\n{\n", gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*[ \t]*\*[a-zA-Z_][a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\));[ \t]*$/, "\\1","g", line))
+			printf("\t%s *ret;\n\n\treturn ret;\n}\n", gensub(/^[ \t]*([a-zA-Z_][a-zA-Z0-9_]*)[ \t]*\*[a-zA-Z_][a-zA-Z0-9_]*\([a-zA-Z0-9_ ,*\t]+\);[ \t]*$/, "\\1","g", line))
 		}
 	}
 }

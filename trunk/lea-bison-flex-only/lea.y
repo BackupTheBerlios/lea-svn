@@ -553,7 +553,7 @@ expr_bool:
 	| struct_call
 		{ $$ = TRexpr_bool_struct($1); }
 	| NOT_OP expr_bool %prec NEG
-		{ $$ = TRexpr_bool($1, $2, NULL); }
+		{ $$ = TRexpr_bool('!', $2, NULL); }
 	| expr_bool AND_OP expr_bool
 		{ $$ = TRexpr_bool($2, $1, $3); }
 	| expr_bool OR_OP expr_bool
@@ -565,11 +565,11 @@ expr_bool:
 	| expr '>' expr
 		{ $$ = TRexpr_bool($2, $1, $3); }
 	| expr LE_OP expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool('l', $1, $3); }
 	| expr GE_OP expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool('g', $1, $3); }
 	| expr NOT_EQ expr
-		{ $$ = TRexpr_bool($2, $1, $3); }
+		{ $$ = TRexpr_bool('n', $1, $3); }
 	| function_call
 		{ $$ = TRexpr_bool_fcall($1); }
 ;
@@ -598,7 +598,7 @@ expr:
 	| expr '^' expr
 		{ $$ = TRexpr($2, $1, $3); }
 	| '-' expr %prec NEG
-		{ $$ = TRexpr($1, $2, NULL); }
+		{ $$ = TRexpr('n', $2, NULL); }
 	| '(' expr ')'
 		{ $$ = $2; }
 	| function_call

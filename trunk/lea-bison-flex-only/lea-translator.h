@@ -842,39 +842,39 @@
 	Tsentence *TRstruct_call(Tsentence *, Tsentence *); 
 	Tsentence *TRstruct_call(NULL, Tsentence *); 
 	// variable_list: 
-	Tvar_call_list *TRvariable_list($1, $3); 
-	Tvar_call_list *TRvariable_list(NULL, $1); 
+	Tvar_call_list *TRvariable_list(Tvar_call_list *, Tvar_call *); 
+// 	Tvar_call_list *TRvariable_list(NULL, Tvar_call *); 
 	// procedure_call: 
-	Tsentence *TRprocedure_call($1, $3); 
+	Tsentence *TRprocedure_call(Tid *, Texpr_list *); 
 	// expr_list: 
 	// 		NULL;  
-	Texpr_list *TRexpr_list($1, $3); 
-	Texpr_list *TRexpr_list(NULL, $1); 
+	Texpr_list *TRexpr_list(Texpr_list *, Texpr *); 
+// 	Texpr_list *TRexpr_list(NULL, Texpr *); 
 	// expr_bool: 
-	Texpr_bool *TRexpr_bool_val($1); 
-	Texpr_bool *TRexpr_bool_struct($1); 
-	Texpr_bool *TRexpr_bool($1, $2, NULL); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool($2, $1, $3); 
-	Texpr_bool *TRexpr_bool_fcall($1); 
+	Texpr_bool *TRexpr_bool_val(bool *); 
+	Texpr_bool *TRexpr_bool_struct(Tsentence *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, NULL); 
+	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, Texpr_bool *); 
+	Texpr_bool *TRexpr_bool_fcall(Tsentence *); 
 	// expr: 
-	Texpr *TRexpr_int($1); 
-	Texpr *TRexpr_expr_bool($1); 
-	Texpr *TRexpr_float($1); 
-	Texpr *TRexpr_str($1); 
-	Texpr *TRexpr_struct($1); 
-	Texpr *TRexpr($2, $1, $3); 
-	Texpr *TRexpr($2, $1, $3); 
-	Texpr *TRexpr($2, $1, $3); 
-	Texpr *TRexpr($2, $1, $3); 
-	Texpr *TRexpr($2, $1, $3); 
-	Texpr *TRexpr($2, $1, $3); 
-	Texpr *TRexpr($1, $2, NULL); 
-	Texpr *TRexpr_fcall($1); 
+	Texpr *TRexpr_int(int *); 
+	Texpr *TRexpr_expr_bool(Texpr_bool *); 
+	Texpr *TRexpr_float(float *); 
+	Texpr *TRexpr_str(char *); 
+	Texpr *TRexpr_struct(Tsentence *); 
+	Texpr *TRexpr(char, Texpr *, Texpr *); 
+// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
+// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
+// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
+// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
+// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
+// 	Texpr *TRexpr(char, Texpr *, NULL); 
+	Texpr *TRexpr_fcall(Tsentence *); 
 	#endif
