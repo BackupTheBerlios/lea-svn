@@ -3,6 +3,7 @@
  * \brief Translator to Abstract Tree header
  *
  * \author Eduardo Robles Elvira <edulix@iespana.es>
+ * \author Felix Robles Elvira <redeadlink@hotmail.com>
  *
  * This is part of Lea. Lea is free software; 
  * you can redistribute it and/or
@@ -70,54 +71,71 @@
 	#define Varray_type				31
 	#define Vvar_type				32
 	#define Vreg_type				33
-	#define Vother_type				34
+	#define Vintern_other_type		34
+	#define Vintern_enum_type		35
+	#define Vintern_array_type		36
+	#define Vintern_var_type		37
+	#define Vintern_reg_type		38
+	#define Vintern_other_type		39
 	
-	#define OPnot					35
-	#define OPand					36
-	#define OPor					37
-	#define OPeq					38
-	#define OPless					39
-	#define OPgreater				40
-	#define OPle					41
-	#define OPge					42
+	#define OPnot					40
+	#define OPand					41
+	#define OPor					42
+	#define OPeq					43
+	#define OPless					44
+	#define OPgreater				45
+	#define OPle					46
+	#define OPge					47
 	
-	#define OPsum					43
-	#define OPsub					44
-	#define OPmult					45
-	#define OPdiv					46
-	#define OPmod					47
-	#define OPexp					48
+	#define OPsum					48
+	#define OPsub					49
+	#define OPmult					50
+	#define OPdiv					51
+	#define OPmod					52
+	#define OPexp					53
 	
-	#define Valg					49
-	#define Vfunc					50
-	#define Vproc					51
+	#define Valg					54
+	#define Vfunc					55
+	#define Vproc					56
 	
-	#define Vif_statement			52
-	#define Vassign_statement		53
-	#define Vmult_assign_statement	54
-	#define Vwhile_loop				55
-	#define Vfromto_loop			56
-	#define Vmethod_call			57
-	#define Vreserved_call			58
+	#define Vif_statement			57
+	#define Vassign_statement		58
+	#define Vmult_assign_statement	59
+	#define Vwhile_loop				60
+	#define Vfromto_loop			61
+	#define Vmethod_call			62
+	#define Vreserved_call			63
 	
-	#define Valgorithm				59
-	#define Vfunction				60
-	#define Vprocedure				61
+	#define Valgorithm				64
+	#define Vfunction				65
+	#define Vprocedure				66
 	
-	#define OPexpr					62
-	#define OPexpr_bool				63
-	#define OPop					64
-	#define OPvar_call				65
-	#define OParray_call			66
-	#define OPmethod_call			67
-	#define OPreserved_call			68
+	#define OPexpr					67
+	#define OPexpr_bool				68
+	#define OPop					69
+	#define OPvar_call				70
+	#define OParray_call			71
+	#define OPmethod_call			72
+	#define OPreserved_call			73
 	
 	/****************************
 	*     Types definitions     *
 	****************************/
 	/**
 	 * \brief Definition of all the (T)types used in the translator
-	 * Note that linked lists end when the *next pointer is set to NULL
+	 *
+	 * General notes:
+	 *
+	 *  - Linked lists end when the *next pointer is set to NULL
+	 *
+	 *  - If there are a fixed number of elements in an array, then
+	 *    we use a dynamic pointer to store all the elements and a
+	 *    pointer to the last element to check array limits easily.
+	 *
+	 *  - An internal type is a custom type used internally or
+	 *    used by the user but not declared implicitly
+	 *
+	 *  - Internal types never have a name (ie. char*name=NULL;)
 	 */
 	
 	/**
@@ -195,18 +213,6 @@
 	} Tstr_list;
 	
 	/**
-	 * \brief Tarray_dimensions type definition
-	 * Note that because we can define the array_dimensions using a prexisting
-	 * constant (or global variable if we're inside a function), we need to use
-	 * Tint_id_val type for setting the actual dimension.
-	 *
-	 * By the way, we don't use a linked list (Tint_id_val) but a "dynamic"
-	 * pointer to store the dimensions because we already know how many dimensions
-	 * are and it's a static number.
-	 */
-	typedef Tint_id_val *Tarray_dimensions;
-	
-	/**
 	 * \brief Tint_id_val_list type definition
 	 * This type is meant to be used when you need a list of integer values 
 	 * that can be obtained either by an existing integer variable/constant
@@ -263,7 +269,7 @@
 	 */
 	typedef struct {
 		char *name;
-		Tenum_element *storage;
+		Tenum_element *elements, *last_element;
 	} Tenum_type;
 	
 	/**
@@ -272,8 +278,8 @@
 	 */
 	typedef struct {
 		char *name;
+		Tenum_element *element;
 		Tenum_type *type_sym;
-		char *storage;
 	} Tenum_sym;
 	
 	/**
@@ -281,7 +287,7 @@
 	 */
 	typedef struct {
 		char *name;
-		Tarray_dimensions *dimensions;
+		unsigned int *dimensions;
 		Tother_type *type_sym;
 	} Tarray_type;
 	
@@ -291,19 +297,13 @@
 	 * Note that whenever we have fixed number of elements, we stop using linked lists
 	 * and use pointers (that can be properly used as "dynamic" arrays), like in
 	 * Tother_sym *elements;.
-	 *
-	 * In this structure char *type can be:
-	 *  -  Varray_type (for type_sym.array)
-	 *  -  Vother_type (for type_sym.other)
 	 */
 	typedef struct {
-		char *name;
-		union {
-			Tarray_type *array;
-			Tother_type *other;
-		} type_sym;
-		char *type;
-		Tother_sym *elements;
+		char *name; 
+		// Array of pointers  (containing as many elements as the first dimension
+		// does) to sub-arrays or other types:
+		Tarray_type *type_sym; 
+		Tother_sym *elements, *last_element;
 	} Tarray_sym;
 	
 	/**
@@ -323,6 +323,7 @@
 	 * contain files, for $DEITY's sake!
 	 */
 	typedef struct {
+		char *name;
 		FILE *file;
 		Tfile_type *type_sym;
 	} Tfile_sym;
@@ -330,11 +331,11 @@
 	/**
 	 * \brief Tother_type type definition
 	 * In this structure char *type can be:
-	 *  -  Vother_type (for kind.other)
-	 *  -  Venum_type (for kind.enumerated)
-	 *  -  Varray_type (for kind.array)
-	 *  -  Vfile_type (for kind.file)
-	 *  -  Vreg_type (for kind.reg)
+	 *  -  V(|intern_)other_type (for kind.other)
+	 *  -  V(|intern_)enum_type (for kind.enumerated)
+	 *  -  V(|intern_)array_type (for kind.array)
+	 *  -  V(|intern_)file_type (for kind.file)
+	 *  -  V(|intern_)reg_type (for kind.reg)
 	 */
 	typedef struct {
 		char *name;
@@ -365,7 +366,7 @@
 	typedef struct{
 		char *name;
 		union {
-			Tvar_sym *normal;
+			Tvar_sym *other;
 			Tenum_sym *enumerated;
 			Tarray_sym *array;
 			Tfile_sym *file;
@@ -373,7 +374,7 @@
 		} symbol;
 		char *type;
 		Tother_type *type;
-	}  Tother_sym;
+	}  Tother_sym; 
 	
 	/**
 	 * \brief Tother_type_list type definition
