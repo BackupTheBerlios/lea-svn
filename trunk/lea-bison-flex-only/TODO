@@ -27,12 +27,18 @@ User-input/code ---strings---->
 	shouldn't stop the next sentence from being executed. It should also show the user exactly which are the
 	problematic lines and show as much hints as we can provide to allow him to quickly detect which was the
 	error.
+ @ Support debuggers ?
+	We haven't got even error recovery yet at all. So this is still an utopia. But needs to be kept in mind so
+	that it doesn't turn an huge task of code refactoring to implement in the end. 
 
 2. Grammatical parser
 #####################
  ----> Mostly done
  @ No error recovery yet
 	Pretty similar problem as in the Lexical parser, applied to gramatics.
+	
+ @ Support debuggers ?
+ 	Idem as in the Lexical Parser analogue point.
 
  @ Some gramatical checks are not being done here
 	This is not something I feel that needs to be fixed, but just to talk about it a bit and decide if it's the
