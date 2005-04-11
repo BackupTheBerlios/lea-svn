@@ -115,8 +115,10 @@
 	#define OPop					69
 	#define OPvar_call				70
 	#define OParray_call			71
-	#define OPmethod_call			72
-	#define OPreserved_call			73
+	#define OPid_call				72
+	#define OPmethod_call			73
+	#define OPreserved_call			74
+	#define OPreg_call				75
 	
 	/****************************
 	*     Types definitions     *
@@ -132,8 +134,10 @@
 	typedef struct Tother_type Tother_type;
 	typedef struct Tother_sym Tother_sym;
 	typedef struct Treg_type Treg_type;
+	typedef struct Treg_call Treg_call;
 	typedef struct Treg_sym Treg_sym;
 	typedef struct Texpr Texpr;
+	typedef struct Texpr_list Texpr_list;
 	typedef struct Texpr_bool_op Texpr_bool_op;
 	typedef struct Tmethod_call Tmethod_call;
 	typedef struct Tmethod_sym Tmethod_sym;
@@ -326,13 +330,23 @@
 	 * Tother_sym *elements;.
 	 */
 	typedef struct {
-		char *name; 
+		char *name;
 		// Array of pointers  (containing as many elements as the first dimension
 		// does) to sub-arrays or other types:
 		Tarray_type *type_sym; 
 		 //this is a bit redundant 'cause this info also is at every element of *elements in Tarray_sym:
 		Tother_sym *elements, *last_element;
 	} Tarray_sym;
+	
+	/**
+	 * \brief Tarray_call type definition
+	 * A call to an array need to store both the name of the indexes
+	 */
+	
+	typedef struct {
+		char *name;
+		Texpr_list *indexes;
+	} Tarray_call;
 	
 	/**
 	 * \brief Tfile_type type definition
@@ -402,7 +416,7 @@
 		} symbol;
 		char *type;
 		Tother_type *type_type;
-	}; 
+	};
 	
 	/**
 	 * \brief Tother_type_list type definition
@@ -422,6 +436,32 @@
 	struct Tother_sym_list {
 		Tother_sym *actual;
 		Tother_sym_list *next;
+	};
+	
+	/**
+	 * \brief Tsym_call type definition
+	 * In this structure char *type can be:
+	 *  -  OParray_call (for expr_bool.array_call)
+	 *  -  OPid_call (for expr_bool.id_call)
+	 *  -  OPreg_call (for expr_bool.reg_call)
+	 */
+	typedef struct {
+		union {
+			Tarray_call *array_call;
+			char *id_call;
+			Treg_call *reg_call;
+		} call;
+		char *type;
+	} Tsym_call;
+	
+	/**
+	 * \brief Tsym_call_list type definition
+	 */
+	typedef struct Tsym_call_list Tsym_call_list;
+	
+	struct Tsym_call_list {
+		Tsym_call *actual;
+		Tsym_call_list *next;
 	};
 	
 	/**
@@ -448,25 +488,31 @@
 	 * stored as a Tvar_sym (to an integer var) and not 
 	 * as a Treg_call!
 	 */
-	typedef union {
-		char *name;
-		Treg_sym *symbol;
-	} Treg_call;
+	
+	struct Treg_call {
+		Tsym_call *actual;
+		Treg_call *next;
+	};
 	
 	/**
 	 * \brief expr_bool type definition
 	 * In this structure char *type can be:
 	 *  -  OPexpr_bool (for expr_bool.expr_bool)
-	 *  -  OPvar_call (for expr_bool.var_call)
+	 *  -  OPvar_call (for expr_bool.var_call, note that this is used only to
+	 *                 store a boolean internal var)
 	 *  -  OParray_call (for expr_bool.array_call)
+	 *  -  OPid_call (for expr_bool.id_call)
 	 *  -  OPmethod_call (for expr_bool.method_call)
+	 *  -  OPreg_call (for expr_bool.reg_call)
 	 */
 	typedef struct {
 		union {
 			Texpr_bool_op *expr_bool;
 			Tvar_sym *var_call;
-			Tarray_sym *array_call;
+			Tarray_call *array_call;
+			char *id_call;
 			Tmethod_call *method_call;
+			Treg_call *reg_call;
 		} expr_bool;
 		char *type;
 	} Texpr_bool;
@@ -507,9 +553,12 @@
 	 * In this structure char *type can be:
 	 *  -  OPexpr_bool (for expr.expr_bool)
 	 *  -  OPexpr (for expr.expr)
-	 *  -  OPvar_call (for expr.var_call)
+	 *  -  OPvar_call (for expr.var_call, note that this is used only to
+	 *                 store a boolean internal var)
 	 *  -  OParray_call (for expr.array_call)
+	 *  -  OPid_call (for expr_bool.id_call)
 	 *  -  OPmethod_call (for expr.method_call)
+	 *  -  OPreg_call (for expr.reg_call)
 	 */
 	struct Texpr {
 		char *type;
@@ -517,8 +566,10 @@
 			Texpr_bool_op *expr_bool;
 			Texpr_op *expr;
 			Tvar_sym *var_call;
-			Tarray_sym *array_call;
+			Tarray_call *array_call;
+			char *id_call;
 			Tmethod_call *method_call;
+			Treg_call *reg_call;
 		} expr;
 	};
 	
@@ -633,14 +684,13 @@
 	 * \brief Tassign_statement type definition
 	 */
 	struct Tassign_statement {
-		Tother_sym_list *sym_list;
+		Tsym_call_list *sym_list;
 		Texpr *expr;
 	};
 	 
 	/**
 	 * \brief Texpr_list type definition
 	 */
-	typedef struct Texpr_list Texpr_list;
 	
 	struct Texpr_list {
 		Texpr *actual;
@@ -651,7 +701,7 @@
 	 * \brief Tmult_assign_statement type definition
 	 */
 	struct Tmult_assign_statement {
-		Tother_sym_list *sym_list;
+		Tsym_call_list *sym_list;
 		Texpr_list *expr_list;
 	};
 	
@@ -852,12 +902,9 @@
 	Tassign_statement *TRfromto_assign_statement(Tsentence *, Texpr *); 
 	// fromto_loop: 
 	Tsentence *TRfromto_loop(Tassign_statement *, Texpr *, Tsentence_list *); 
-	// TODO: is it correct to set this as  Tsentence *? function_call: 
 	Tsentence *TRfunction_call(char *, Texpr_list *); 
-	// TODO: is it correct to set this as  Tsentence *? variable_call: 
 	Tsentence *TRvariable_call(char *, Texpr_list *); 
 	Tsentence *TRvariable_call_node(char *); 
-	// TODO: is it correct to set this as  Tsentence *? struct_call: 
 	Tsentence *TRstruct_call(Tsentence *, Tsentence *);
 	Tsentence *TRstruct_call_node(Tsentence *);
 	// variable_list: 
@@ -872,7 +919,7 @@
 	// expr_bool: 
 	Texpr_bool *TRexpr_bool_val(bool *); 
 	Texpr_bool *TRexpr_bool_struct(Tsentence *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, NULL);; 
+// 	Texpr_bool *TRexpr_bool(char, Texpr_bool *, NULL); 
 	Texpr_bool *TRexpr_bool_not(Texpr_bool *);  
 	Texpr_bool *TRexpr_bool_log(char, Texpr_bool *, Texpr_bool *); 
 	Texpr_bool *TRexpr_bool(char, Texpr *, Texpr *); 

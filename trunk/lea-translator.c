@@ -320,14 +320,24 @@ Tother_sym *TRinout_var_dcl_array(Tid_list *id_list, Tint_id_val_list *dimension
 }
 
 /**
- * \brief 
+ * \brief Allocate memory for an identifier list
  * 
- * \param		
- * \return	 
+ * \param	previous_list	Previous list of identifiers
+ * \param	actual			Actual identifier
+ * \return					An identifier list 
  */
 Tid_list *TRid_list(Tid_list *previous_list, char *actual)
 {
+	// Returning value
 	Tid_list *ret;
+	
+	// Allocate needed memory
+	ret				=	malloc(sizeof(Tid_list));
+	
+	// Initialization
+	
+	ret->actual 	=	actual;
+	ret->next		=	previous_list;
 
 	return ret;
 }
@@ -346,10 +356,11 @@ Tint_id_val_list *TRint_val_list(Tint_id_val_list *previous_list, Tint_id_val *a
 }
 
 /**
- * \brief 
+ * \brief Allocate memory for an integer in a Tint_id_val struct
+ * Tint_id_val structures are used when either an integer or a variable call can be needed
  * 
- * \param		
- * \return	 
+ * \param	value	Value to store
+ * \return	A 		Tint_id_val struct
  */
 Tint_id_val *TRint_id_val_int(int *value)
 {
@@ -658,15 +669,31 @@ Tsentence *TRassign_statement_expr(Tsentence *var_list, Texpr *expr)
 }
 
 /**
- * \brief 
+ * \brief Creates a sentence for a multiple assignation statement
  * 
- * \param		
- * \return	 
+ * \param	var_list	List of variables to set
+ * \param	expr_list	List of expressions to use for the assignations
+ * \return				Return a multiple assgination statement sentence
  */
 Tsentence *TRmult_assign_statement(Tvar_sym_list *var_list, Texpr_list *expr_list)
 {
-	Tsentence *ret;
+	// Returning struct
+	Tsentence				*ret;
+	Tmult_assign_statement	*mult_assign_statement;
+	
+	// Allocate needed memory
+	ret						=	malloc(sizeof(Tsentence));
+	ret->type				=	malloc(sizeof(char));
+	
+	mult_assign_statement	=	malloc(sizeof(Tmult_assign_statement));
 
+	// Initialization
+//TODO: 	mult_assign_statement->sym_list	=	var_list;
+	mult_assign_statement->expr_list	=	expr_list;
+	
+	*(ret->type)						=	Vmult_assign_statement;
+	ret->sentence.mult_assign_statement	=	mult_assign_statement;
+	
 	return ret;
 }
 
@@ -684,15 +711,31 @@ Tsentence *TRoutput_input_statement(char *name, Texpr_list *expr_list)
 }
 
 /**
- * \brief 
+ * \brief Creates a sentence for a while loop
  * 
- * \param		
- * \return	 
+ * \param	expr_bool		Iteration condition
+ * \param	sentence_list	List of sentences to execute inside the loop
+ * \return					Return a while loop sentence
  */
 Tsentence *TRwhile_loop(Texpr_bool *expr_bool, Tsentence_list *sentence_list)
 {
-	Tsentence *ret;
-
+	// Returning struct
+	Tsentence	*ret;
+	Twhile_loop	*while_loop;
+	
+	// Allocate needed memory
+	ret			=	malloc(sizeof(Tsentence));
+	ret->type	=	malloc(sizeof(char));
+	
+	while_loop	=	malloc(sizeof(Twhile_loop));
+	
+	// Initialization
+	while_loop->cond			=	expr_bool;
+	while_loop->sentence_list	=	sentence_list;
+	
+	*(ret->type)				=	Vwhile_loop;
+	ret->sentence.while_loop	=	while_loop;
+	
 	return ret;
 }
 
@@ -808,6 +851,7 @@ Tvar_sym_list *TRvariable_list(Tvar_sym_list *previous_list, Tsentence *next_lis
  */
 Tvar_sym_list *TRvariable_list_node(Tsentence *next_list)
 {
+	
 	Tvar_sym_list *ret;
 
 	return ret;
@@ -827,12 +871,12 @@ Tsentence *TRprocedure_call(char *name, Texpr_list *arg_list)
 }
 
 /**
- * \brief Adds an element to a linked list of expresions
+ * \brief Adds an element to a linked list of expressions
  * 
- * \param	next_list	Existing linked list of expresions
+ * \param	next_list	Existing linked list of expressions
  * \param	actual		Expresion element to add to the list
  * \return				New linked list containing all the previous \
- * expresions and the new one
+ * expressions and the new one
  */
 Texpr_list *TRexpr_list(Texpr_list *next_list, Texpr *actual)
 {
@@ -850,10 +894,10 @@ Texpr_list *TRexpr_list(Texpr_list *next_list, Texpr *actual)
 }
 
 /**
- * \brief Allocates storage for a boolean expresion value
+ * \brief Allocates storage for a boolean expression value
  * 
  * \param	bool_val	Value to preserve
- * \return				Pointer to the expresion holding the given value
+ * \return				Pointer to the expression holding the given value
  */
 Texpr_bool *TRexpr_bool_val(bool *val)
 {
@@ -901,10 +945,10 @@ Texpr_bool *TRexpr_bool_struct(Tsentence *struct_call)
 }
 
 /**
- * \brief Negates a boolean expresion
+ * \brief Negates a boolean expression
  * 
- * \param	expr_bool	Boolean expresion to negate
- * \return				Returns a boolean expresion negating the given one
+ * \param	expr_bool	Boolean expression to negate
+ * \return				Returns a boolean expression negating the given one
  */
 Texpr_bool *TRexpr_bool_not(Texpr_bool *expr_bool)
 {
@@ -935,16 +979,16 @@ Texpr_bool *TRexpr_bool_not(Texpr_bool *expr_bool)
  * \brief Allocates storage for a boolean operation with two boolean operands
  *
  * \param	type		Operation
- * \param	left_expr	Left boolean expresion in the operation
- * \param	right_expr	Right boolean expresion in the operation
+ * \param	left_expr	Left boolean expression in the operation
+ * \param	right_expr	Right boolean expression in the operation
  * \return				Pointer to the structure holding the boolean operation
  */
 Texpr_bool *TRexpr_bool_log(char type, Texpr_bool *left_expr, Texpr_bool *right_expr)
 {
 	// Returning struct
-	Texpr_bool *ret;
+	Texpr_bool		*ret;
 	// Internal intermediate storage struct:
-	Texpr_bool_op *expr_bool_op;
+	Texpr_bool_op	*expr_bool_op;
 	
 	// Allocate needed memory
 	ret					=	malloc(sizeof(Texpr_bool));
@@ -976,16 +1020,16 @@ Texpr_bool *TRexpr_bool_log(char type, Texpr_bool *left_expr, Texpr_bool *right_
  * \brief Allocates storage for a boolean operation with two operands
  *
  * \param	type		Operation
- * \param	left_expr	Left expresion in the operation
- * \param	right_expr	Right expresion in the operation
+ * \param	left_expr	Left expression in the operation
+ * \param	right_expr	Right expression in the operation
  * \return				Pointer to the structure holding the boolean operation
  */
 Texpr_bool *TRexpr_bool(char type, Texpr *left_expr, Texpr *right_expr)
 {
 	// Returning struct:
-	Texpr_bool *ret;
+	Texpr_bool		*ret;
 	// Internal intermediate storage struct:
-	Texpr_bool_op *expr_bool_op;
+	Texpr_bool_op	*expr_bool_op;
 	
 	// Allocate needed memory
 	ret			=	malloc(sizeof(Texpr_bool));
@@ -1039,10 +1083,10 @@ Texpr_bool *TRexpr_bool_fcall(Tsentence *function_call)
 }
 
 /**
- * \brief Allocates storage for an integer expresion value
+ * \brief Allocates storage for an integer expression value
  * 
  * \param	int_val	Value to preserve
- * \return			Pointer to the expresion holding the given value
+ * \return			Pointer to the expression holding the given value
  */
 Texpr *TRexpr_int(int *int_val)
 {
@@ -1077,10 +1121,10 @@ Texpr *TRexpr_int(int *int_val)
 }
 
 /**
- * \brief Allocates storage for a boolean expresion value
+ * \brief Allocates storage for a boolean expression value
  *
  * \param	bool_val	Value to preserve
- * \return				Pointer to the expresion holding the given value
+ * \return				Pointer to the expression holding the given value
  */
 Texpr *TRexpr_expr_bool(bool *bool_val)
 {
@@ -1115,10 +1159,10 @@ Texpr *TRexpr_expr_bool(bool *bool_val)
 }
 
 /**
- * \brief Allocates storage for a float expresion value
+ * \brief Allocates storage for a float expression value
  *
  * \param	float_val	Value to preserve
- * \return				Pointer to the expresion holding the given value
+ * \return				Pointer to the expression holding the given value
  */
 Texpr *TRexpr_float(float *float_val)
 {
@@ -1153,10 +1197,10 @@ Texpr *TRexpr_float(float *float_val)
 }
 
 /**
- * \brief Allocates storage for a str expresion value
+ * \brief Allocates storage for a str expression value
  *
  * \param	str	Value to preserve
- * \return		Pointer to the expresion holding the given value
+ * \return		Pointer to the expression holding the given value
  */
 Texpr *TRexpr_str(char *str)
 {
@@ -1207,16 +1251,16 @@ Texpr *TRexpr_struct(Tsentence *struct_call)
  * \brief Allocates storage for an operation with two operands
  *
  * \param	type		Operation
- * \param	left_expr	Left expresion in the operation
- * \param	right_expr	Right expresion in the operation
+ * \param	left_expr	Left expression in the operation
+ * \param	right_expr	Right expression in the operation
  * \return				Pointer to the structure holding the operation
  */
 Texpr *TRexpr(char type, Texpr *left_expr, Texpr *right_expr)
 {
 	// Returning struct:
-	Texpr *ret;
+	Texpr		*ret;
 	// Internal intermediate storage struct:
-	Texpr_op *expr_op;
+	Texpr_op	*expr_op;
 	
 	// Allocate needed memory
 	ret			=	malloc(sizeof(Texpr));

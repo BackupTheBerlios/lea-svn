@@ -73,7 +73,7 @@ prog antispam
 		var
 			i,j : entero
 		prin
-			i, j := 1, 1
+			i := j := 1
 			
 			mientras i<=long(t)
 				si t[i]=sep y i>1:
