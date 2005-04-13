@@ -1,7 +1,7 @@
 all: lea
 
 TMPS=lex.yy.c lea.tab.c
-OBJS=lea-translator.o
+OBJS=lea-translator.o symbol-table.o
 LEX_SRC=lea.l
 YACC_SRC=$(LEX_SRC:.l=.y)
 OUT=$(LEX_SRC:.l=)

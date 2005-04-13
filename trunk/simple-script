@@ -78,7 +78,13 @@ prog antispam
 			mientras i<=long(t)
 				si t[i]=sep y i>1:
 					j := j + 1
-				|otras:
+				| i<1:
+					j := j - 1
+					f()
+				| i<1:
+					j := j - 1
+					f()
+				| otras:
 					nula
 				fsi
 				t[j] := cad[i]

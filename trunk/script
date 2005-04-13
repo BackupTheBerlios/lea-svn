@@ -88,7 +88,8 @@ proc my_procedure(ent b, c: flujo de entrada de entero, d: cadena; sal e:flujo d
 				file: fichero de real
 			freg
 	prin
-		a := {1, 2, 3}
+		//a := {1, 2, 3}
+		df := (f y g) y a
 		a[3] := 2
 		llamada_a_un_func_o_proc(45, 4., a)
 		escribir pi

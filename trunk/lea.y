@@ -199,37 +199,37 @@ proc_arg:
 ;
 
 proc_arg_list:
-	proc_arg_list ';' proc_arg
+	proc_arg ';' proc_arg_list
 		{ $$ = TRproc_arg_list($1, $3);  }
 	| proc_arg
-		{ $$ = TRproc_arg_list(NULL, $1); }
+		{ $$ = TRproc_arg_list($1, NULL); }
 ;
 
 in_arg_list:
 	EPSILON
 		{ $$ = NULL; }
-	| in_arg_list ',' in_var_dcl
+	| in_var_dcl ',' in_arg_list
 		{ $$ = TRin_arg_list($1, $3); }
 	| in_var_dcl
-		{ $$ = TRin_arg_list(NULL, $1); }
+		{ $$ = TRin_arg_list($1, NULL); }
 ;
 
 out_arg_list:
 	EPSILON
 		{ $$ = NULL; }
-	| out_arg_list ',' out_var_dcl
+	| out_var_dcl ',' out_arg_list
 		{ $$ = TRout_arg_list($1, $3); }
 	| out_var_dcl
-		{ $$ = TRout_arg_list(NULL, $1); }
+		{ $$ = TRout_arg_list($1, NULL); }
 ;
 
 inout_arg_list:
 	EPSILON
 		{ $$ = NULL; }
-	| inout_arg_list ',' inout_var_dcl
+	| inout_var_dcl ',' inout_arg_list
 		{ $$ = TRinout_arg_list($1, $3); }
 	| inout_var_dcl
-		{ $$ = TRinout_arg_list(NULL, $1); }
+		{ $$ = TRinout_arg_list($1, NULL); }
 ;
 
 in_var_dcl:
@@ -266,10 +266,10 @@ inout_var_dcl:
 ;
 
 id_list:
-	id_list ',' ID
+	ID ',' id_list
 		{ $$ = TRid_list($1, $3); }
 	| ID
-		{ $$ = TRid_list(NULL, $1); }
+		{ $$ = TRid_list($1, NULL); }
 ;
 
 array_dimensions:
@@ -278,10 +278,10 @@ array_dimensions:
 ;
 
 int_val_list:
-	int_val_list ',' int_id_val
+	int_id_val ',' int_val_list
 		{ $$ = TRint_val_list($1, $3); }
 	| int_id_val
-		{ $$ = TRint_val_list(NULL, $1); }
+		{ $$ = TRint_val_list($1, NULL); }
 ;
 
 int_id_val:
@@ -309,24 +309,24 @@ consts_block:
 const_dcl_list:
 	EPSILON
 		{ $$ = NULL; }
-	| const_dcl_list
-	id_list ':' BOOL_VAL '\n'
-		{ $$ = TRconst_dcl_list_bool($1, $2, $4); }
-	| const_dcl_list
-	id_list ':' INT_VAL '\n'
-		{ $$ = TRconst_dcl_list_int($1, $2, $4); }
-	| const_dcl_list
-	id_list ':' FLOAT_VAL '\n'
-		{ $$ = TRconst_dcl_list_float($1, $2, $4); }
-	| const_dcl_list
-	id_list ':' CHAR_VAL '\n'
-		{ $$ = TRconst_dcl_list_char($1, $2, $4); }
-	| const_dcl_list
-	id_list ':' STR_VAL '\n'
-		{ $$ = TRconst_dcl_list_str($1, $2, $4); }
-	| const_dcl_list
-	id_list ':' register
-		{ $$ = TRconst_dcl_list_reg($1, $2, $4); }
+	| id_list ':' BOOL_VAL '\n'
+	const_dcl_list
+		{ $$ = TRconst_dcl_list_bool($1, $3, $5); }
+	| id_list ':' INT_VAL '\n'
+	const_dcl_list
+		{ $$ = TRconst_dcl_list_int($1, $3, $5); }
+	| id_list ':' FLOAT_VAL '\n'
+	const_dcl_list
+		{ $$ = TRconst_dcl_list_float($1, $3, $5); }
+	| id_list ':' CHAR_VAL '\n'
+	const_dcl_list
+		{ $$ = TRconst_dcl_list_char($1, $3, $5); }
+	| id_list ':' STR_VAL '\n'
+	const_dcl_list
+		{ $$ = TRconst_dcl_list_str($1, $3, $5); }
+	| id_list ':' register
+	const_dcl_list
+		{ $$ = TRconst_dcl_list_reg($1, $3, $4); }
 ;
 
 types_block:
@@ -339,28 +339,28 @@ types_block:
 types_dcl_list:
 	EPSILON
 		{ $$ = NULL; }
-	| types_dcl_list
-	id_list ':' '(' str_list ')' '\n'
-		{ $$ = TRtypes_dcl_list_enum($1, $2, $5); }
-	| types_dcl_list
-	id_list ':' ID '\n'
-		{ $$ = TRtypes_dcl_list_var($1, $2, $4, NULL); }
-	| types_dcl_list
-	id_list ':' ID OF ID '\n'
-		{ $$ = TRtypes_dcl_list_var($1, $2, $4, $6); }
-	| types_dcl_list
-	id_list ':' ARRAY array_dimensions OF ID '\n'
-		{ $$ = TRtypes_dcl_list_array($1, $2, $5, $7); }
-	| types_dcl_list
-	id_list ':' register
-		{ $$ = TRtypes_dcl_list_reg($1, $2, $4); }
+	| id_list ':' '(' str_list ')' '\n'
+	types_dcl_list
+		{ $$ = TRtypes_dcl_list_enum($1, $4, $7); }
+	| id_list ':' ID '\n'
+	types_dcl_list
+		{ $$ = TRtypes_dcl_list_var($1, $3, NULL, $5); }
+	| id_list ':' ID OF ID '\n'
+	types_dcl_list
+		{ $$ = TRtypes_dcl_list_var($1, $3, $5, $7); }
+	| id_list ':' ARRAY array_dimensions OF ID '\n'
+	types_dcl_list
+		{ $$ = TRtypes_dcl_list_array($1, $4, $6, $8); }
+	| id_list ':' register
+	types_dcl_list
+		{ $$ = TRtypes_dcl_list_reg($1, $3, $4); }
 ;
 
 str_list:
-	str_list ',' ID
+	ID ',' str_list
 		{ $$ = TRstr_list($1, $3); }
 	| ID
-		{ $$ = TRstr_list(NULL, $1); }
+		{ $$ = TRstr_list($1, NULL); }
 ;
 
 vars_block:
@@ -374,22 +374,22 @@ vars_block:
 vars_dcl:
 	vars_reg_dcl
 		{ $$ = $1; }
-	| vars_dcl
-	id_list ':' register  //TODO: !!!!!
-		{ $$ = TRvars_dcl_reg($1, $2, $4); }
+	| id_list ':' register  //TODO: !!!!!
+	vars_dcl
+		{ $$ = TRvars_dcl_reg($1, $3, $4); }
 ;
 vars_reg_dcl:
 	EPSILON
 		{ $$ = NULL; }
-	| vars_reg_dcl
-	id_list ':' ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, NULL); }
-	| vars_reg_dcl
-	id_list ':' ID OF ID '\n'
-		{ $$ = TRvars_dcl_var($1, $2, $4, $6); }
-	| vars_reg_dcl
-	id_list ':' ARRAY array_dimensions OF ID '\n'
-		{ $$ = TRvars_dcl_array($1, $2, $5, $7); }
+	| id_list ':' ID '\n'
+	vars_reg_dcl
+		{ $$ = TRvars_dcl_var($1, $3, NULL, $5); }
+	| id_list ':' ID OF ID '\n'
+	vars_reg_dcl
+		{ $$ = TRvars_dcl_var($1, $3, $5, $7); }
+	| id_list ':' ARRAY array_dimensions OF ID '\n'
+	vars_reg_dcl
+		{ $$ = TRvars_dcl_array($1, $4, $6, $8); }
 ;
 
 register:
@@ -417,7 +417,7 @@ sentence_list_block:
 sentence_list:
 	EPSILON
 		{ $$ = NULL; }
-	| sentence_list sentence
+	| sentence sentence_list
 		{ $$ = TRsentence_list($1, $2); }
 	| IS_NULL '\n'
 		{ $$ = NULL; }
@@ -471,9 +471,9 @@ elif_statement:
 
 elif_statement_list:
 	elif_statement_list elif_statement
-		{ $$ = TRelif_statement_list($1, $2); }
+		{ $$ = TRelif_statement_list($2, $1); }
 	| elif_statement
-		{ $$ = TRelif_statement_list(NULL, $1); }
+		{ $$ = TRelif_statement_list($1, NULL); }
 ;
 
 assign_statement:
@@ -546,14 +546,14 @@ variable_call:
 ;
 
 struct_call:
-	struct_call '.' variable_call
+	variable_call '.' struct_call
 		{ $$ = TRstruct_call($1, $3); }
 	| variable_call
 		{ $$ = TRstruct_call_node($1); }
 ;
 
 variable_list:
-	variable_list ',' variable_call
+	variable_call ',' variable_list
 		{ $$ = TRvariable_list($1, $3); }
 	| variable_call
 		{ $$ = TRvariable_list_node($1); }
@@ -567,10 +567,10 @@ procedure_call:
 expr_list:
 	EPSILON
 		{ $$ = NULL; }
-	| expr_list ',' expr
+	| expr ',' expr_list
 		{ $$ = TRexpr_list($1, $3); }
 	| expr
-		{ $$ = TRexpr_list(NULL, $1); }
+		{ $$ = TRexpr_list($1, NULL); }
 ;
 
 expr_bool:

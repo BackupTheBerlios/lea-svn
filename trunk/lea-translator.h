@@ -175,7 +175,10 @@
 	/**
 	 * \brief bool type definition
 	 */
-	typedef enum {false, true} bool;
+	#ifndef BOOL_TYPE
+		#define BOOL_TYPE
+		typedef enum {false, true} bool;
+	#endif
 	
 	/**
 	 * \brief Ttype type definition
@@ -638,7 +641,7 @@
 	 *  -  Vwhile_loop (for sentence.while_loop)
 	 *  -  Vfromto_loop (for sentence.fromto_loop)
 	 *  -  Vmethod_call (for sentence.method_call)
-	 *  -  Vreserved_call (for sentence.Treserved_call)
+	 *  -  Vreserved_call (for sentence.reserved_call)
 	 */
 	struct Tsentence {
 		char *type;
@@ -649,7 +652,7 @@
 			Twhile_loop *while_loop;
 			Tfromto_loop *fromto_loop;
 			Tmethod_call *method_call;
-			Treserved_call *Treserved_call;
+			Treserved_call *reserved_call;
 		} sentence;
 	};
 	
@@ -802,15 +805,15 @@
 // 	Tinterface_sym *TRproc_arg_list(NULL, Tinterface_sym *); 
 	// in_arg_list: 
 	// 		NULL;  
-	Tother_sym_list *TRin_arg_list(Tother_sym_list *, Tother_sym *); 
+	Tother_sym_list *TRin_arg_list(Tother_sym *, Tother_sym_list *); 
 // 	Tother_sym_list *TRin_arg_list(NULL, Tother_sym *); 
 	// out_arg_list: 
 	// 		NULL;  
-	Tother_sym_list *TRout_arg_list(Tother_sym_list *, Tother_sym *); 
+	Tother_sym_list *TRout_arg_list(Tother_sym *, Tother_sym_list *); 
 // 	Tother_sym_list *TRout_arg_list(NULL, Tother_sym *); 
 	// inout_arg_list: 
 	// 		NULL;  
-	Tother_sym_list *TRinout_arg_list(Tother_sym_list *, Tother_sym *); 
+	Tother_sym_list *TRinout_arg_list(Tother_sym *, Tother_sym_list *); 
 // 	Tother_sym_list *TRinout_arg_list(NULL, Tother_sym *); 
 	// in_var_dcl: 
 // 	Tother_sym *TRin_var_dcl(Tid_list *, char *, NULL, NULL); 
@@ -828,10 +831,10 @@
 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, char); 
 	Tother_sym *TRinout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// id_list: 
-	Tid_list *TRid_list(Tid_list *, char *); 
+	Tid_list *TRid_list(char *, Tid_list *); 
 // 	Tid_list *TRid_list(NULL, char *); 
 	// int_val_list: 
-	Tint_id_val_list *TRint_val_list(Tint_id_val_list *, Tint_id_val *); 
+	Tint_id_val_list *TRint_val_list(Tint_id_val *, Tint_id_val_list *); 
 // 	Tint_id_val_list *TRint_val_list(NULL, Tint_id_val *); 
 	// int_id_val: 
 	Tint_id_val *TRint_id_val_int(int *);
@@ -842,38 +845,38 @@
 	// 		NULL;  
 	// const_dcl_list: 
 	// 		NULL;  
-	Tother_sym_list *TRconst_dcl_list_bool(Tother_sym_list *, Tid_list *, bool *); 
-	Tother_sym_list *TRconst_dcl_list_int(Tother_sym_list *, Tid_list *, int *); 
-	Tother_sym_list *TRconst_dcl_list_float(Tother_sym_list *, Tid_list *, float *); 
-	Tother_sym_list *TRconst_dcl_list_char(Tother_sym_list *, Tid_list *, char *); 
-	Tother_sym_list *TRconst_dcl_list_str(Tother_sym_list *, Tid_list *, char *); 
-	Tother_sym_list *TRconst_dcl_list_reg(Tother_sym_list *, Tid_list *, Tother_type *); 
+	Tother_sym_list *TRconst_dcl_list_bool(Tid_list *, bool *, Tother_sym_list *); 
+	Tother_sym_list *TRconst_dcl_list_int(Tid_list *, int *, Tother_sym_list *); 
+	Tother_sym_list *TRconst_dcl_list_float(Tid_list *, float *, Tother_sym_list *); 
+	Tother_sym_list *TRconst_dcl_list_char(Tid_list *, char *, Tother_sym_list *); 
+	Tother_sym_list *TRconst_dcl_list_str(Tid_list *, char *, Tother_sym_list *); 
+	Tother_sym_list *TRconst_dcl_list_reg(Tid_list *, Tother_type *, Tother_sym_list *); 
 	// types_block: 
 	// 		NULL;  
 	// types_dcl_list: 
 	// 		NULL;  
-	Tother_type_list *TRtypes_dcl_list_enum(Tother_type_list *, Tid_list *, Tstr_list *); 
+	Tother_type_list *TRtypes_dcl_list_enum(Tid_list *, Tstr_list *, Tother_type_list *); 
 // 	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, char *, NULL); 
-	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, char *, char *); 
-	Tother_type_list *TRtypes_dcl_list_array(Tother_type_list *, Tid_list *, Tint_id_val_list *, char *); 
-	Tother_type_list *TRtypes_dcl_list_reg(Tother_type_list *, Tid_list *, Tother_type *); 
+	Tother_type_list *TRtypes_dcl_list_var(Tid_list *, char *, char *, Tother_type_list *); 
+	Tother_type_list *TRtypes_dcl_list_array(Tid_list *, Tint_id_val_list *, char *, Tother_type_list *); 
+	Tother_type_list *TRtypes_dcl_list_reg(Tid_list *, Tother_type *, Tother_type_list *); 
 	// str_list: 
-	Tstr_list *TRstr_list(Tstr_list *, char *); 
+	Tstr_list *TRstr_list(char *,Tstr_list *); 
 // 	Tstr_list *TRstr_list(NULL, char *); 
 	// vars_block: 
 	// 		NULL;  
 	// vars_dcl: 
 	// 		NULL;  
 // 	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, char *, NULL); 
-	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, char *, char *); 
-	Tother_sym_list *TRvars_dcl_array(Tother_sym_list *, Tid_list *, Tint_id_val_list *, char *); 
-	Tother_sym_list *TRvars_dcl_reg(Tother_sym_list *, Tid_list *, Tother_type *); 
+	Tother_sym_list *TRvars_dcl_var(Tid_list *, char *, char *, Tother_sym_list *); 
+	Tother_sym_list *TRvars_dcl_array(Tid_list *, Tint_id_val_list *, char *, Tother_sym_list *); 
+	Tother_sym_list *TRvars_dcl_reg(Tid_list *, Tother_type *, Tother_sym_list *); 
 	// register: 
 // 	Tother_type *TRregister(Tother_sym_list *); 
 	Tother_type *TRregister(Tother_sym_list *); 
 	// sentence_list: 
 	// 		NULL;  
-	Tsentence_list *TRsentence_list(Tsentence_list *, Tsentence *); 
+	Tsentence_list *TRsentence_list(Tsentence *, Tsentence_list *); 
 	// 		NULL;  
 	// if_statement: 
 	Tsentence *TRif_statement(Texpr_bool *, Tsentence_list *, Telif_statement_list *, Tsentence_list *); 
@@ -881,7 +884,7 @@
 	// elif_statement: 
 	Telif_statement *TRelif_statement(Texpr_bool *, Tsentence_list *); 
 	// elif_statement_list: 
-	Telif_statement_list *TRelif_statement_list(Telif_statement_list *, Telif_statement *); 
+	Telif_statement_list *TRelif_statement_list(Telif_statement *, Telif_statement_list *); 
 // 	Telif_statement_list *TRelif_statement_list(NULL, Telif_statement *); 
 	// assign_statement: 
 	Tsentence *TRassign_statement_assign(Tsentence *, Tsentence *); 
@@ -908,13 +911,13 @@
 	Tsentence *TRstruct_call(Tsentence *, Tsentence *);
 	Tsentence *TRstruct_call_node(Tsentence *);
 	// variable_list: 
-	Tvar_sym_list *TRvariable_list(Tvar_sym_list *, Tsentence *); 
+	Tvar_sym_list *TRvariable_list(Tsentence *, Tvar_sym_list *); 
 	Tvar_sym_list *TRvariable_list_node(Tsentence *); 
 	// procedure_call: 
 	Tsentence *TRprocedure_call(char *, Texpr_list *); 
 	// expr_list: 
 	// 		NULL;  
-	Texpr_list *TRexpr_list(Texpr_list *, Texpr *); 
+	Texpr_list *TRexpr_list(Texpr *, Texpr_list *); 
 // 	Texpr_list *TRexpr_list(NULL, Texpr *); 
 	// expr_bool: 
 	Texpr_bool *TRexpr_bool_val(bool *); 
