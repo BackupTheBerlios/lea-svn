@@ -61,13 +61,7 @@ ID			{L}+{H}*
 <comment>"*/"\n			{ printf("BEGIN(INITIAL) \n"); BEGIN(INITIAL);	}
 "//".*\n				{ printf("ONE-LINE COMMENT \n"); }
 
-%{/*
-   * This is for scripting  to work:
-   * TODO: this should only apply when it's on the first line!
-   * TODO: this should determine login_prompt var!
-   */
-%}
-^"#!/"({ID}\/)*{ID}\n	{ printf("SCRIPT LINE \n"); }
+
 ^[ \t]*\n				{ printf("\nNULL LINE \n"); }
 [ \t]+					{  }
 

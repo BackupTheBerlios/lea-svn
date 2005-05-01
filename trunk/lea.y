@@ -634,11 +634,29 @@ EPSILON:
 int main(int argc, char *argv[])
 {
 	extern FILE *yyin;
+	char *header;
 	
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "\nUnable to open source file: %s\n", argv[1]);
 			exit(1);
+		} else {
+			header = calloc(255, sizeof(char));
+			fgets(header,255, yyin);
+			
+			/*
+			 * Detect whether header does contain a
+			 * Linux scripting header or not. If not,
+			 * reposition to the beguinning of the
+			 * stream.
+			 */
+			
+			if(header[0] != '#' || header[1] != '!')
+			{
+				printf("bingo: %s\n", header);
+				fseek(yyin, 0, SEEK_SET);
+			}
+			free(header);
 		}
 	}
 	
