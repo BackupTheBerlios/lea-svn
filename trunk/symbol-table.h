@@ -47,8 +47,6 @@
 		+((const uint8_t *)(d))[0])
 	#endif
 	
-	const unsigned int PRIME = 101;
-	
 	/**
 	 * \brief Tsym_list type definition
 	 */
@@ -61,12 +59,21 @@
 	};
 	
 	/**
+	 * \brief Tsym_table definition
+	 */
+	typedef struct {
+		Tsym_list **elements;
+		// number of list elements
+		unsigned int PRIME;
+	} Tsym_table;
+	
+	/**
 	 * Prototypes definition
 	 */
 	
-	Tsym_list **initSymTable();
-	bool addSym(Tsym_list **symTable, const char *data, const void *sym);
-	bool delSym(Tsym_list **symTable, const char *data);
-	const void *getSym(Tsym_list **symTable, const char *data);
+	Tsym_table *initSymTable(const unsigned int PRIME);
+	bool addSym(Tsym_table *symTable, const char *data, const void *sym);
+	bool delSym(Tsym_table *symTable, const char *data);
+	const void *getSym(Tsym_table *, const char *data);
 	uint32_t getHash(const char *data, size_t len);
 #endif

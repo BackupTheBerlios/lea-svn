@@ -29,6 +29,9 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include <stdio.h>
+	#include "symbol-table.h"
+	// Number of list elements in symbol tables. *Should* be prime
+	#define PRIME 101
 	
 	/**
 	 * \brief defines of (V)value type and their assigned values
@@ -119,6 +122,10 @@
 	#define OPmethod_call			73
 	#define OPreserved_call			74
 	#define OPreg_call				75
+	
+	#define Vreg_type_const_dcl		76
+	#define Vreg_type_types_dcl		77
+	#define Vreg_type_vars_dcl		78
 	
 	/****************************
 	*     Types definitions     *
@@ -699,6 +706,17 @@
 		Texpr *actual;
 		Texpr_list *next;
 	};
+	
+	/**
+	 * \brief Texpr_list_nested type definition
+	 * Used in mult_assign_statement/mult_assign_statement_list
+	 */
+	typedef struct Texpr_list_nested Texpr_list_nested;
+	
+	struct Texpr_list_nested {
+		Texpr_list *actual;
+		Texpr_list_nested *next;
+	};
 	 
 	/**
 	 * \brief Tmult_assign_statement type definition
@@ -762,13 +780,68 @@
 	 */
 	 
 	/****************************
-	*     Vars declarations     *
+	*    Global declarations    *
 	****************************/
 	/**
-	* \brief Abstract Tree
-	*/
+	 * \brief Main program tree
+	 */
 	
-	Tprogram abstract_tree;
+	Tprogram *program;
+	
+	/**
+	 * \brief Symbols table
+	 * This is where symbols like variables (both local and global
+	 * ones) or methods are stored so that they ca be easily and
+	 * quickly retrieved.
+	 * 
+	 * The naming convention for each kind of symbol is:
+	 * 		- Global variables:			":global_var:<var_name>"
+	 * 		- Local variables:			":local_var:<method_name>@<var_name>"
+	 * 		- Global types:				":global_type:<type_name>"
+	 * 		- Local types:				":local_type:<method_name>@<type_name>"
+	 * 		- Methods:					":method:<method_name>"
+	 * 		- Vars inside registers:	":reg_var:<reg_name>@<var_name>"
+	 */
+	Tsym_table *sym_table;
+	
+	/**
+	 * \brief Temporal pointer to actual method (if any)
+	 * HACK: Sometimes the Lea translator needs to know exactly to which
+	 * method symbol does a local variable, or an call argument belong to.
+	 *
+	 * The solution provided by this hack is to create a temporal external
+	 * pointer that points to the method symbol while it's being constructed,
+	 * and thus Lea translation calls can store there the calling args,
+	 * get the method name in order to store a var in the symbol table (see
+	 * above), etc.
+	 *
+	 * It's set to NULL when Lea Translator is not inside a method (by default).
+	 */
+	
+ 	Tmethod_sym *tmp_method_sym;
+	
+	/**
+	 * \brief Name of actual register (if any)
+	 * HACK: Lea Translator needs to know the name(s) of a register when
+	 * declaring the vars inside of it, and it's inside tmp_reg_names where
+	 * it's stored in that case (temporally).
+	 *
+	 * It's set to NULL when we're not inside a register.
+	 */
+	Tid_list *tmp_reg_names;
+	
+	/**
+	 * \brief Kind of actual register (if any)
+	 * HACK: Lea Translator needs to know whether we're declaring a new register
+	 * type or a new register var directly
+	 *
+	 * It's set to NULL when we're not inside a register. Otherwise, it can
+	 * be set to:
+	 * 		- Vreg_type_const_dcl
+	 * 		- Vreg_type_types_dcl
+	 * 		- Vreg_type_vars_dcl
+	 */
+	char *tmp_reg_type;
 	
 	/****************************
 	*    Function prototypes    *
@@ -777,59 +850,30 @@
 	 * \Brief Prototypes of the (TR)translator functions
 	 */
 	// program: 
-	Tprogram *TRprogram(char *, Tdeclarations_sym *, Tsentence_list *, Tmethod_sym *); 
-	// library: 
-	// 		NULL;  
-	Tmethod_sym *TRlibrary(Tmethod_sym *, Tmethod_sym *); 
-	// algorithm: 
-	Tmethod_sym *TRalgorithm(char *, Tinterface_sym *, Tdeclarations_sym *, Tsentence_list *); 
-	// function: 
-	Tmethod_sym *TRfunction(Tmethod_sym *, Tdeclarations_sym *, Tsentence_list *); 
-	// procedure: 
-	Tmethod_sym *TRprocedure(Tmethod_sym *, Tdeclarations_sym *, Tsentence_list *); 
+	void TRprogram(Tsentence_list *); 
+	// prog_header: 
+	void TRprog_header(char *); 
+	// alg_header: 
+	void TRalg_header(char *); 
 	// func_header: 
-	Tmethod_sym *TRfunc_header(char *, Tother_sym_list *, Tother_sym *); 
+	void TRfunc_header(char *); 
 	// proc_header: 
-	Tmethod_sym *TRproc_header(char *, Tinterface_sym *); 
-	// interface_block: 
-	// 		NULL;  
-	Tinterface_sym *TRinterface_block_in(Tother_sym_list *, Tinterface_sym *); 
-	Tinterface_sym *TRinterface_block_out(Tother_sym_list *, Tinterface_sym *); 
-	// proc_arg: 
-	// 		NULL;  
-	Tinterface_sym *TRproc_arg_in(Tother_sym_list *); 
-	Tinterface_sym *TRproc_arg_out(Tother_sym_list *); 
-	Tinterface_sym *TRproc_arg_inout(Tother_sym_list *); 
-	// proc_arg_list: 
-	Tinterface_sym *TRproc_arg_list(Tinterface_sym *, Tinterface_sym *);  
-// 	Tinterface_sym *TRproc_arg_list(NULL, Tinterface_sym *); 
-	// in_arg_list: 
-	// 		NULL;  
-	Tother_sym_list *TRin_arg_list(Tother_sym *, Tother_sym_list *); 
-// 	Tother_sym_list *TRin_arg_list(NULL, Tother_sym *); 
-	// out_arg_list: 
-	// 		NULL;  
-	Tother_sym_list *TRout_arg_list(Tother_sym *, Tother_sym_list *); 
-// 	Tother_sym_list *TRout_arg_list(NULL, Tother_sym *); 
-	// inout_arg_list: 
-	// 		NULL;  
-	Tother_sym_list *TRinout_arg_list(Tother_sym *, Tother_sym_list *); 
-// 	Tother_sym_list *TRinout_arg_list(NULL, Tother_sym *); 
+	void TRproc_header(char *);
 	// in_var_dcl: 
-// 	Tother_sym *TRin_var_dcl(Tid_list *, char *, NULL, NULL); 
-// 	Tother_sym *TRin_var_dcl(Tid_list *, char *, char *, NULL); 
-	Tother_sym *TRin_var_dcl(Tid_list *, char *, char *, char); 
-	Tother_sym *TRin_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
+// 	void TRin_var_dcl(Tid_list *, char *, NULL, NULL); 
+// 	void TRin_var_dcl(Tid_list *, char *, char *, NULL); 
+	void TRin_var_dcl(Tid_list *, char *, char *, char); 
+	void TRin_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// out_var_dcl: 
-// 	Tother_sym *TRout_var_dcl(Tid_list *, char *, NULL, NULL); 
-// 	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, NULL); 
-	Tother_sym *TRout_var_dcl(Tid_list *, char *, char *, char); 
-	Tother_sym *TRout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
+// 	void TRout_var_dcl(Tid_list *, char *, NULL, NULL); 
+// 	void TRout_var_dcl(Tid_list *, char *, char *, NULL); 
+	void TRout_var_dcl(Tid_list *, char *, char *, char); 
+	void TRout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// inout_var_dcl: 
-// 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, NULL, NULL); 
-// 	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, NULL); 
-	Tother_sym *TRinout_var_dcl(Tid_list *, char *, char *, char); 
-	Tother_sym *TRinout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
+// 	void TRinout_var_dcl(Tid_list *, char *, NULL, NULL); 
+// 	void TRinout_var_dcl(Tid_list *, char *, char *, NULL); 
+	void TRinout_var_dcl(Tid_list *, char *, char *, char); 
+	void TRinout_var_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// id_list: 
 	Tid_list *TRid_list(char *, Tid_list *); 
 // 	Tid_list *TRid_list(NULL, char *); 
@@ -839,41 +883,30 @@
 	// int_id_val: 
 	Tint_id_val *TRint_id_val_int(int *);
 	Tint_id_val *TRint_id_val_id(char *); 
-	// declarations_block: 
-	Tdeclarations_sym *TRdeclarations_block(Tother_sym_list *, Tother_type_list *, Tother_sym_list *); 
-	// consts_block: 
-	// 		NULL;  
 	// const_dcl_list: 
-	// 		NULL;  
-	Tother_sym_list *TRconst_dcl_list_bool(Tid_list *, bool *, Tother_sym_list *); 
-	Tother_sym_list *TRconst_dcl_list_int(Tid_list *, int *, Tother_sym_list *); 
-	Tother_sym_list *TRconst_dcl_list_float(Tid_list *, float *, Tother_sym_list *); 
-	Tother_sym_list *TRconst_dcl_list_char(Tid_list *, char *, Tother_sym_list *); 
-	Tother_sym_list *TRconst_dcl_list_str(Tid_list *, char *, Tother_sym_list *); 
-	Tother_sym_list *TRconst_dcl_list_reg(Tid_list *, Tother_type *, Tother_sym_list *); 
-	// types_block: 
-	// 		NULL;  
+	void TRconst_dcl_bool(Tid_list *, bool *); 
+	void TRconst_dcl_int(Tid_list *, int *); 
+	void TRconst_dcl_float(Tid_list *, float *); 
+	void TRconst_dcl_char(Tid_list *, char *); 
+	void TRconst_dcl_str(Tid_list *, char *); 
+	void TRconst_dcl_reg(Tid_list *); 
 	// types_dcl_list: 
-	// 		NULL;  
-	Tother_type_list *TRtypes_dcl_list_enum(Tid_list *, Tstr_list *, Tother_type_list *); 
-// 	Tother_type_list *TRtypes_dcl_list_var(Tother_type_list *, Tid_list *, char *, NULL); 
-	Tother_type_list *TRtypes_dcl_list_var(Tid_list *, char *, char *, Tother_type_list *); 
-	Tother_type_list *TRtypes_dcl_list_array(Tid_list *, Tint_id_val_list *, char *, Tother_type_list *); 
-	Tother_type_list *TRtypes_dcl_list_reg(Tid_list *, Tother_type *, Tother_type_list *); 
+	void TRtypes_dcl_enum(Tid_list *, Tstr_list *); 
+// 	void TRtypes_dcl_var(Tother_type_list *, Tid_list *, char *, NULL); 
+	void TRtypes_dcl_var(Tid_list *, char *, char *); 
+	void TRtypes_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
+	void TRtypes_dcl_reg(Tid_list *); 
 	// str_list: 
 	Tstr_list *TRstr_list(char *,Tstr_list *); 
 // 	Tstr_list *TRstr_list(NULL, char *); 
-	// vars_block: 
-	// 		NULL;  
-	// vars_dcl: 
-	// 		NULL;  
-// 	Tother_sym_list *TRvars_dcl_var(Tother_sym_list *, Tid_list *, char *, NULL); 
-	Tother_sym_list *TRvars_dcl_var(Tid_list *, char *, char *, Tother_sym_list *); 
-	Tother_sym_list *TRvars_dcl_array(Tid_list *, Tint_id_val_list *, char *, Tother_sym_list *); 
-	Tother_sym_list *TRvars_dcl_reg(Tid_list *, Tother_type *, Tother_sym_list *); 
+	// vars_dcl:
+	void TRvars_dcl_reg(Tid_list *);
+	// vars_reg_dcl: 
+// 	void TRvars_noreg_dcl(Tid_list *, char *, NULL); 
+	void TRvars_noreg_dcl(Tid_list *, char *, char *); 
+	void TRvars_noreg_dcl_array(Tid_list *, Tint_id_val_list *, char *); 
 	// register: 
-// 	Tother_type *TRregister(Tother_sym_list *); 
-	Tother_type *TRregister(Tother_sym_list *); 
+	void TRregister(); 
 	// sentence_list: 
 	// 		NULL;  
 	Tsentence_list *TRsentence_list(Tsentence *, Tsentence_list *); 
@@ -889,16 +922,16 @@
 	// assign_statement: 
 	Tsentence *TRassign_statement_assign(Tsentence *, Tsentence *); 
 	Tsentence *TRassign_statement_expr(Tsentence *, Texpr *); 
-	/* TODO: Tsentence *TRassign_statement_mult($1, $3); 
+	Tsentence *TRassign_statement_mult(Tsentence *, Texpr_list_nested *); 
 	// mult_assign_list: 
-			TRmult_assign_list($1, $3); 
-			TRmult_assign_list_expr($1, $3); 
-			TRmult_assign_list_expr($1, NULL); 
-			TRmult_assign_list($1, NULL);  */
+	Texpr_list_nested *TRmult_assign_list(Texpr_list_nested *, Texpr_list_nested *); 
+	Texpr_list_nested *TRmult_assign_list_expr(Texpr *, Texpr_list_nested *); 
+// 	Tmult_assign *TRmult_assign_list_expr($1, NULL); 
+// 	Tmult_assign *TRmult_assign_list($1, NULL); 
 	// mult_assign_statement: 
 	Tsentence *TRmult_assign_statement(Tvar_sym_list *, Texpr_list *);
 	// output_input_statement: 
-	Tsentence *TRoutput_input_statement(char *, Texpr_list *); 
+	Tsentence *TRoutput_input_statement(char, Texpr_list *); 
 	// while_loop: 
 	Tsentence *TRwhile_loop(Texpr_bool *, Tsentence_list *); 
 	// fromto_assign_statement: 
@@ -917,8 +950,8 @@
 	Tsentence *TRprocedure_call(char *, Texpr_list *); 
 	// expr_list: 
 	// 		NULL;  
-	Texpr_list *TRexpr_list(Texpr *, Texpr_list *); 
-// 	Texpr_list *TRexpr_list(NULL, Texpr *); 
+	Texpr_list *TRexpr_list_full(Texpr *, Texpr_list *); 
+// 	Texpr_list *TRexpr_list_full(NULL, Texpr *); 
 	// expr_bool: 
 	Texpr_bool *TRexpr_bool_val(bool *); 
 	Texpr_bool *TRexpr_bool_struct(Tsentence *); 
@@ -936,7 +969,7 @@
 	Texpr_bool *TRexpr_bool_fcall(Tsentence *); 
 	// expr: 
 	Texpr *TRexpr_int(int *); 
-	Texpr *TRexpr_expr_bool(bool *); 
+	Texpr *TRexpr_expr_bool(Texpr_bool *); 
 	Texpr *TRexpr_float(float *); 
 	Texpr *TRexpr_str(char *); 
 	Texpr *TRexpr_struct(Tsentence *); 

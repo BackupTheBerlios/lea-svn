@@ -59,13 +59,14 @@
 	Tsentence 				*Tsentence;
 	Tassign_statement		*Tassign_statement;
 	Texpr_list				*Texpr_list;
+	Texpr_list_nested		*Texpr_list_nested;
 	Texpr_bool				*Texpr_bool;
 	Texpr					*Texpr;
 // \endlist
 }
 
 %token PROG ALG FUNC IN_STREAM OUT_STREAM INOUT_STREAM DEV PROC END IN OUT INOUT CONSTS TYPES VARS START OF
-%token IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO IS_NULL ARRAY REG ENDREG
+%token IF ELSE IS_NULL ENDIF WHILE ENDWHILE FROM TO ENDFROMTO IS_NULL ARRAY REG ENDREG PRINT READ
 
 %token <int_val>	INT_VAL
 %token <bool_val>	BOOL_VAL
@@ -79,27 +80,19 @@
  * NOTE: tabulation added manually
  */
 %type <Tstr_list>				str_list
-%type <Texpr>					expr
-%type <Tother_type_list>		types_dcl_list types_block
+%type <Texpr>					expr expr_op expr_val
 %type <Tid_list>				id_list
-%type <Tprogram>				program
 %type <Telif_statement>			elif_statement
-%type <Tsentence>				if_statement assign_statement mult_assign_statement output_input_statement while_loop fromto_loop function_call variable_call struct_call procedure_call sentence
+%type <Tsentence>				if_statement assign_statement mult_assign_statement output_input_statement while_loop fromto_loop function_call variable_call struct_call procedure_call sentence input_statement output_statement
 %type <Tint_id_val_list>		int_val_list array_dimensions
-%type <Texpr_list>				expr_list
-%type <Tdeclarations_sym>		declarations_block
+%type <Texpr_list>				expr_list expr_list_full
+%type <Texpr_list_nested>		mult_assign mult_assign_list
 %type <Tint_id_val>				int_id_val
 %type <Tassign_statement>		fromto_assign_statement
 %type <Texpr_bool>				expr_bool
-%type <Tinterface_sym>			interface_block proc_arg proc_arg_list
 %type <Tvar_sym_list>			variable_list
-%type <Tother_sym_list>			in_arg_list out_arg_list inout_arg_list const_dcl_list vars_dcl vars_reg_dcl consts_block vars_block
-%type <Tmethod_sym>				library algorithm function procedure func_header proc_header
-%type <Tother_sym>				in_var_dcl out_var_dcl inout_var_dcl
 %type <Telif_statement_list>	elif_statement_list
 %type <Tsentence_list>			sentence_list sentence_list_block
-%type <Tother_type>				register
-%type <str_val>					prog_header alg_header
 // \endlist
 
 %start	program
@@ -120,23 +113,19 @@ program:
 	declarations_block
 	sentence_list_block
 	library
-		{ $$ = TRprogram($1, $2, $3, $4); }
+		{ TRprogram($3); }
 ;
 
 prog_header:
 	PROG ID '\n'
-		{ $$ = $2; }
+		{ TRprog_header($2); }
 ;
 
 library:
 	EPSILON
-		{ $$ = NULL; }
 	| library algorithm
-		{ $$ = TRlibrary($1, $2); }
 	| library function
-		{ $$ = TRlibrary($1, $2); }
 	| library procedure
-		{ $$ = TRlibrary($1, $2); }
 ;
 
 algorithm:
@@ -144,125 +133,106 @@ algorithm:
 	interface_block
 	declarations_block
 	sentence_list_block
-		{ $$ = TRalgorithm($1, $2, $3, $4); }
 ;
 
 function:
 	func_header
 	declarations_block
 	sentence_list_block
-		{ $$ = TRfunction($1, $2, $3); }
 ;
 
 procedure:
 	proc_header
 	declarations_block
 	sentence_list_block
-		{ $$ = TRprocedure($1, $2, $3); }
 ;
 
 alg_header:
 	ALG ID '\n'
-		{ $$ = $2; }
+		{ TRalg_header($2); }
 ;
 
 func_header:
-	FUNC ID '(' in_arg_list ')'  DEV '(' out_var_dcl ')' '\n'
-		{ $$ = TRfunc_header($2, $4, $8); }
+	FUNC ID 
+		{ TRfunc_header($2); }
+	'(' in_arg_list ')'  DEV '(' out_var_dcl ')' '\n'
 ;
 
 proc_header:
-	PROC ID '(' proc_arg_list ')' '\n'
-		{ $$ = TRproc_header($2, $4); }
+	PROC ID 
+		{ TRproc_header($2); }
+		'(' proc_arg_list ')' '\n'
 ;
 
 interface_block:
 	EPSILON
-		{ $$ = NULL; }
 	| IN in_arg_list '\n'
 	interface_block
-		{ $$ = TRinterface_block_in($2, $4); }
 	| OUT out_arg_list '\n'
 	interface_block
-		{ $$ = TRinterface_block_out($2, $4); }
 ;
 
 proc_arg:
 	EPSILON
-		{ $$ = NULL; }
-	| IN in_arg_list 
-		{ $$ = TRproc_arg_in($2); }
+	| IN in_arg_list
 	| OUT out_arg_list
-		{ $$ = TRproc_arg_out($2); }
 	| INOUT inout_arg_list
-		{ $$ = TRproc_arg_inout($2); }
 ;
 
 proc_arg_list:
 	proc_arg ';' proc_arg_list
-		{ $$ = TRproc_arg_list($1, $3);  }
 	| proc_arg
-		{ $$ = TRproc_arg_list($1, NULL); }
 ;
 
 in_arg_list:
 	EPSILON
-		{ $$ = NULL; }
 	| in_var_dcl ',' in_arg_list
-		{ $$ = TRin_arg_list($1, $3); }
 	| in_var_dcl
-		{ $$ = TRin_arg_list($1, NULL); }
 ;
 
 out_arg_list:
 	EPSILON
-		{ $$ = NULL; }
 	| out_var_dcl ',' out_arg_list
-		{ $$ = TRout_arg_list($1, $3); }
 	| out_var_dcl
-		{ $$ = TRout_arg_list($1, NULL); }
 ;
 
 inout_arg_list:
 	EPSILON
-		{ $$ = NULL; }
 	| inout_var_dcl ',' inout_arg_list
-		{ $$ = TRinout_arg_list($1, $3); }
 	| inout_var_dcl
-		{ $$ = TRinout_arg_list($1, NULL); }
 ;
 
 in_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRin_var_dcl($1, $3, (char *)NULL, (char)NULL); }
+		{ TRin_var_dcl($1, $3, (char *)NULL, (char)NULL); }
 	| id_list ':' ID OF ID
-		{ $$ = TRin_var_dcl($1, $3, $5, (char)NULL); }
+		{ TRin_var_dcl($1, $3, $5, (char)NULL); }
 	| id_list ':' ID OF IN_STREAM ID
-		{ $$ = TRin_var_dcl($1, $3, $6, 's'); }
+		{ TRin_var_dcl($1, $3, $6, 's'); }
 	| id_list  ':' ARRAY array_dimensions OF ID
-		{ $$ = TRin_var_dcl_array($1, $4, $6); }
+		{ TRin_var_dcl_array($1, $4, $6); }
 ;
 
 out_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRout_var_dcl($1, $3, (char *)NULL, (char)NULL); }
+		{ TRout_var_dcl($1, $3, (char *)NULL, (char)NULL); }
 	| id_list ':' ID OF ID
-		{ $$ = TRout_var_dcl($1, $3, $5, (char)NULL); }
+		{ TRout_var_dcl($1, $3, $5, (char)NULL); }
 	| id_list ':' ID OF OUT_STREAM ID
-		{ $$ = TRout_var_dcl($1, $3, $6, 's'); }
+		{ TRout_var_dcl($1, $3, $6, 's'); }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRout_var_dcl_array($1, $4, $6); }
+		{ TRout_var_dcl_array($1, $4, $6); }
 ;
 
 inout_var_dcl:
 	id_list   ':' ID
-		{ $$ = TRinout_var_dcl($1, $3, (char *)NULL, (char)NULL); }
+		{ TRinout_var_dcl($1, $3, (char *)NULL, (char)NULL); }
 	| id_list ':' ID OF ID
-		{ $$ = TRinout_var_dcl($1, $3, $5, (char)NULL); }
+		{ TRinout_var_dcl($1, $3, $5, (char)NULL); }
 	| id_list ':' ID OF INOUT_STREAM ID
-		{ $$ = TRinout_var_dcl($1, $3, $6, 's'); }
+		{ TRinout_var_dcl($1, $3, $6, 's'); }
 	| id_list ':' ARRAY array_dimensions OF ID
-		{ $$ = TRinout_var_dcl_array($1, $4, $6); }
+		{ TRinout_var_dcl_array($1, $4, $6); }
 ;
 
 id_list:
@@ -295,65 +265,57 @@ declarations_block:
 	consts_block
 	types_block
 	vars_block
-		{ $$ = TRdeclarations_block($1, $2, $3); }
 ;
 
 consts_block:
 	EPSILON
-		{ $$ = NULL; }
 	| CONSTS '\n'
 		const_dcl_list
-		{ $$ = $3; }
 ;
 
 const_dcl_list:
 	EPSILON
-		{ $$ = NULL; }
-	| id_list ':' BOOL_VAL '\n'
-	const_dcl_list
-		{ $$ = TRconst_dcl_list_bool($1, $3, $5); }
+	| const_dcl const_dcl_list
+;
+
+const_dcl:
+	id_list ':' BOOL_VAL '\n'
+		{ TRconst_dcl_bool($1, $3); }
 	| id_list ':' INT_VAL '\n'
-	const_dcl_list
-		{ $$ = TRconst_dcl_list_int($1, $3, $5); }
+		{ TRconst_dcl_int($1, $3); }
 	| id_list ':' FLOAT_VAL '\n'
-	const_dcl_list
-		{ $$ = TRconst_dcl_list_float($1, $3, $5); }
+		{ TRconst_dcl_float($1, $3); }
 	| id_list ':' CHAR_VAL '\n'
-	const_dcl_list
-		{ $$ = TRconst_dcl_list_char($1, $3, $5); }
+		{ TRconst_dcl_char($1, $3); }
 	| id_list ':' STR_VAL '\n'
-	const_dcl_list
-		{ $$ = TRconst_dcl_list_str($1, $3, $5); }
-	| id_list ':' register
-	const_dcl_list
-		{ $$ = TRconst_dcl_list_reg($1, $3, $4); }
+		{ TRconst_dcl_str($1, $3); }
+	| id_list ':' reg_init 
+		{ TRconst_dcl_reg($1); }
+	register
 ;
 
 types_block:
 	EPSILON
-		{ $$ = NULL; }
 	| TYPES '\n'
 		types_dcl_list
-		{ $$ = $3; }
 ;
 types_dcl_list:
 	EPSILON
-		{ $$ = NULL; }
-	| id_list ':' '(' str_list ')' '\n'
-	types_dcl_list
-		{ $$ = TRtypes_dcl_list_enum($1, $4, $7); }
+	| types_dcl types_dcl_list
+;
+
+types_dcl:
+	id_list ':' '(' str_list ')' '\n'
+		{ TRtypes_dcl_enum($1, $4); }
 	| id_list ':' ID '\n'
-	types_dcl_list
-		{ $$ = TRtypes_dcl_list_var($1, $3, NULL, $5); }
+		{ TRtypes_dcl_var($1, $3, NULL); }
 	| id_list ':' ID OF ID '\n'
-	types_dcl_list
-		{ $$ = TRtypes_dcl_list_var($1, $3, $5, $7); }
+		{ TRtypes_dcl_var($1, $3, $5); }
 	| id_list ':' ARRAY array_dimensions OF ID '\n'
-	types_dcl_list
-		{ $$ = TRtypes_dcl_list_array($1, $4, $6, $8); }
-	| id_list ':' register
-	types_dcl_list
-		{ $$ = TRtypes_dcl_list_reg($1, $3, $4); }
+		{ TRtypes_dcl_array($1, $4, $6); }
+	| id_list ':' reg_init 
+		{ TRtypes_dcl_reg($1); }
+	register
 ;
 
 str_list:
@@ -365,42 +327,42 @@ str_list:
 
 vars_block:
 	EPSILON
-		{ $$ = NULL; }
 	| VARS '\n'
 		vars_dcl
-		{ $$ = $3; }
 ;
 
 vars_dcl:
-	vars_reg_dcl
-		{ $$ = $1; }
-	| id_list ':' register  //TODO: !!!!!
-	vars_dcl
-		{ $$ = TRvars_dcl_reg($1, $3, $4); }
-;
-vars_reg_dcl:
 	EPSILON
-		{ $$ = NULL; }
-	| id_list ':' ID '\n'
-	vars_reg_dcl
-		{ $$ = TRvars_dcl_var($1, $3, NULL, $5); }
+	| vars_noreg_dcl vars_dcl
+	| id_list':' reg_init
+		{ TRvars_dcl_reg($1); }
+	register  //TODO: !!!!!
+	vars_dcl
+;
+
+vars_noreg_dcl_list:
+	EPSILON
+	| vars_noreg_dcl vars_noreg_dcl_list
+;
+
+vars_noreg_dcl:
+	id_list ':' ID '\n'
+		{ TRvars_noreg_dcl($1, $3, NULL); }
 	| id_list ':' ID OF ID '\n'
-	vars_reg_dcl
-		{ $$ = TRvars_dcl_var($1, $3, $5, $7); }
+		{ TRvars_noreg_dcl($1, $3, $5); }
 	| id_list ':' ARRAY array_dimensions OF ID '\n'
-	vars_reg_dcl
-		{ $$ = TRvars_dcl_array($1, $4, $6, $8); }
+		{ TRvars_noreg_dcl_array($1, $4, $6); }
+;
+
+reg_init:
+	REG '\n'
+	| '\n' REG '\n'
 ;
 
 register:
-	REG '\n'
-		vars_reg_dcl
+		vars_noreg_dcl_list
 	ENDREG '\n'
-		{ $$ = TRregister($3); }
-	| '\n' REG '\n'
-		vars_reg_dcl
-	ENDREG '\n'
-		{ $$ = TRregister($4); }
+		{ TRregister(); }
 ;
 
 sentence_list_block:
@@ -435,8 +397,6 @@ sentence:
 	| while_loop
 		{ $$ = $1; }
 	| fromto_loop
-		{ $$ = $1; }
-	| function_call '\n'
 		{ $$ = $1; }
 	| procedure_call
 		{ $$ = $1; }
@@ -481,10 +441,10 @@ assign_statement:
 		{ $$ = TRassign_statement_assign($1, $3); }
 	| struct_call ASSIGN expr
 		{ $$ = TRassign_statement_expr($1, $3); }
-	/* TODO: | struct_call ASSIGN mult_assign
-		{ $$ = TRassign_statement_mult($1, $3); }*/
+	| struct_call ASSIGN mult_assign
+		{ $$ = TRassign_statement_mult($1, $3); }
 ;
-/* TODO:
+
 mult_assign:
 	'{' mult_assign_list '}'
 		{ $$ = $2; }
@@ -498,18 +458,33 @@ mult_assign_list:
 	| expr
 		{ $$ = TRmult_assign_list_expr($1, NULL); }
 	| mult_assign
-		{ $$ = TRmult_assign_list($1, NULL); }*/
+		{ $$ = TRmult_assign_list($1, NULL); }
 ;
 
 mult_assign_statement:
-	variable_list ASSIGN expr_list '\n'
-		{ $$ = TRmult_assign_statement($1, $3); }
+	variable_call ',' variable_list ASSIGN expr_list_full '\n'
+		{ $$ = TRmult_assign_statement(TRvariable_list($1, $3), $5); }
 ;
 
-// We'll need course need to check that id = (PRINT|READ)
 output_input_statement:
-	ID expr_list '\n'
-		{ $$ = TRoutput_input_statement($1, $2); }
+	output_statement
+		{ $$ = $1; }
+	| input_statement
+		{ $$ = $1; }
+;
+
+input_statement:
+	READ expr_list_full '\n'
+		{ $$ = TRoutput_input_statement('i', $2); }
+	| READ '(' expr_list_full ')' '\n'
+		{ $$ = TRoutput_input_statement('i', $3); }
+;
+
+output_statement:
+	PRINT expr_list_full '\n'
+		{ $$ = TRoutput_input_statement('o', $2); }
+	| PRINT '(' expr_list_full ')' '\n'
+		{ $$ = TRoutput_input_statement('o', $3); }
 ;
 
 while_loop:
@@ -539,7 +514,7 @@ function_call:
 ;
 
 variable_call:
-	ID '[' expr_list ']'
+	ID '[' expr_list_full ']'
 		{ $$ = TRvariable_call($1, $3); }
 	| ID
 		{  $$ = TRvariable_call_node($1); }
@@ -567,19 +542,26 @@ procedure_call:
 expr_list:
 	EPSILON
 		{ $$ = NULL; }
-	| expr ',' expr_list
-		{ $$ = TRexpr_list($1, $3); }
+	| expr_list_full
+		{ $$ = $1; }
+;
+
+expr_list_full:
+	expr ',' expr_list_full
+		{ $$ = TRexpr_list_full($1, $3); }
 	| expr
-		{ $$ = TRexpr_list($1, NULL); }
+		{ $$ = TRexpr_list_full($1, NULL); }
 ;
 
 expr_bool:
 	BOOL_VAL
 		{ $$ = TRexpr_bool_val($1); }
-	| '(' expr_bool ')'
-		{ $$ = $2; }
+	| function_call
+		{ $$ = TRexpr_bool_fcall($1); }
 	| struct_call
 		{ $$ = TRexpr_bool_struct($1); }
+	| '(' expr_bool ')'
+		{ $$ = $2; }
 	| NOT_OP expr_bool %prec NEG
 		{ $$ = TRexpr_bool_not($2); }
 	| expr_bool AND_OP expr_bool
@@ -598,43 +580,51 @@ expr_bool:
 		{ $$ = TRexpr_bool('g', $1, $3); }
 	| expr NOT_EQ expr
 		{ $$ = TRexpr_bool('n', $1, $3); }
-	| function_call
-		{ $$ = TRexpr_bool_fcall($1); }
 ;
 
-expr:
+expr_val:
 	INT_VAL
 		{ $$ = TRexpr_int($1); }
-	// TODO: Sometimes a expr_bool can also be considered an expr,
-	// usually when it reffers to a boolean variable, but if we
-	// add here expr_bool 91 reduce/reduce problems appear!
-	| BOOL_VAL
-		{ $$ = TRexpr_expr_bool($1); }
 	| FLOAT_VAL
 		{ $$ = TRexpr_float($1); }
 	| STR_VAL
 		{ $$ = TRexpr_str($1); }
-	| struct_call
-		{ $$ = TRexpr_struct($1); }
-	| expr '+' expr
-		{ $$ = TRexpr('+', $1, $3); }
-	| expr '-' expr
-		{ $$ = TRexpr('-', $1, $3); }
-	| expr '*' expr
-		{ $$ = TRexpr('*', $1, $3); }
-	| expr '/' expr
-		{ $$ = TRexpr('/', $1, $3); }
-	| expr '%' expr
-		{ $$ = TRexpr('%', $1, $3); }
-	| expr '^' expr
-		{ $$ = TRexpr('^', $1, $3); }
-	| '-' expr %prec NEG
-		{ $$ = TRexpr('n', $2, NULL); }
-	| '(' expr ')'
-		{ $$ = $2; }
 	| function_call
 		{ $$ = TRexpr_fcall($1); }
+	| struct_call
+		{ $$ = TRexpr_struct($1); }
 ;
+
+expr_op:
+	expr_val
+		{ $$ = $1; }
+	| expr_op '+' expr_op
+		{ $$ = TRexpr('+', $1, $3); }
+	| expr_op '-' expr_op
+		{ $$ = TRexpr('-', $1, $3); }
+	| expr_op '*' expr_op
+		{ $$ = TRexpr('*', $1, $3); }
+	| expr_op '/' expr_op
+		{ $$ = TRexpr('/', $1, $3); }
+	| expr_op '%' expr_op
+		{ $$ = TRexpr('%', $1, $3); }
+	| expr_op '^' expr_op
+		{ $$ = TRexpr('^', $1, $3); }
+	| '-' expr_op %prec NEG
+		{ $$ = TRexpr('n', $2, NULL); }
+	| '+' expr_op %prec NEG
+		{ $$ = $2; }
+	| '(' expr_op ')'
+		{ $$ = $2; }
+;
+
+expr:
+	expr_bool
+		{ $$ = TRexpr_expr_bool($1); }
+	| expr_op
+		{ $$ = $1; }
+;
+
 
 EPSILON:
 ;
@@ -645,13 +635,18 @@ int main(int argc, char *argv[])
 {
 	extern FILE *yyin;
 	
-	
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "\nUnable to open source file: %s\n", argv[1]);
 			exit(1);
 		}
 	}
+	
+	//Initialization:
+	sym_table		= initSymTable(PRIME);
+	tmp_method_sym	= NULL;
+	tmp_reg_names	= NULL;
+	tmp_reg_type	= NULL;
 	
 	yyparse();
 	

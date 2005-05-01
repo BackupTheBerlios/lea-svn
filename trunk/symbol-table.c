@@ -87,17 +87,19 @@ uint32_t getHash(const char *data, size_t len)
  * 
  * \return	symTable	Initialized symbol table
  */
-Tsym_list **initSymTable()
+Tsym_table *initSymTable(const unsigned int PRIME)
 {
 	// Allocate memory:
-	Tsym_list **symTable = malloc(PRIME * sizeof(Tsym_list *));
+	Tsym_table *symTable = malloc(sizeof(Tsym_table));
+	symTable->elements = malloc(PRIME * sizeof(Tsym_list *));
+	symTable->PRIME = PRIME;
 	unsigned int i;
 	
 	// Initialize memory:
 	for (i = 0; i < PRIME; i++)
 	{
-		symTable[i] = malloc (sizeof(Tsym_list));
-		symTable[i]->data = calloc(1, sizeof(char));
+		symTable->elements[i] = malloc (sizeof(Tsym_list));
+		symTable->elements[i]->data = calloc(1, sizeof(char));
 	}
 	
 	return symTable;
@@ -111,11 +113,11 @@ Tsym_list **initSymTable()
  * \param	data		The data used as the searching key
  * \return	!found		Return 0 (false) only if that data already existed; 1 (true) otherwise
  */
-bool addSym(Tsym_list **symTable, const char *data, const void *sym)
+bool addSym(Tsym_table *symTable, const char *data, const void *sym)
 {
 	size_t		len					= strlen(data);					// Data string length
-	uint32_t	hash				= getHash(data, len) % PRIME;	// Array index
-	Tsym_list 	*symListActual		= symTable[hash],				// Actual symList element
+	uint32_t	hash				= getHash(data, len) % symTable->PRIME;	// Array index
+	Tsym_list 	*symListActual		= symTable->elements[hash],		// Actual symList element
 				*symListNew;										// Smybol to add
 	bool		found				= 0;							// Searching loop iterate condition
 	
@@ -137,10 +139,10 @@ bool addSym(Tsym_list **symTable, const char *data, const void *sym)
 		symListNew			= malloc(sizeof(Tsym_list));
 		symListNew->data	= malloc(len);
 		symListNew->sym		= (void *)sym;
-		symListNew->next	= symTable[hash];
+		symListNew->next	= symTable->elements[hash];
 		strcpy(symListNew->data, data);
 		
-		symTable[hash] = symListNew;
+		symTable->elements[hash] = symListNew;
 	}
 	
 	return !found;
@@ -153,11 +155,11 @@ bool addSym(Tsym_list **symTable, const char *data, const void *sym)
  * \param	data		The data used as the searching key
  * \return	found		Return 1 (true) only if data was deleted successfully; 0 (false) otherwise
  */
-bool delSym(Tsym_list **symTable, const char *data)
+bool delSym(Tsym_table *symTable, const char *data)
 {
 	size_t		len					= strlen(data);					// Data string length
-	uint32_t	hash				= getHash(data, len) % PRIME;	// Array index
-	Tsym_list	*symListPrevious	= symTable[hash],				// Previous symlist element
+	uint32_t	hash				= getHash(data, len) % symTable->PRIME;	// Array index
+	Tsym_list	*symListPrevious	= symTable->elements[hash],		// Previous symlist element
 				*symListActual		= symListPrevious;				// Actual symList element
 	bool		found				= 0;							// Searching loop iterate condition
 	
@@ -173,7 +175,7 @@ bool delSym(Tsym_list **symTable, const char *data)
 			if (symListPrevious != symListActual)
 				symListPrevious->next = symListActual->next;
 			else
-				symTable[hash] = symListActual->next;
+				symTable->elements[hash] = symListActual->next;
 			
 			free(symListActual->data);
 			free(symListActual);
@@ -197,12 +199,12 @@ bool delSym(Tsym_list **symTable, const char *data)
  * \param	data		The data used as the searching key
  * \return	ret			symbol retrieved
  */
-const void *getSym(Tsym_list **symTable, const char *data)
+const void *getSym(Tsym_table *symTable, const char *data)
 {
 	const void	*ret			= NULL;							// Returning value
 	size_t		len				= strlen(data);					// Data string length
-	uint32_t	hash			= getHash(data, len) % PRIME;	// Array index
-	Tsym_list	*symList0		= symTable[hash],				// For extreme cases
+	uint32_t	hash			= getHash(data, len) % symTable->PRIME;	// Array index
+	Tsym_list	*symList0		= symTable->elements[hash],		// For extreme cases
 				*symList1		= symList0,						// For extreme cases
 				*symListActual	= symList0,						// Actual symList element
 				*symListActualNextTemp;							// Temporal pointer
@@ -227,10 +229,10 @@ const void *getSym(Tsym_list **symTable, const char *data)
 				symList1->next			= symListActualNextTemp;
 			} else if(symList1 != symListActual)
 			{
-				symListActualNextTemp	= symListActual->next;
-				symListActual->next		= symList1;
-				symList1->next			= symListActualNextTemp;
-				symTable[hash]			= symListActual;
+				symListActualNextTemp		= symListActual->next;
+				symListActual->next			= symList1;
+				symList1->next				= symListActualNextTemp;
+				symTable->elements[hash]	= symListActual;
 			}
 		// Not found, reiterate:
 		} else {

@@ -25,6 +25,7 @@
  */
 	#include <stdlib.h>
 	#include <string.h>
+	#include "symbol-table.h"
  	#include "lea-translator.h"
 	#include "lea.tab.h"
 	
@@ -70,9 +71,9 @@ ID			{L}+{H}*
 ^[ \t]*\n				{ printf("\nNULL LINE \n"); }
 [ \t]+					{  }
 
-prog					{ printf("PROG "); return PROG;		}
-alg						{ printf("ALG "); return ALG;		}
-func					{ printf("FUNC "); return FUNC;		}
+prog					{ printf("PROG "); return PROG;	}
+alg						{ printf("ALG "); return ALG;	}
+func					{ printf("FUNC "); return FUNC;	}
 entrada[ \t]+de[ \t]+	{ printf("IN_STREAM "); return IN_STREAM;	}
 salida[ \t]+de[ \t]+	{ printf("OUT_STREAM "); return OUT_STREAM; }
 entrada[ \t]+y[ \t]+salida[ \t]+de[ \t]+	{ printf("INOUT_STREAM "); return INOUT_STREAM; }
@@ -100,6 +101,10 @@ freg					{ printf("ENDREG "); return ENDREG;	}
 var						{ printf("VARS "); return VARS;		}
 prin					{ printf("START "); return START;		}
 fin						{ printf("END\n"); return END;		}
+
+
+escribir				{ printf("PRINT "); return PRINT;	}
+leer					{ printf("READ "); return READ;		}
 
 [ \t]+de[ \t]+			{ printf("OF "); return OF;		}
 

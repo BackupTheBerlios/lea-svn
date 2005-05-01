@@ -74,7 +74,7 @@ prog antispam
 			i,j : entero
 		prin
 			i := j := 1
-			
+			a := verdadero
 			mientras i<=long(t)
 				si t[i]=sep y i>1:
 					j := j + 1
@@ -94,13 +94,13 @@ prog antispam
 	
 	func count(t:tabla[MAX_ARRAY] de cadena) dev (l: entero)
 	var
-		f : logico
+		enc : logico
 	prin
 		si (long(l[1]) <> 0):
-			f := falso
+			enc := falso
 			l := 1
 			
-			mientras l <= MAX_ARRAY y (no f)
+			mientras l <= MAX_ARRAY y (no enc)
 				si long(t[l]) = 0:
 					enc:=cierto
 				| otras:

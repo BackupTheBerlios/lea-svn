@@ -25,15 +25,15 @@
 #include <stdio.h>
 #include "symbol-table.c"
 
-void debug(Tsym_list **symTable)
+void debug(Tsym_table *symTable)
 {
 	unsigned int i, j;
 	Tsym_list	*symList;
 	
-	for (i = 0; i < PRIME; i++)
+	for (i = 0; i < symTable->PRIME; i++)
 	{
 		printf("hash: %i\n", i);
-		symList	= symTable[i];
+		symList	= symTable->elements[i];
 		j=0;
 		while(strcmp(symList->data, ""))
 		{
@@ -49,8 +49,9 @@ int main(int argc, char *argv[])
 {
 	int task;
 	char *key;
+	const unsigned int PRIME = 101;
 	uint32_t hash;
-	Tsym_list **mySymTable = initSymTable();
+	Tsym_table *mySymTable = initSymTable(PRIME);
 	
 	while(1)
 	{
