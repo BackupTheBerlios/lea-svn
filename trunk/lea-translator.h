@@ -233,6 +233,7 @@
 	/**
 	 * \brief Tvar_sym type definition
 	 * Symbols are meant to be part of the symbol table
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct {
 		char *name;
@@ -242,6 +243,7 @@
 	/**
 	 * \brief Tvar_sym_list type definition
 	 * Note that constants and vars are both called via this type list
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct Tvar_sym_list Tvar_sym_list;
 	 
@@ -272,6 +274,8 @@
 	
 	/**
 	 * \brief Tstr_list type definition
+	 * \WARNING: might not needed anymore.
+	 * Could be replaced with Tenum_element * ¿?
 	 */
 	typedef struct Tstr_list Tstr_list;
 	
@@ -297,6 +301,7 @@
 	 * \brief Tenum_element type definition
 	 * Used in Tenum_type to identify enum elements with an integer value
 	 * used only internaly to speed up the enumerated type
+	 * \WARNING: recheck, needs to be rethought
 	 */
 	typedef struct {
 		char *name;
@@ -307,6 +312,8 @@
 	 * \brief Tenum_type type definition
 	 * Note that as the elements of an enumerated type doesn't ever change
 	 * we've defined *storage as a "dynamic" array instead of as a linked list  
+	 * \WARNING might be not needed anymore: "char *name;"
+	 * \WARNING: recheck, needs to be rethought
 	 */
 	typedef struct {
 		char *name;
@@ -316,6 +323,7 @@
 	/**
 	 * \brief Tenum_sym type definition
 	 * Symbols are meant to be part of the symbol table
+	 * \WARNING might be not needed anymore: "char *name;"
 	 */
 	typedef struct {
 		char *name;
@@ -325,6 +333,7 @@
 	
 	/**
 	 * \brief Tarray_type type definition
+	 * \WARNING might be not needed anymore: "char *name;"
 	 */
 	typedef struct {
 		char *name;
@@ -338,6 +347,7 @@
 	 * Note that whenever we have fixed number of elements, we stop using linked lists
 	 * and use pointers (that can be properly used as "dynamic" arrays), like in
 	 * Tother_sym *elements;.
+	 * \WARNING might be not needed anymore: "char *name;"
 	 */
 	typedef struct {
 		char *name;
@@ -362,6 +372,7 @@
 	 * \brief Tfile_type type definition
 	 * Note that files and streams are used internally in this
 	 * implementation indistinctively
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct {
 		char *name;
@@ -371,8 +382,9 @@
 	/**
 	 * \brief Tfile_sym type definition
 	 * Symbols are meant to be part of the symbol table
-	 * WARNING: Check that we don't have files of registers that
+	 * \WARNING Check that we don't have files of registers that
 	 * contain files, for $DEITY's sake!
+	 * \WARNING might be not needed anymore: "char *name;"
 	 */
 	typedef struct {
 		char *name;
@@ -388,6 +400,7 @@
 	 *  -  V(|intern_)array_type (for kind.array)
 	 *  -  V(|intern_)file_type (for kind.file)
 	 *  -  V(|intern_)reg_type (for kind.reg)
+	 * \WARNING might be not needed anymore: "char *name;"
 	 */
 	struct Tother_type {
 		char *name;
@@ -414,6 +427,7 @@
 	 * In TXXX_sym you already get the type, so Tother_type is
 	 * (but only partially) redundant. But some redundancy
 	 * some times make things less insane!
+	 * \WARNING might be not needed anymore: "char *name;"
 	 */
 	struct Tother_sym {
 		char *name;
@@ -430,6 +444,7 @@
 	
 	/**
 	 * \brief Tother_type_list type definition
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct Tother_type_list Tother_type_list;
 	
@@ -440,6 +455,7 @@
 	
 	/**
 	 * \brief Tother_sym_list type definition
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct Tother_sym_list Tother_sym_list;
 	
@@ -466,6 +482,7 @@
 	
 	/**
 	 * \brief Tsym_call_list type definition
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct Tsym_call_list Tsym_call_list;
 	
@@ -476,6 +493,8 @@
 	
 	/**
 	 * \brief Treg_type_sym type definition
+	 * \WARNING might be not needed anymore: "char *name;"
+	 * \WARNING might be not needed anymore
 	 */
 	typedef struct {
 		char *name;
@@ -484,6 +503,9 @@
 	
 	/**
 	 * \brief Treg_sym type definition
+	 * \WARNING might be not needed anymore: "char *name;"
+	 * \WARNING needs major rework
+	 * \WARNING might be not needed anymore
 	 */
 	struct Treg_sym {
 		char *name;
@@ -493,7 +515,7 @@
 	
 	/**
 	 * \brief Treg_call type definition
-	 * Note that this will store only a ultimate call to
+	 * Note that this will store only an ultimate call to
 	 * a register; myRegister.intArrayNM[x, y] should be
 	 * stored as a Tvar_sym (to an integer var) and not 
 	 * as a Treg_call!
@@ -595,6 +617,7 @@
 	 
 	/**
 	 * \brief Tlibrary type definition
+	 * \WARNING might be not needed anymore
 	 */
 	struct Tlibrary {
 		Tlibrary *next;
@@ -605,6 +628,9 @@
 	 * \brief Tmethod_sym type definition
 	 * In this structure char *type can be:
 	 *  - OPalg/OPfunc/OPproc
+	 * \WARNING might be not needed anymore:
+	 * "char *name;, Tdeclarations_sym *declarations;
+	 * Tinterface_sym *interface;"
 	 */
 	struct Tmethod_sym {
 		char *name;
@@ -618,6 +644,7 @@
 	 * \brief Tinterface_sym type definition
 	 * If this is an interface for a function then args_io
 	 * would be NULL and args_out would be a sole arg, etc..
+	 * \WARNING might be not needed anymore
 	 */
 	struct Tinterface_sym {
 		Tother_sym_list *args_in, *args_out, *args_io;
@@ -625,6 +652,7 @@
 	 
 	/**
 	 * \brief Tdeclarations_sym type definition
+	 * \WARNING might be not needed anymore
 	 */
 	struct Tdeclarations_sym {
 		Tother_sym_list *consts, *vars;
@@ -687,11 +715,12 @@
 	struct Tif_statement {
 		Texpr_bool *cond;
 		Telif_statement_list *elif_statement_list;
-		Tsentence_list *sentence_list, *else_sentence_list;
+		Tsentence_list *sentence_list;
 	};
 	 
 	/**
 	 * \brief Tassign_statement type definition
+	 * \WARNING might need a Tsym_call_list *sym_list_last;
 	 */
 	struct Tassign_statement {
 		Tsym_call_list *sym_list;
@@ -912,12 +941,13 @@
 	Tsentence_list *TRsentence_list(Tsentence *, Tsentence_list *); 
 	// 		NULL;  
 	// if_statement: 
-	Tsentence *TRif_statement(Texpr_bool *, Tsentence_list *, Telif_statement_list *, Tsentence_list *); 
+	Tsentence *TRif_statement(Texpr_bool *, Tsentence_list *, Telif_statement_list *); 
 // 	Tsentence *TRif_statement(Texpr_bool *, Tsentence_list *, NULL, Tsentence_list *); 
 	// elif_statement: 
 	Telif_statement *TRelif_statement(Texpr_bool *, Tsentence_list *); 
 	// elif_statement_list: 
 	Telif_statement_list *TRelif_statement_list(Telif_statement *, Telif_statement_list *); 
+	Telif_statement_list *TRelif_statement_list_else(Tsentence_list *); 
 // 	Telif_statement_list *TRelif_statement_list(NULL, Telif_statement *); 
 	// assign_statement: 
 	Tsentence *TRassign_statement_assign(Tsentence *, Tsentence *); 
@@ -959,13 +989,6 @@
 	Texpr_bool *TRexpr_bool_not(Texpr_bool *);  
 	Texpr_bool *TRexpr_bool_log(char, Texpr_bool *, Texpr_bool *); 
 	Texpr_bool *TRexpr_bool(char, Texpr *, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
-// 	Texpr_bool *TRexpr_bool(char, Texpr*, Texpr *); 
 	Texpr_bool *TRexpr_bool_fcall(Tsentence *); 
 	// expr: 
 	Texpr *TRexpr_int(int *); 
@@ -974,11 +997,5 @@
 	Texpr *TRexpr_str(char *); 
 	Texpr *TRexpr_struct(Tsentence *); 
 	Texpr *TRexpr(char, Texpr *, Texpr *); 
-// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
-// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
-// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
-// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
-// 	Texpr *TRexpr(char, Texpr *, Texpr *); 
-// 	Texpr *TRexpr(char, Texpr *, NULL); 
 	Texpr *TRexpr_fcall(Tsentence *); 
 	#endif

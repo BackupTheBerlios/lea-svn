@@ -82,7 +82,6 @@
 %type <Tstr_list>				str_list
 %type <Texpr>					expr expr_op expr_val
 %type <Tid_list>				id_list
-%type <Telif_statement>			elif_statement
 %type <Tsentence>				if_statement assign_statement mult_assign_statement output_input_statement while_loop fromto_loop function_call variable_call struct_call procedure_call sentence input_statement output_statement
 %type <Tint_id_val_list>		int_val_list array_dimensions
 %type <Texpr_list>				expr_list expr_list_full
@@ -92,6 +91,7 @@
 %type <Texpr_bool>				expr_bool
 %type <Tvar_sym_list>			variable_list
 %type <Telif_statement_list>	elif_statement_list
+%type <Telif_statement>			elif_statement
 %type <Tsentence_list>			sentence_list sentence_list_block
 // \endlist
 
@@ -402,25 +402,16 @@ sentence:
 		{ $$ = $1; }
 ;
 
+cond_start:
+	':' '\n'
+	| ':'
+;
+
 if_statement:
 	IF expr_bool cond_start
 		sentence_list
 	elif_statement_list
-	'|' ELSE cond_start
-		sentence_list
-	ENDIF '\n'
-		{ $$ = TRif_statement($2, $4, $5, $9); }
-	| IF expr_bool cond_start
-		sentence_list
-	'|' ELSE cond_start
-		sentence_list
-	ENDIF '\n'
-		{ $$ = TRif_statement($2, $4, NULL, $8); }
-;
-
-cond_start:
-	':' '\n'
-	| ':'
+ 		{ $$ = TRif_statement($2, $4, $5); }
 ;
 
 elif_statement:
@@ -430,10 +421,12 @@ elif_statement:
 ;
 
 elif_statement_list:
-	elif_statement_list elif_statement
-		{ $$ = TRelif_statement_list($2, $1); }
-	| elif_statement
-		{ $$ = TRelif_statement_list($1, NULL); }
+	elif_statement elif_statement_list
+		{ $$ = TRelif_statement_list($1, $2); }
+	| '|' ELSE cond_start
+		sentence_list
+	ENDIF '\n'
+		{ $$ = TRelif_statement_list_else($4); }
 ;
 
 assign_statement:
@@ -653,7 +646,6 @@ int main(int argc, char *argv[])
 			
 			if(header[0] != '#' || header[1] != '!')
 			{
-				printf("bingo: %s\n", header);
 				fseek(yyin, 0, SEEK_SET);
 			}
 			free(header);

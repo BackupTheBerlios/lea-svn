@@ -6,6 +6,9 @@ LEX_SRC=lea.l
 YACC_SRC=$(LEX_SRC:.l=.y)
 OUT=$(LEX_SRC:.l=)
 
+ERASABLE=$(TMPS) lea.tab.h $(OUT) *.o *~
+WRITTEN=*{.h,.c,.y,.awk,Makefile}
+
 LEX=flex
 YACC=bison
 
@@ -15,10 +18,14 @@ lea: $(OBJS)
 	$(CC) -o $(OUT) $(TMPS) $(OBJS) -lfl -lm $(CFLAGS)
 
 clean:
-	$(RM) -f $(TMPS) $(OUT) *.o *~
+	$(RM) -f $(ERASABLE)
 
 prueba:
 	$(CC) -o prueba prueba.c
 
 install:
 	cp lea /bin/
+	
+wc:
+	wc -l $(WRITTEN) | tail -n 1
+

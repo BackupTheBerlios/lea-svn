@@ -404,7 +404,7 @@ Tsentence_list *TRsentence_list(Tsentence *actual, Tsentence_list *next_list)
  * \param		
  * \return	 
  */
-Tsentence *TRif_statement(Texpr_bool *if_expr, Tsentence_list *if_sentence_list, Telif_statement_list *el_if_list, Tsentence_list *else_sentence_list)
+Tsentence *TRif_statement(Texpr_bool *if_expr, Tsentence_list *if_sentence_list, Telif_statement_list *el_if_list)
 {
 	Tsentence *ret;
 
@@ -431,6 +431,19 @@ Telif_statement *TRelif_statement(Texpr_bool *elif_expr, Tsentence_list *elif_se
  * \return	 
  */
 Telif_statement_list *TRelif_statement_list(Telif_statement *actual, Telif_statement_list *next_list)
+{
+	Telif_statement_list *ret;
+
+	return ret;
+}
+
+/**
+ * \brief 
+ * 
+ * \param		
+ * \return	 
+ */
+Telif_statement_list *TRelif_statement_list_else(Tsentence_list *sentence_list)
 {
 	Telif_statement_list *ret;
 
