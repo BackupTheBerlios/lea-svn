@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="LEA" version="1.0" kateversion="2.4" section="Scripts" extensions="*.lea" priority="9">
+
+<!-- (c) 2005 by Eduardo Robles Elvira, edulix@spymac.com
+		Released under the LGPL-->
+
+<highlighting>
+    <list name="keywords">
+		<item>prog</item>
+		<item>alg</item>
+		<item>func</item>
+		<item>proc</item>
+		<item>fin</item>
+		<item>ent</item>
+		<item>sal</item>
+		<item>entsal</item>
+		<item>ent/sal</item>
+		<item>cons</item>
+		<item>tipos</item>
+		<item>reg</item>
+		<item>freg</item>
+		<item></item>
+		<item></item>
+	</list>
+	<list name="types">
+		<item>logico</item>
+		<item>entero</item>
+		<item>real</item>
+		<item>fichero</item>
+		<item>tabla</item>
+		<item></item>
+		<item></item>
+		<item></item>
+		<item></item>
+	</list>
+</highlight>
