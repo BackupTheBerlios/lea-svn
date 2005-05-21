@@ -12,6 +12,8 @@ WRITTEN=*{.h,.c,.y,.awk,Makefile}
 LEX=flex
 YACC=bison
 
+KDEDIR=/usr
+
 lea: $(OBJS)
 	$(LEX) $(LEX_SRC)
 	$(YACC) --verbose -d $(YACC_SRC)
@@ -28,4 +30,7 @@ install:
 	
 wc:
 	wc -l $(WRITTEN) | tail -n 1
+
+kde:
+	cp katehighlight/lea.xml $(KDEDIR)/share/apps/katepart/syntax/
 

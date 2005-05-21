@@ -1,37 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE language SYSTEM "language.dtd">
-<language name="LEA" version="1.0" kateversion="2.4" section="Scripts" extensions="*.lea" priority="9">
+<!DOCTYPE language SYSTEM "language.dtd"
+		  [
+		  <!ENTITY var		"[A-Za-z][\w_]*">
+   ]>
+<language name="LEA" version="1.0" kateversion="2.4" section="Scripts" extensions="*.lea" priority="20"
+		  author="Eduardo Robles Elvira (edulix@spymac.com)" license="LGPL">
 
-<!-- (c) 2005 by Eduardo Robles Elvira, edulix@spymac.com
-		Released under the LGPL-->
-
-<highlighting>
-    <list name="keywords">
-		<item>prog</item>
-		<item>alg</item>
-		<item>func</item>
-		<item>proc</item>
-		<item>fin</item>
-		<item>ent</item>
-		<item>sal</item>
-		<item>entsal</item>
-		<item>ent/sal</item>
-		<item>cons</item>
-		<item>tipos</item>
-		<item>reg</item>
-		<item>freg</item>
-		<item></item>
-		<item></item>
-	</list>
-	<list name="types">
-		<item>logico</item>
-		<item>entero</item>
-		<item>real</item>
-		<item>fichero</item>
-		<item>tabla</item>
-		<item></item>
-		<item></item>
-		<item></item>
-		<item></item>
-	</list>
-</highlight>
+	<highlighting>
+		<list name="keywords">
+			<item>cons</item>
+			<item>tipos</item>
+			<item>var</item>
+			<item>dev</item>
+			<item>prin</item>
+			
+			<item>ent</item>
+			<item>sal</item>
+			<item>entsal</item>
+			<item>ent/sal</item>
+			
+			<item>|</item>
+			<item>otras</item>
+			<item>nula</item>
+			<item>hasta</item>
+			<item>nula</item>
+			<item>tabla</item>
+			
+			<item>cierto</item>
+			<item>verdadero</item>
+			<item>falso</item>
+			
+			<item>y</item>
+			<item>o</item>
+			<item>no</item>
+		</list>
+		
+		<list name="functions">
+			<item>escribir</item>
+			<item>leer</item>
+			<item>truncar</item>
+			<item>redondear</item>
+			<item>abrir</item>
+			<item>cerrar</item>
+		</list>
+		
+		<list name="types">
+			<item>logico</item>
+			<item>entero</item>
+			<item>real</item>
+			<item>caracter</item>
+			<item>cadena</item>
+			<item>fichero</item>
+			<item>flujo</item>
+			<item>de</item>
+			<item>entrada</item>
+			<item>salida</item>
+		</list>
+		
+		<list name="blocks">
+			<item>prog</item>
+			<item>alg</item>
+			<item>func</item>
+			<item>proc</item>
+		</list>
+		
+		<contexts>
+			<context attribute="Normal Text" lineEndContext="#stay" name="Normal Text" >
+				<keyword attribute="Keyword"	context="#stay"			String="keywords"/>
+				<keyword attribute="Builtins"	context="#stay"			String="functions"/>
+				
+				<DetectChar attribute="String" context="String" char="&quot;"/>
+				
+				<Float		attribute="Float"	context="#stay"/>
+				<Int		attribute="Decimal"	context="#stay"/>
+				<HlCChar	attribute="Char"	context="#stay"/>
+				
+				<IncludeRules context="##Doxygen" />
+				<Detect2Chars attribute="Comment" context="Commentar 1" char="#" char1="!"/>
+				<Detect2Chars attribute="Comment" context="Commentar 2" char="/" char1="/"/>
+				<Detect2Chars attribute="Comment" context="Commentar 3" char="/" char1="*" beginRegion="Comment"/>
+				
+				<RegExpr attribute="Keyword" context="#stay" String="si" beginRegion="Region1"/>
+				<StringDetect attribute="Keyword" context="#stay" String="fsi" endRegion="Region1"/>
+				
+				<RegExpr attribute="Keyword" context="#stay" String="mientras" beginRegion="Region2"/>
+				<StringDetect attribute="Keyword" context="#stay" String="fm" endRegion="Region2"/>
+				
+				<RegExpr attribute="Keyword" context="#stay" String="desde" beginRegion="Region3"/>
+				<StringDetect attribute="Keyword" context="#stay" String="fd" endRegion="Region3"/>
+				
+				<keyword attribute="Keyword" context="#stay" String="blocks" beginRegion="Region4"/>
+				<StringDetect attribute="Keyword" context="#stay" String="fin" endRegion="Region4"/>
+				
+				<RegExpr attribute="Keyword" context="#stay" String="reg" beginRegion="Region5"/>
+				<StringDetect attribute="Keyword" context="#stay" String="freg" endRegion="Region5"/>
+				
+				<DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace1" />
+				<DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace1" />
+				
+				<AnyChar attribute="Keyword" context="#stay" String="+\-*/%^&gt;&lt;=" />
+				<RegExpr attribute="Normal Text" context="Function" String="&var;\s*(\()" lookAhead="true"/>
+				<RegExpr attribute="Data Type" context="Data" String=":(\s*&var;)+" lookAhead="true"/>
+				<RegExpr attribute="Variable" context="#stay" String="&var;"/>
+			</context>
+			
+			<context name="Data" attribute="Normal Text" lineEndContext="#pop">
+				<AnyChar attribute="Normal Text" context="#pop" String=",;)"/>
+				
+				<Float	attribute="Float"	context="#stay"/>
+				<Int	attribute="Decimal"	context="#stay"/>
+				
+				<IncludeRules context="##Doxygen" />
+				<Detect2Chars attribute="Comment" context="Commentar 2" char="/" char1="/"/>
+				<Detect2Chars attribute="Comment" context="Commentar 3" char="/" char1="*" beginRegion="Comment"/>
+				
+				<DetectChar attribute="Normal Text" context="Matrix Index" char="[" />
+				<DetectChar attribute="Data Type" context="#stay" char="y" />
+				<keyword attribute="Keyword" context="#stay" String="keywords"/>
+				<keyword attribute="Builtin Data Type" context="#stay" String="types"/>
+				<RegExpr attribute="Data Type" context="#stay" String="&var;"/>
+			</context>
+			
+			<context name="Matrix Index" attribute="Normal Text" dynamic="true"  lineEndContext="#pop">
+				<AnyChar attribute="Normal Text" context="#pop" String="]"/>
+				
+				<Float	attribute="Float"	context="#stay"/>
+				<Int	attribute="Decimal"	context="#stay"/>
+				<RegExpr attribute="Variable" context="#stay" String="&var;"/>
+			</context>
+			
+<!-- 			 TODO: Eliminate dynamic-->
+			<context name="Function" attribute="Normal Text" dynamic="true"  lineEndContext="#pop">
+				<RegExpr attribute="Function" context="#pop" String="&var;"/>
+			</context>
+			
+			<context name="String" attribute="String" lineEndContext="#pop">
+				<LineContinue attribute="String" context="#stay"/>
+				<HlCStringChar attribute="Char" context="#stay"/>
+				<DetectChar attribute="String" context="#pop" char="&quot;"/>
+			</context>
+			
+			<context name="Commentar 1" attribute="Comment" lineEndContext="#pop">
+				<DetectSpaces />
+				<DetectIdentifier />
+			</context>
+			
+			<context name="Commentar 2" attribute="Comment" lineEndContext="#pop">
+				<DetectSpaces />
+				<IncludeRules context="##Alerts" />
+				<DetectIdentifier />
+			</context>
+			
+			<context name="Commentar 3" attribute="Comment" lineEndContext="#stay">
+				<DetectSpaces />
+				<Detect2Chars attribute="Comment" context="#pop" char="*" char1="/" endRegion="Comment"/>
+				<IncludeRules context="##Alerts" />
+				<DetectIdentifier />
+      		</context>
+		</contexts>
+		
+		<itemDatas>
+			<itemData name="Normal Text"		defStyleNum="dsNormal" />
+			<itemData name="Keyword"			defStyleNum="dsKeyword" />
+			<itemData name="Variable"			defStyleNum="dsBaseN"/>
+			<itemData name="Char"				defStyleNum="dsChar" />
+			<itemData name="Function"			defStyleNum="dsNormal" color="#008000"/>
+			<itemData name="Builtins"			defStyleNum="dsFunction"/>
+			<itemData name="Data Type"			defStyleNum="dsDataType"/>
+			<itemData name="Builtin Data Type"	defStyleNum="dsDataType" bold="1"/>
+			<itemData name="Decimal"			defStyleNum="dsDecVal"/>
+			<itemData name="Float"				defStyleNum="dsFloat"/>
+			<itemData name="String"				defStyleNum="dsString" />
+      		<itemData name="Comment"			defStyleNum="dsComment"/>
+		</itemDatas>
+	</highlighting>
+	
+	<general>
+		<comments>
+			<comment name="singleLine" start="//" />
+			<comment name="multiLine" start="/*" end="*/" region="Comment"/>
+		</comments>
+		<keywords casesensitive="1" />
+  	</general>
+</language>
