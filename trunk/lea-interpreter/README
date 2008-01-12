@@ -5,3 +5,9 @@ http://developer.berlios.de/projects/lea
 
 Licenced under the GPL 2.0 - see 'COPYING'
 
+How to execute
+--------------
+
+At the moment the easiest way to test this version of the interpreter
+is importing this directory (trunk/lea/interpreter/) into a Eclipse
+workspace.
