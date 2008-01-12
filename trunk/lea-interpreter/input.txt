@@ -1,0 +1,36 @@
+prog antispam
+	cons
+		MAX_ARRAY : 200
+		MAX       : 10
+	var
+		email     : cadena
+		i         : logico
+		df:
+			reg
+				v: entero
+			freg
+	prin
+			escribir	"This program reads an email address (i.e luis. 
+						fernando@myserver.com.es) and shows then the HTML code to 
+						create a link to it and also it as a text so that spammers 
+						will not use that email address to their business\n 
+						Whenever you want to stop the program, press <Ctrl>-<C>"
+		
+		i:= (verdadero y falso)
+		
+		desde j:=1 hasta 5
+			leer i
+			escribir j, ", ", i
+		fd
+	fin
+	
+	proc my_procedure(ent d: cadena; sal e:caracter, gg:entero; entsal f:real, g:tabla[5] de logico)
+	var
+		t1,t2      : tabla[MAX_ARRAY] de cadena
+		i, j, k, l : entero
+	prin
+	fin
+	func funcion() dev(a: entero)
+	prin
+		a := 0
+	fin
